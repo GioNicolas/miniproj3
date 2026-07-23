@@ -1,0 +1,24 @@
+# banco local — NUNCA commitar (conflito binário é pânico garantido)
+*.db
+*.sqlite
+*.sqlite3
+
+# segredos
+.env
+.env.local
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# node
+node_modules/
+.next/
+out/
+
+# editores/os
+.DS_Store
+.vscode/
+.idea/
