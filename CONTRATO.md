@@ -342,7 +342,7 @@ testes autorais (guia 09).
 
 | Método | Rota | Body | Status | Resposta |
 |---|---|---|---|---|
-| POST | 🔒 `/posts/{post_id}/imagem` | `multipart/form-data com o arquivo` | 200 | {"imagem_url": str} |
+| POST | 🔒 `/posts/{post_id}/imagem` | `multipart/form-data, campo "arquivo"` | 200 | {"imagem_url": str} |
 
 - TECNOLOGIA EXTRA: isenta de core/ e de medição (RUBRICA item 4)
 - só o autor do post → 403; jpg/png/webp; máx 2 MB → 413

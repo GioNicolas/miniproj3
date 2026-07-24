@@ -99,7 +99,7 @@ IA **permitida com disclosure**: seção "Uso de IA" no `DECISIONS.md`. A contra
 
 ## Produto: vídeo + demo day (10 pts)
 
-- **Vídeo (~4 min, 7 pts)**, roteiro fixo: fluxo contínuo cadastro → login → post → follow → feed; **até 2 avançadas** em destaque (não tem 2? mostre as 2 features mais fortes do trio — o item do checklist conta igual); e 1 item nomeando **o que ficou de fora no congelamento e por quê**. Corrigido por checklist binário.
+- **Vídeo (~4 min, 7 pts)**, roteiro fixo: fluxo contínuo cadastro → login → post → follow → feed; **até 2 avançadas** em destaque (não tem 2? mostre as 2 features mais fortes do trio — o item do checklist conta igual); e 1 item nomeando **o que ficou de fora no congelamento e por quê**. Corrigido por checklist binário de 6 itens: **nota do vídeo = 7 × (itens ✓ ÷ 6), arredondada para a 0,5 mais próxima**. Demo day: 3 itens de 1 pt cada.
 - **Demo day (3 min ao vivo + 1 pergunta, 3 pts)**: o pitch do nicho (problema → para quem → solução) sai da sua boca, não do vídeo — hackathon não aceita regravação. Mesmo checklist da banca.
 - Deploy público (+5): o avaliador abre a URL na defesa e percorre o fluxo do vídeo (cadastro → login → post → follow → feed). Gravar o vídeo contra a URL pública é recomendado, não obrigatório.
 
