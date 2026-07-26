@@ -1,6 +1,6 @@
 # Rubrica — Mini-projeto 3: Rede social de nicho
 
-> Versão 4.1 (painel v2 + verificação de consistência, 2026-07-21). Total: **100 pts + bônus**.
+> Versão 4.1. Total: **100 pts + bônus**.
 > O catálogo de features está em [CATALOGO.md](CATALOGO.md). O contrato exato (rota, método, request, response) de cada **feature de menu** está em `CONTRATO.md`; o **núcleo** é especificado pelos testes `@skip` do template — os testes são a spec.
 
 ## Composição da nota
