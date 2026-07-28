@@ -1,7 +1,7 @@
 """Valida o DECISIONS.md em todo `make test` — o corretor usa o MESMO parser.
 
 Se passa aqui, o grader parseia por construção. Linha inválida numa feature de
-menu = a feature reprova na checagem transversal e vale 0 (RUBRICA item 5).
+menu = a feature reprova na checagem transversal e vale 0 (ver RUBRICA.md).
 
 Regras: célula vazia ou "—" = trabalho em andamento, ignorada. Célula
 preenchida tem que ser válida AGORA.
@@ -114,7 +114,7 @@ def test_linhas_de_menu_preenchidas_sao_validas():
 
 
 @pytest.mark.skip(
-    reason="Remova na sexta do MVP: cada membro precisa ser dono de ≥1 feature de MENU de esforço M ou G"
+    reason="Remova quando o trio definir as features: cada membro precisa ser dono de ≥1 feature de MENU M ou G"
 )
 def test_piso_cada_membro_tem_feature_media_ou_grande():
     donos: dict[str, list[str]] = {}

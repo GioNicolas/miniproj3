@@ -5,8 +5,6 @@ Uma receita só, ponta a ponta: backend no **Render** (free), front na
 e percorre cadastro → login → post → follow → feed. Gravar o vídeo contra a
 URL pública é recomendado, não obrigatório.
 
-**Plantão de dúvidas: quarta do deploy (semana 2).**
-
 ## Antes de começar: os 3 avisos do free tier
 
 1. **O filesystem é efêmero**: a cada deploy ou restart, o `app.db` (SQLite) e

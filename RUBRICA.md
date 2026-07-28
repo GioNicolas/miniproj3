@@ -1,106 +1,138 @@
-# Rubrica — Mini-projeto 3: Rede social de nicho
+# Rubrica
 
-> Versão 4.1. Total: **100 pts + bônus**.
-> O catálogo de features está em [CATALOGO.md](CATALOGO.md). O contrato exato (rota, método, request, response) de cada **feature de menu** está em `CONTRATO.md`; o **núcleo** é especificado pelos testes `@skip` do template — os testes são a spec.
+Versão 4.2. Total: 100 pontos, mais bônus.
 
-## Composição da nota
+O núcleo é definido pelos testes `@skip`. As features de menu estão no
+[`CATALOGO.md`](CATALOGO.md) e seguem o [`CONTRATO.md`](CONTRATO.md).
 
-| Bloco | Regra | Pontos |
+## Pontuação
+
+| Bloco | Regra | Máximo |
 |---|---|---|
-| **Núcleo** (obrigatório) | 8 features: auth via guia, posts CRUD, feed paginado, perfil, follow, curtidas, comentários planos, seed fake | 25 |
-| **Menu intermediário** | fácil 3 / média 5 / difícil 7 pts; **no máximo 3 fáceis pontuam** | cap 40 |
-| **Menu avançado** | esforço M (médio) = 8 pts, G (grande) = 10 pts — legenda P/M/G no CATALOGO | cap 25 |
-| **Produto** | vídeo demo de ~4 min (7 pts) + **demo day ao vivo** de 3 min (3 pts) | 10 |
-| **Bônus** | deploy verificado **+5**; **+1** por feature média/difícil/avançada acima do cap (máx. **+3**); melhor `DECISIONS.md` da turma **+2** | acima de 100 |
+| Núcleo | 8 features obrigatórias | 25 |
+| Menu intermediário | P = 3, M = 5, G = 7; só 3 features P pontuam | 40 |
+| Menu avançado | M = 8, G = 10 | 25 |
+| Produto | vídeo = 7; demo ao vivo = 3 | 10 |
+| Bônus | deploy +5; excedente +3; melhor `DECISIONS.md` +2 | acima de 100 |
 
-**Nota 10 = atingir os caps.** Os "mínimos" de 8 intermediárias e 3 avançadas não são gates do script — são a quantidade que a aritmética exige para a soma alcançar o cap. Pode (e às vezes deve) entregar mais. Nem todo mix fecha:
+Para fechar o bloco intermediário, exemplos válidos são 8 M ou 1 G + 7 M.
+Três P + cinco M somam apenas 34. No avançado, três M somam 24; é preciso uma
+G ou uma quarta feature.
 
-- **Intermediário** (cap 40): atenção — o catálogo tem **só 1 intermediária difícil** (Comunidades/grupos). Com 8 features, fecham: **8 médias** (40), **1 difícil + 7 médias** (42→40) ou **1 fácil + 1 difícil + 6 médias** (40 exato). **3 fáceis + 5 médias = 34, não fecha** com 8 features — quem fizer fáceis compensa entregando mais (ex.: 3 fáceis + 7 médias = 44→40, com 10 features).
-- **Avançado** (cap 25): exige **≥ 1 de esforço G** entre as 3 (3 avançadas M = 24, não fecha).
+## Cálculo da nota
 
-**Escala de notas parciais** (nota 10 é o teto, não o piso da aprovação):
+Para cada feature de menu:
 
-| Entrega | Nota aproximada |
-|---|---|
-| Núcleo completo + 5 intermediárias + 1 avançada | ≈ 7 |
-| Caps atingidos em todos os blocos | 10 |
+1. teste oculto falhou → 0;
+2. `core/` não existe, não é usado ou a linha do `DECISIONS.md` é inválida → 0;
+3. avançada sem benchmark reproduzível e interpretação vira intermediária G,
+   vale 7 e entra no limite de 40;
+4. teste autoral ausente ou inválido → valor × 0,7;
+5. defesa → valor × 1, × 0,5 ou × 0;
+6. apenas as três maiores features P pontuam;
+7. aplicam-se os limites de 40 e 25.
 
-## Como a nota é calculada (este pseudocódigo É o script do grader)
+O núcleo vale:
 
 ```text
-# Núcleo: avaliado só pela fórmula do passo 5 (os testes estão no seu repo).
-para cada feature de MENU entregue:
-  passou no teste oculto?                          senão: vale 0
-  sobreviveu à checagem transversal?               senão: vale 0
-    (transversal = itens 4 e 5 abaixo: teste-sabotagem + grep 'from app.core'
-     + linha válida no DECISIONS.md. Features marcadas "tecnologia extra" no
-     catálogo são isentas de core/ e de medição.)
-1. RECLASSIFICAÇÃO: avançada sem medição válida (bench_ irreproduzível ou sem a
-   frase de interpretação) vira intermediária difícil (7 pts): passa a contar
-   no cap 40; sai do cap 25. Não se aplica a "tecnologia extra" (isenta de medição).
-2. TESTE AUTORAL: feature de menu sem teste autoral válido (critério: ele fica
-   vermelho se a feature for sabotada) → valor × 0,7.
-3. DEFESA: feature sorteada → × 1,0 / × 0,5 / × 0 (escala 100/50/0 abaixo).
-   Reprovar = × 0 (o degrau 50% NÃO é reprovação). Dono reprovado nas 2
-   sorteadas → as 2 continuam valendo 0 e todas as DEMAIS features dele × 0,5.
-4. TETO DE FÁCEIS: só as 3 fáceis de maior valor pontuam; as demais valem 0.
-5. SOMAS, CAPS E BÔNUS (por último):
-   núcleo   = 25 × (testes do núcleo passando ÷ total)
-   inter    = min(soma, 40)        avançado = min(soma, 25)
-   produto  = max(0, vídeo (0–7) + demo day (0–3) − 2 se o congelamento da
-              sexta do MVP estiver ausente ou com commit fora do prazo)
-   bônus    = deploy verificado (+5) + 1/feature média-ou-acima além do cap
-              (máx +3) + melhor DECISIONS.md da turma (+2, um trio)
-   nota     = núcleo + inter + avançado + produto (+ bônus)
+25 × (testes do núcleo passando ÷ total de testes do núcleo)
 ```
 
-## Como a correção funciona (leia antes de codar)
+`skipped` significa feature não entregue.
 
-1. **Os testes do núcleo são a spec.** O template traz testes `@skip` por feature do núcleo. Ciclo: remova o `@skip` → rode → veja falhar → implemente até passar. **`skipped` conta como não-entregue** — "6 passed, 11 skipped" não é sucesso, é backlog.
-2. **Os testes do menu são ocultos e rodam na infra do instrutor.** O grader clona seu repo (somente leitura), roda no repo privado e publica um relatório no seu repo: **PASS/FAIL por feature + 1 mensagem por falha citando a seção do `CONTRATO.md`** ("esperava feed desc por `created_at`, veio asc") — nunca traceback. Cadência: toda noite, mais rodadas extras no checkpoint de auth, na sexta do MVP e na entrega. Você nunca vê o código dos testes; o contrato público é o `CONTRATO.md`. Achou um bug no grader? Vale o que o `CONTRATO.md` diz — reporte por issue (protocolo no README), correção em até ~48h.
-3. **Contrato de API congelado.** Rotas, métodos, campos e status das features de menu estão no `CONTRATO.md`; o núcleo está nos testes `@skip`. O nicho do trio vive em conteúdo, seed e UI. Divergir do contrato = teste falha = 0 na feature.
-4. **A checagem transversal: a estrutura tem que rodar de verdade.** Toda feature de menu exige a estrutura em `backend/app/core/` como Python puro **e o endpoint usando-a**. O grader (a) roda o teste-sabotagem — troca seu `core/` por uma versão quebrada; o endpoint tem que quebrar junto — e (b) cruza `grep 'from app.core'` com o `DECISIONS.md`. O template traz o exemplo canônico do padrão em `core/contadores.py` — imite-o. Core "de teatro" reprova na transversal e a feature **vale 0**. Exceção nomeada: features marcadas **"tecnologia extra"** no catálogo (ex.: Posts com imagem/upload) não têm estrutura possível — dispensam `core/` e medição; seus gates são o teste oculto e a alteração sob medida na defesa.
-5. **`DECISIONS.md` é o índice da correção — e você mesmo o valida.** Tabela por feature: `| Feature | Dono | Módulo em core/ (app.core.<nome>) | Endpoint que usa | Big O | Por quê (1 frase) | Caso autoral (1 frase) |`. Features do **núcleo** entram só com Feature e Dono; as demais colunas valem para features de menu (célula vazia = WIP, ignorada pelo validador). O template traz `tests/test_decisions.py`, que roda em todo `make test` — se passa aí, o grader parseia por construção. Linha inválida numa feature de menu = reprova na transversal e **vale 0**.
-6. **Teste autoral.** Cada feature de menu exige ≥ 1 teste do trio (`test_autoral_<feature>.py`) cobrindo um caso que o `CONTRATO.md` **não** especifica (borda, erro, permissão). Critério objetivo: o teste deve ficar **vermelho se a feature for sabotada**; duplicar o caminho feliz do contrato = teste ausente. Pode ser escrito com IA — mas é matéria da defesa ("que caso cobre e por quê? faça-o falhar mexendo no código"). Sem teste válido: × 0,7. Guia 09 ensina do zero, com `test_autoral_exemplo.py` de modelo.
-7. **Medição obrigatória nas avançadas.** Números só valem saindo de `scripts/bench_<feature>.py` commitado e rodável via `make bench`, com o output colado no `DECISIONS.md` **+ 1 frase de interpretação** ("a trie só ganha do bisect a partir de ~N porque…"). A receita de 10 linhas está nos mini-guias (`timeit`, N de 1k/10k/100k via faker, média de repetições, medir só a operação). O corretor re-roda por amostragem — conclusão e ordem de grandeza têm que bater. **A estrutura ingênua vencer em N pequeno é resultado válido e valioso: pontua a interpretação, não a vitória.** Sem medição válida: pontua como intermediária difícil (7 pts). Alternativas ingênuas por feature: BFS vs varredura, heap vs ordenar tudo, trie vs bisect, árvore vs lista plana, DMs = dict de conversas vs varredura linear da tabela de mensagens. Upload é "tecnologia extra": isento.
+## Gates das features de menu
 
-## Trabalho em equipe (verificado por script)
+- O endpoint deve seguir método, rota, campos e status do `CONTRATO.md`.
+- A estrutura fica em `backend/app/core/` como Python puro.
+- O endpoint deve importar e usar o módulo declarado no `DECISIONS.md`.
+- Cada feature precisa de dono e teste `test_autoral_<feature>.py`.
+- O teste autoral cobre algo fora do contrato e precisa falhar quando a
+  feature é sabotada.
 
-- Cada feature tem **dono nomeado** no `DECISIONS.md` desde o dia 2, e **cada membro é dono de ≥ 1 feature de MENU de esforço M ou G** (piso estrutural — o `test_decisions.py` checa, com o mapa feature→esforço do catálogo embutido).
-- **Processo**: toda feature pontuada tem **1 issue no GitHub fechada por PR merged** (`Closes #N`) do seu dono. Verificado por script; **não entra na fórmula da nota** — feature sem issue fechada gera alerta e vira **direcionador da defesa** (alteração mais difícil, 2ª sorteada antecipada). Board/colunas são livres e não pontuam.
-- Por membro: **≥ 5 commits não triviais** e **≥ 2 PRs merged com review aprovado de colega**. Também **direcionam a defesa** em vez de dar nota: padrão suspeito (rajada na véspera, commits só de README) → alteração mais difícil e 2ª sorteada antecipada. Trios em risco recebem aviso na metade da semana 1.
+Upload é tecnologia extra e não exige `core/` nem benchmark.
 
-## Defesa oral com modificação ao vivo
+Avançadas exigem `scripts/bench_<feature>.py`, execução por `make bench`,
+resultado no `DECISIONS.md` e uma frase interpretando os números. O corretor
+pode repetir a medição. A alternativa simples vencer com poucos dados é um
+resultado válido.
 
-O gate central da nota individual. **Sorteia-se 1 feature por membro** (2ª apenas se reprovar na 1ª, ou antecipada por padrão git suspeito), **priorizando intermediárias e avançadas** — fácil só se não houver alternativa. Para a feature sorteada, o dono:
+## Trabalho em trio
 
-- Recebe uma **alteração instanciada na hora** a partir dos arquétipos publicados em `docs/defesa.md` do template desde o dia 1 ("inverta a ordenação de `{campo}`", "mude o limite para `{N}`", "inverta a regra de permissão"…) — só a instância com `{campo}`/`{N}` é sorteada na hora. Alterações calibradas: 1 função/1 arquivo, verificável com 1 curl/teste, gabarito de ≤ 5 min. Features de estrutura avançada (grafo, árvore, heap, trie e afins) recebem ≥ 1 alteração **inviável sem a estrutura**; as 6 avançadas têm alterações sob medida.
-- **Escala 100/50/0**: alterou e a verificação passa = 100%; apontou o arquivo/função corretos **e** descreveu a mudança certa, mas não terminou no tempo = 50%; não soube onde mexer = 0. **Reprovar = 0** (o degrau 50% não é reprovação). Quem só colou código não sabe nem apontar o arquivo.
-- Defende também o **teste autoral** da feature (que caso cobre? faça-o falhar) e, em avançada, responde uma **pergunta de previsão** antes de rodar o bench ("dobro o N — o que acontece com cada lado?").
-- **Sem IA, operacionalmente**: editor sem assistentes de IA (`code --disable-extensions`, conferido em 30 s), terminal limpo, navegador só em localhost/Swagger/`CONTRATO.md`. Autocomplete padrão e LSP podem.
-- **Anti-carona em escada**: reprovou na sorteada → ela zera e sorteia-se uma 2ª do mesmo dono; reprovou as duas → as 2 permanecem em 0 e **as demais features do dono caem para 50%**. Um branco de nervosismo continua barato; padrão não é nervosismo.
-- Logística: 2 bancas em paralelo × 2 tardes, slot de 40 min por trio, máquina preparada e `git reset` entre membros. Ensaio de 5 min por trio na sexta do MVP.
+- Toda feature tem um dono no `DECISIONS.md`.
+- Cada integrante é dono de pelo menos uma feature de menu M ou G.
+- Toda feature pontuada tem uma issue fechada pelo PR do dono com `Closes #N`.
+- Cada integrante deve ter pelo menos 5 commits relevantes e 2 PRs aprovados
+  por outro membro.
 
-## Política de IA
+Issues, commits e reviews não alteram a nota automaticamente. Eles ajudam a
+escolher o que será pedido na defesa.
 
-IA **permitida com disclosure**: seção "Uso de IA" no `DECISIONS.md`. A contrapartida é dupla: a **defesa com modificação ao vivo** (sem IA) e os **testes ocultos**. Use IA à vontade para escrever — mas o que você entrega tem que passar num teste que você nunca viu, e você tem que saber mexer no código na frente do avaliador. Código que ninguém do trio domina não pontua, gerado por IA ou não.
+## Defesa
 
-## Cronograma e rituais
+Cada integrante modifica ao vivo uma feature própria, sem IA. O sorteio
+prioriza features intermediárias e avançadas e usa os arquétipos de
+[`docs/defesa.md`](docs/defesa.md).
 
-| Quando | O quê |
+| Resultado | Multiplicador |
 |---|---|
-| Dia 1–2 | Nicho, ER, esqueleto rodando (`make check` verde), donos no `DECISIONS.md`, issues das features criadas. **Ninguém espera a auth**: o Passo 0 do guia 01 (bypass de desenvolvimento) destrava posts/feed/curtidas em paralelo |
-| **Dia 3** | **Checkpoint de auth (backend puro)**: testes de auth do núcleo passando + login funcionando via Swagger; quem não passou é destravado presencialmente |
-| Dia 4 | Publicada a **break-glass** — branch de resgate do instrutor com `deps.py` + rotas de auth + páginas de login/registro. Mergear = os testes de auth contam como **não passando** na fórmula do núcleo (valor exato publicado com o template); o resto do núcleo fica intacto |
-| **Sexta (fim da semana 1)** | **Sexta do MVP**: seção "Congelamento" no `DECISIONS.md` (~5 linhas: o que corta e por quê; commit até a data, senão −2 de produto) + 2 min de apresentação + ensaio de defesa (5 min/trio). **Cadastro→login na UI** é critério daqui |
-| **Quarta (semana 2)** | **Quarta do deploy**: plantão de monitor para quem quiser o bônus +5 (guia 08 tem a receita única) |
-| Semana 2 | Menu + polish + vídeo |
-| **Defesas (2 bancas × 2 tardes)** | O **demo day** (3 min de pitch ao vivo + 1 pergunta da banca, 3 pts) abre a 1ª tarde; as defesas seguem nas duas tardes |
+| Alterou e a verificação passou | 100% |
+| Localizou e explicou corretamente, mas não terminou | 50% |
+| Não soube onde ou como alterar | 0% |
 
-## Produto: vídeo + demo day (10 pts)
+Quem recebe 0 defende uma segunda feature. Dois resultados 0 zeram as duas
+features sorteadas e reduzem as outras features desse integrante para 50%.
 
-- **Vídeo (~4 min, 7 pts)**, roteiro fixo: fluxo contínuo cadastro → login → post → follow → feed; **até 2 avançadas** em destaque (não tem 2? mostre as 2 features mais fortes do trio — o item do checklist conta igual); e 1 item nomeando **o que ficou de fora no congelamento e por quê**. Corrigido por checklist binário de 6 itens: **nota do vídeo = 7 × (itens ✓ ÷ 6), arredondada para a 0,5 mais próxima**. Demo day: 3 itens de 1 pt cada.
-- **Demo day (3 min ao vivo + 1 pergunta, 3 pts)**: o pitch do nicho (problema → para quem → solução) sai da sua boca, não do vídeo — hackathon não aceita regravação. Mesmo checklist da banca.
-- Deploy público (+5): o avaliador abre a URL na defesa e percorre o fluxo do vídeo (cadastro → login → post → follow → feed). Gravar o vídeo contra a URL pública é recomendado, não obrigatório.
+O integrante também explica e sabota o teste autoral. Em feature avançada,
+prevê o resultado do benchmark antes de executá-lo.
 
-A nota de **features** vem 100% do grader + defesa — a demo avalia produto, não substitui teste.
+Durante a defesa:
+
+- editor sem assistentes de IA;
+- terminal limpo;
+- navegador apenas em localhost, Swagger e documentação do projeto;
+- autocomplete comum e LSP são permitidos.
+
+## Uso de IA
+
+IA é permitida e deve ser registrada no `DECISIONS.md`. Cada integrante precisa
+explicar, localizar e modificar o código entregue. Código que ninguém domina
+não pontua.
+
+## Produto
+
+### Vídeo: 7 pontos
+
+Vídeo de aproximadamente 4 minutos. O checklist tem seis itens:
+
+1. cadastro;
+2. login;
+3. criação de post;
+4. follow e feed;
+5. até duas features fortes do trio;
+6. uma decisão registrada no `DECISIONS.md`.
+
+A nota é `7 × itens concluídos ÷ 6`, arredondada para o múltiplo de 0,5 mais
+próximo.
+
+### Demo ao vivo: 3 pontos
+
+Pitch de 3 minutos: problema, público e solução, seguido de uma pergunta.
+Cada parte vale 1 ponto.
+
+### Bônus
+
+- Deploy público funcionando: +5.
+- Cada feature M, G ou avançada acima do limite do bloco: +1, máximo +3.
+- Melhor `DECISIONS.md` da turma: +2.
+
+O deploy é verificado pelo fluxo cadastro → login → post → follow → feed.
+
+## Datas
+
+| Marco | Data |
+|---|---|
+| Início | **[DATA DE INÍCIO]** |
+| Entrega final | **24/10/2026** |
+
+Se o grader divergir deste contrato, vale o `CONTRATO.md`. Abram uma issue no
+repositório da turma.
