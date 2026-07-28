@@ -1,4 +1,4 @@
-"""MODELO de teste autoral (RUBRICA item 6) — sobre o slice de exemplo, de
+"""MODELO de teste autoral (ver RUBRICA.md) — sobre o slice de exemplo, de
 propósito: não entrega nenhuma feature de menu.
 
 Um teste autoral cobre um caso que o CONTRATO.md NÃO especifica. Receita de 3

@@ -2,7 +2,7 @@
 
 Cada feature de menu exige ≥1 teste escrito pelo trio (`test_autoral_<feature>.py`),
 cobrindo um caso que o `CONTRATO.md` **não** especifica. Sem ele, a feature
-pontua ×0,7 (RUBRICA item 6). Você nunca escreveu um teste? Este guia resolve.
+pontua ×0,7 (ver `RUBRICA.md`). Você nunca escreveu um teste? Este guia resolve.
 
 ## A anatomia: arrange → act → assert
 

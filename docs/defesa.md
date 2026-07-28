@@ -1,4 +1,4 @@
-# Defesa oral — os arquétipos de alteração (públicos desde o dia 1)
+# Defesa oral — arquétipos de alteração
 
 Na defesa, cada membro recebe **uma alteração sorteada da sua feature** e a
 implementa ao vivo, **sem IA**, em ~10 minutos (RUBRICA: escala 100/50/0).
@@ -46,4 +46,3 @@ provocar. Vá em frente.
   descreveu a mudança correta, mas não terminou; 0% = não soube onde mexer.
 - Reprovou (0%) → sorteia-se uma 2ª feature sua; reprovou as duas → as demais
   features suas caem para 50% (RUBRICA).
-- Ensaio de 5 min por trio na sexta do MVP — aproveite.

@@ -96,6 +96,6 @@ reconstruível com `make seed`.
 
 Commit que muda comportamento ou testes — não `fix typo`, não reindentação,
 não "atualiza README" em série. O script do corretor usa
-`git shortlog -sn --no-merges` e o histórico real; três commits gigantes na
-sexta contam menos a seu favor do que dez pequenos ao longo da semana — e
-lembre: padrão estranho = defesa mais difícil para o dono.
+`git shortlog -sn --no-merges` e o histórico real. Poucos commits gigantes
+mostram menos autoria do que mudanças pequenas e verificáveis. Padrão estranho
+torna a defesa mais difícil para o dono.

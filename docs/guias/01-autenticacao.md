@@ -5,9 +5,8 @@ guia decide o desenho por você e anda de mãos dadas com os testes: cada passo
 termina com um comando e a saída esperada.
 
 **O contrato é `tests/test_nucleo.py`**: `test_auth_registro`, `test_auth_login`
-e `test_auth_eu`. Checkpoint do **dia 3**: os 3 verdes + login pelo Swagger.
-Se travar, monitor destrava presencialmente; no dia 4 existe a branch
-break-glass (mergear custa só os pontos de auth).
+e `test_auth_eu`. A implementação está pronta quando os três testes ficam verdes
+e o login funciona pelo Swagger.
 
 ## O desenho (leia antes de codar — 30 segundos)
 
@@ -20,7 +19,7 @@ break-glass (mergear custa só os pontos de auth).
 
 ---
 
-## Passo 0 — destrave seus colegas (5 min, dia 1)
+## Passo 0 — destrave seus colegas
 
 Quase tudo depende de "usuário logado", mas ninguém pode esperar a auth ficar
 pronta. Cole isto em `app/deps.py` no lugar do `NotImplementedError` — e
@@ -79,7 +78,7 @@ Pronto: quem pegou posts/feed/curtidas já pode proteger rotas com
 
 ---
 
-## Parte 1 — a auth de verdade (backend, dias 2–3)
+## Parte 1 — a auth de verdade (backend)
 
 ### Passo 1 — registro (`test_auth_registro`)
 
@@ -232,7 +231,7 @@ def eu(user: User = Depends(get_current_user)):
 
 Apague a `/eu-temporario` do Passo 0.
 
-**3.4** Verificação — **este é o checkpoint do dia 3**:
+**3.4** Verificação:
 
 ```bash
 uv run pytest -q -k auth
@@ -249,7 +248,7 @@ testes de posts/feed/curtidas ficam destraváveis para o resto do trio.
 
 ---
 
-## Parte 2 — o front (dias 3–5)
+## Parte 2 — o front
 
 Decisão tomada pelo guia: **token no `localStorage`**. Trade-off honesto em um
 parágrafo: `localStorage` é vulnerável a XSS (script injetado lê o token),
@@ -302,7 +301,7 @@ export function useExigeLogin() {
 }
 ```
 
-### Verificação final (ponta a ponta — critério da sexta do MVP)
+### Verificação final (ponta a ponta)
 
 1. `make dev-back` (sem DEBUG!) + `make dev-front`.
 2. Na UI: registrar → logar → abrir o DevTools (F12) → aba Network → qualquer
