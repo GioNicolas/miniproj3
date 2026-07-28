@@ -83,8 +83,8 @@ check_setup — validando o ambiente
 tudo verde — próximos passos: make seed, make dev-back, make dev-front
 ```
 
-Verde? Vá para a seção **"Primeiros 30 minutos"** do README — é lá que o
-projeto começa de verdade.
+Verde? Vá para a seção **"Como começar"** do README. É lá que o projeto
+começa de verdade.
 
 ## Erros comuns de instalação
 
