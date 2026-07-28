@@ -13,6 +13,6 @@ from app.models.user import User
 
 def get_current_user(db: Session = Depends(get_db)) -> User:
     # Passo 0 do guia: docs/guias/01-autenticacao.md — comece por lá.
-    # O guia traz o bypass de desenvolvimento (destrava seus colegas no dia 1)
+    # O guia traz o bypass de desenvolvimento (destrava seus colegas)
     # e termina com você trocando o corpo desta função pela auth real.
     raise NotImplementedError("siga docs/guias/01-autenticacao.md")

@@ -1,6 +1,6 @@
 # Guia 00 — Setup (do zero ao `make check` verde)
 
-Meta deste guia: **todo mundo do trio** com o ambiente verde no dia 1. Se algo
+Meta deste guia: **todo mundo do trio** com o ambiente verde antes de começar. Se algo
 falhar, procure a mensagem na seção de erros no fim — cada uma tem o conserto
 exato. Não gaste mais de 1h nisso sozinho: travou, chame monitor.
 
