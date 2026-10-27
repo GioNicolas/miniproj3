@@ -93,8 +93,7 @@ Um time fictício:
 
 ## Trabalho em time
 
-São 4 times de 4 e 3 times de 3, com as mesmas regras e os mesmos limites.
-Sugestões de divisão estão no
+Times de 3 e de 4 seguem as mesmas regras e limites. Sugestão de divisão no
 [guia 07](docs/guias/07-organizacao-do-time.md).
 
 - Toda feature tem um dono no `DECISIONS.md`.
@@ -104,8 +103,8 @@ Sugestões de divisão estão no
 - Cada integrante tem pelo menos 5 commits relevantes e 2 PRs aprovados por
   outro membro.
 
-Issues, commits e reviews não mudam a nota diretamente. Eles servem para
-escolher o que cada um vai defender.
+Issues, commits e reviews não entram na nota. A banca olha para eles na hora
+de escolher o que cada pessoa defende.
 
 ## Defesa
 
@@ -126,8 +125,8 @@ terminal limpo e navegador só em localhost, Swagger e documentação do projeto
 ## Uso de IA
 
 IA é permitida. Registrem no `DECISIONS.md` qual ferramenta usaram e para quê.
-Código que ninguém do time sabe explicar e alterar não pontua, pela regra da
-defesa.
+Na defesa não tem IA: quem não souber alterar o próprio código perde os pontos
+da feature.
 
 ## Produto
 
@@ -162,9 +161,8 @@ tiradas da seção Produto do `DECISIONS.md`:
   follow → feed.
 - **Features além do limite: +1 cada, até +3.** Vale para M, G ou avançada
   que sobrou depois de o bloco atingir 40 ou 25.
-- **Melhor `DECISIONS.md` da turma: +2.** Ganha o que deixa mais claro para
-  quem é a rede, o que ficou de fora e por quê, e o que os números do
-  benchmark mostraram.
+- **Melhor `DECISIONS.md` da turma: +2.** Ganha o que explica melhor para
+  quem é a rede, o que ficou de fora e o que o benchmark mostrou.
 
 ## Datas
 
