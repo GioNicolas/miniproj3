@@ -39,9 +39,10 @@ da banca. Para se preparar, pratiquem estes arquétipos no código de vocês.
   e avançadas, e sorteia o arquétipo e os parâmetros na hora.
 - Cada alteração cabe em 1 função ou 1 arquivo, é verificável com 1 curl ou 1
   teste e tem gabarito de até 5 minutos.
-- Sem IA: editor sem assistentes (`code --disable-extensions`), terminal
-  limpo, navegador só em localhost, Swagger e documentação do projeto.
-  Autocomplete padrão e LSP são permitidos.
+- Sem IA: desativem as extensões de IA do editor (Copilot, Codeium, Cursor
+  Tab e similares) antes da banca. Extensões de linguagem, autocomplete
+  padrão e LSP continuam permitidos. Terminal limpo e navegador só em
+  localhost, Swagger e documentação do projeto.
 - ×1: alterou e a verificação passa. ×0,5: achou o arquivo e a função certos e
   explicou a mudança, mas não terminou. ×0: não soube onde nem como alterar.
 - **Quem tira 0 defende uma segunda feature. Se tirar 0 de novo, as duas
