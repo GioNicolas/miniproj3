@@ -1,6 +1,6 @@
 # Guia 01 — Autenticação (a feature que destrava tudo)
 
-Auth **não vem pronta** — ela é do trio, de ponta a ponta, back e front. Mas este
+Auth **não vem pronta** — ela é do time, de ponta a ponta, back e front. Mas este
 guia decide o desenho por você e anda de mãos dadas com os testes: cada passo
 termina com um comando e a saída esperada.
 
@@ -244,7 +244,7 @@ curl -s localhost:8000/auth/eu -H "Authorization: Bearer <token>"
 ```
 
 Bônus imediato: a fixture `logar`/`auth_client` dos testes agora funciona — os
-testes de posts/feed/curtidas ficam destraváveis para o resto do trio.
+testes de posts/feed/curtidas ficam destraváveis para o resto do time.
 
 ---
 

@@ -16,7 +16,7 @@ URL pública é recomendado, não obrigatório.
 
 ## Passo 1 — backend no Render
 
-1. [render.com](https://render.com) → New → **Web Service** → conecte o repo do trio.
+1. [render.com](https://render.com) → New → **Web Service** → conecte o repo do time.
 2. Configure:
    - **Root Directory**: `backend`
    - **Build Command**: `pip install uv && uv sync --frozen`

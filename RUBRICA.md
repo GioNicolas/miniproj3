@@ -73,7 +73,7 @@ de 40.
 
 ## Exemplo de cálculo
 
-Um trio fictício:
+Um time fictício:
 
 | Bloco | Situação | Pontos |
 |---|---|---|
@@ -91,7 +91,11 @@ Um trio fictício:
 | Bônus | deploy funcionando | +5 |
 | **Total** | | **93,5** |
 
-## Trabalho em trio
+## Trabalho em time
+
+São 4 times de 4 e 3 times de 3, com as mesmas regras e os mesmos limites.
+Sugestões de divisão estão no
+[guia 07](docs/guias/07-organizacao-do-time.md).
 
 - Toda feature tem um dono no `DECISIONS.md`.
 - Cada integrante é dono de pelo menos uma feature de menu M ou G.
@@ -122,7 +126,7 @@ terminal limpo e navegador só em localhost, Swagger e documentação do projeto
 ## Uso de IA
 
 IA é permitida. Registrem no `DECISIONS.md` qual ferramenta usaram e para quê.
-Código que ninguém do trio sabe explicar e alterar não pontua, pela regra da
+Código que ninguém do time sabe explicar e alterar não pontua, pela regra da
 defesa.
 
 ## Produto
@@ -135,7 +139,7 @@ Cerca de 4 minutos, mostrando:
 2. login;
 3. criação de post;
 4. follow e feed;
-5. até duas features fortes do trio;
+5. até duas features fortes do time;
 6. uma decisão de produto do `DECISIONS.md`: o que vocês escolheram, o que
    cortaram e por quê.
 

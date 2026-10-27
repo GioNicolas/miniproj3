@@ -26,7 +26,7 @@ git push -u origin feat/curtidas
 
 No PR (pela interface do GitHub): descrição curta + **`Closes #12`** (o número
 da issue da feature — sem isso a feature não conta o critério de processo).
-Peça review de um colega do trio; ele comenta/aprova; **quem aprova não é quem
+Peça review de um colega do time; ele comenta/aprova; **quem aprova não é quem
 escreveu**. Merge pelo botão, apague a branch.
 
 ## "Meu PR deu conflito em main.py" — a receita exata

@@ -1,6 +1,6 @@
 # Guia 00 — Setup (do zero ao `make check` verde)
 
-Meta deste guia: **todo mundo do trio** com o ambiente verde antes de começar. Se algo
+Meta deste guia: **todo mundo do time** com o ambiente verde antes de começar. Se algo
 falhar, procure a mensagem na seção de erros no fim — cada uma tem o conserto
 exato. Não gaste mais de 1h nisso sozinho: travou, chame monitor.
 
@@ -54,8 +54,8 @@ no mesmo lugar. Clone o repo **dentro** do WSL (em `~/`), nunca em
 ## Clonar e validar
 
 ```bash
-# aceite o link do GitHub Classroom (cria o repo do seu trio), depois:
-git clone <url-do-repo-do-seu-trio>
+# aceite o link do GitHub Classroom (cria o repo do seu time), depois:
+git clone <url-do-repo-do-seu-time>
 cd <nome-do-repo>
 
 # backend

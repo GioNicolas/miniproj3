@@ -1,6 +1,6 @@
 # Catálogo de features
 
-O trio escolhe um nicho, mas segue o mesmo contrato de API. Personalizem
+O time escolhe um nicho, mas segue o mesmo contrato de API. Personalizem
 conteúdo, seed e interface. Não mudem rotas ou campos do
 [`CONTRATO.md`](CONTRATO.md).
 

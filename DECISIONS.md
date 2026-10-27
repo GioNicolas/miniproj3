@@ -1,6 +1,6 @@
-# Decisões do trio
+# Decisões do time
 
-**Trio:** _(nomes e usernames do GitHub)_
+**Time:** _(nomes e usernames do GitHub)_
 
 ## Produto
 
@@ -62,4 +62,4 @@ dado isso vale.
 ## Uso de IA
 
 Ferramenta e para quê. Exemplo: "Claude para gerar o seed de 200 posts sobre
-corrida; o resto foi escrito pelo trio."
+corrida; o resto foi escrito pelo time."
