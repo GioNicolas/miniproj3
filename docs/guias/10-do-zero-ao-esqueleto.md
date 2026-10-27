@@ -1,9 +1,9 @@
-# Guia 10 — Do zero ao esqueleto em ~30 minutos
+# Guia 10: do zero ao esqueleto em ~30 minutos
 
-No hackathon não vai ter template: a primeira hora é a página em branco. Este
-guia recria, do zero, um esqueleto equivalente ao deste repo — backend FastAPI
-+ SQLite e front Next falando entre si. Treine antes; no dia, isso sai no
-piloto automático.
+No hackathon não vai ter template: a primeira hora começa da página em branco.
+Este guia recria do zero um esqueleto equivalente ao deste repo, com backend
+FastAPI + SQLite e front Next conversando. Treinem antes para fazer no dia sem
+precisar pensar.
 
 ## Os 10 comandos
 
@@ -23,12 +23,11 @@ cd frontend                                    # 8
 npm run dev                                    # 10 → localhost:3000
 ```
 
-## Os 3 blocos de cola
+## Os 3 blocos para copiar
 
-Decore onde encontrá-los, não o conteúdo — no hackathon você cola daqui.
+Não precisam memorizar o conteúdo. No hackathon, copiem daqui.
 
-**Bloco 1 — FastAPI + CORS** (sem isso o front toma erro de CORS na primeira
-chamada):
+Bloco 1: FastAPI + CORS. Sem o CORS, o front dá erro na primeira chamada.
 
 ```python
 from fastapi import FastAPI
@@ -48,7 +47,7 @@ def ping():
     return {"pong": True}
 ```
 
-**Bloco 2 — SQLite + sessão** (o `db.py` de qualquer projeto):
+Bloco 2: SQLite + sessão, o `db.py` de qualquer projeto.
 
 ```python
 from sqlalchemy import create_engine
@@ -68,10 +67,10 @@ def get_db():
         db.close()
 ```
 
-(Models: classe herdando de `Base` + `Base.metadata.create_all(engine)` no
-startup — igual ao `main.py` deste repo.)
+Para os models, criem classes herdando de `Base` e chamem
+`Base.metadata.create_all(engine)` no startup, como no `main.py` deste repo.
 
-**Bloco 3 — fetch tipado no front** (`lib/api.ts`):
+Bloco 3: fetch tipado no front (`lib/api.ts`).
 
 ```ts
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -93,11 +92,11 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
 }
 ```
 
-## Prova de fogo
+## Teste final
 
-Uma página `"use client"` chamando `apiGet("/ping")` e mostrando o resultado.
-Se apareceu `pong` na tela, o esqueleto está de pé: model → rota → fetch →
-tela é o mesmo caminho do slice `/usuarios` deste repo.
+Criem uma página `"use client"` que chama `apiGet("/ping")` e mostra o
+resultado. Se `pong` aparecer na tela, o esqueleto funciona. O caminho model →
+rota → fetch → tela é o mesmo do slice `/usuarios` deste repo.
 
-**Faça isso 1 vez na semana antes do hackathon, cronometrado.** Meta: 30
-minutos sem consultar nada além desta página.
+Façam isso uma vez na semana antes do hackathon, cronometrando. A meta é 30
+minutos consultando só esta página.

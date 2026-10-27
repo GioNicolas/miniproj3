@@ -1,13 +1,12 @@
-# Guia 02 — Git em equipe (receitas, não teoria)
+# Guia 02: Git em equipe
 
-Regras da rubrica que este guia te ajuda a cumprir sem drama: **≥5 commits não
-triviais por membro**, **≥2 PRs merged com review de colega por membro**, e
-**toda feature pontuada tem 1 issue fechada pelo PR** (`Closes #N`). Isso é
-verificado por script — e padrão suspeito (rajada de commits na véspera,
-commits só de README) não tira ponto direto: **direciona a defesa** para cima
-de você, com alteração mais difícil. Commite de verdade, todo dia.
+A rubrica pede de cada integrante pelo menos 5 commits relevantes e 2 PRs
+aprovados por outro membro. Toda feature que pontua tem uma issue, fechada
+pelo PR do dono com `Closes #N`. Issues, commits e reviews não entram na nota,
+mas a banca olha para eles na hora de escolher o que cada pessoa defende.
+Commitem todo dia.
 
-## O fluxo diário (decore isto)
+## O fluxo diário
 
 ```bash
 # 1. comece o dia atualizado
@@ -24,15 +23,13 @@ git commit -m "curtir post: endpoint idempotente (2º like não duplica)"
 git push -u origin feat/curtidas
 ```
 
-No PR (pela interface do GitHub): descrição curta + **`Closes #12`** (o número
-da issue da feature — sem isso a feature não conta o critério de processo).
-Peça review de um colega do time; ele comenta/aprova; **quem aprova não é quem
-escreveu**. Merge pelo botão, apague a branch.
+No PR, pela interface do GitHub, escrevam uma descrição curta e `Closes #12`,
+com o número da issue da feature. Peçam review de um colega do time. Quem
+aprova não é quem escreveu. Façam o merge pelo botão e apaguem a branch.
 
-## "Meu PR deu conflito em main.py" — a receita exata
+## Conflito em main.py
 
-Vai acontecer, porque todo mundo registra router em `main.py`. Sem pânico —
-são 5 comandos:
+Vai acontecer, porque todo mundo registra router em `main.py`. São 5 comandos:
 
 ```bash
 git checkout main && git pull
@@ -43,7 +40,7 @@ git merge main
 #   Automatic merge failed; fix conflicts and then commit the result.
 ```
 
-Abra `backend/app/main.py`. O conflito tem esta cara:
+Abram `backend/app/main.py`. O conflito tem esta cara:
 
 ```python
 <<<<<<< HEAD
@@ -53,15 +50,15 @@ app.include_router(posts.router)
 >>>>>>> main
 ```
 
-A resolução aqui é sempre a mesma: **as duas linhas ficam** (e os dois
-imports). Apague só os marcadores `<<<<<<<`, `=======`, `>>>>>>>`:
+Aqui a resolução é sempre a mesma: as duas linhas ficam, e os dois imports
+também. Apaguem só os marcadores `<<<<<<<`, `=======`, `>>>>>>>`:
 
 ```python
 app.include_router(posts.router)
 app.include_router(curtidas.router)
 ```
 
-Termine:
+Para terminar:
 
 ```bash
 git add backend/app/main.py
@@ -70,16 +67,15 @@ git push
 # → o PR atualiza sozinho, sem conflito
 ```
 
-É por isso que o template é **1 arquivo por router e 1 por model**: o único
-ponto de colisão vira uma linha de `include_router` — conflito de 10 segundos.
-Se dois membros editam o MESMO arquivo de router, o conflito é dentro da
-lógica — aí é sentar junto e resolver linha a linha (e repensar a divisão de
-donos).
+Por isso o template tem um arquivo por router e um por model: o único ponto
+de colisão é uma linha de `include_router`. Se duas pessoas editam o mesmo
+arquivo de router, o conflito fica dentro da lógica. Nesse caso, sentem juntos,
+resolvam linha a linha e revejam a divisão de donos.
 
-## "Commitei o app.db" (ou outro arquivo que não devia)
+## Commitei o app.db
 
-O `.gitignore` do template já bloqueia `*.db` — se o `git status` mostra
-`app.db`, alguém mexeu no `.gitignore` ou forçou com `-f`. Conserto:
+O `.gitignore` do template já bloqueia `*.db`. Se o `git status` mostra
+`app.db`, alguém mexeu no `.gitignore` ou forçou com `-f`. Para consertar:
 
 ```bash
 git rm --cached backend/app.db
@@ -88,14 +84,13 @@ git commit -m "remove app.db do versionamento (banco é local)"
 git push
 ```
 
-Confira que a linha `*.db` existe no `.gitignore`. Binário no git = conflito
-irresolvível esperando para acontecer; o banco de cada um é local e
-reconstruível com `make seed`.
+Confiram que a linha `*.db` existe no `.gitignore`. Binário no git gera
+conflito que não se resolve. O banco de cada um é local e se reconstrói com
+`make seed`.
 
-## O que conta como "commit não trivial"
+## O que é commit relevante
 
-Commit que muda comportamento ou testes — não `fix typo`, não reindentação,
-não "atualiza README" em série. O script do corretor usa
-`git shortlog -sn --no-merges` e o histórico real. Poucos commits gigantes
-mostram menos autoria do que mudanças pequenas e verificáveis. Padrão estranho
-torna a defesa mais difícil para o dono.
+Commit que muda comportamento ou testes. `fix typo`, reindentação e uma série
+de "atualiza README" não contam. Poucos commits gigantes mostram menos autoria
+do que mudanças pequenas e verificáveis. Para ver quantos commits cada pessoa
+tem, usem `git shortlog -sn --no-merges`.

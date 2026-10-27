@@ -1,20 +1,19 @@
-# Guia 05 — JWT (opcional, leitura de 2 minutos)
+# Guia 05: JWT (opcional)
 
-**Você não precisa disto para o projeto.** A auth do guia 01 (token opaco em
-tabela) é auth de verdade e vale todos os pontos. JWT aqui não vale ponto extra
-— este stub existe só para matar a curiosidade.
+Vocês não precisam disto para o projeto. A auth do guia 01 (token opaco em
+tabela) é auth de verdade e vale todos os pontos. JWT não vale ponto extra.
 
-**O que é**: JWT (JSON Web Token) é um token que carrega os próprios dados
-(user_id, validade...) assinados criptograficamente. O servidor não guarda nada:
-ele **verifica a assinatura** em vez de consultar a tabela `sessions`.
+JWT (JSON Web Token) é um token que carrega os próprios dados (user_id,
+validade...) com assinatura criptográfica. O servidor não guarda nada: ele
+verifica a assinatura em vez de consultar a tabela `sessions`.
 
-**Trade-off em uma linha**: JWT é *stateless* (escala sem banco de sessões),
-mas o seu token em tabela é *revogável* (logout/ban = deletar a linha; um JWT
-emitido vale até expirar, goste você ou não).
+O trade-off: JWT é *stateless* e escala sem banco de sessões. O token em
+tabela é revogável: logout ou ban é deletar a linha, enquanto um JWT emitido
+vale até expirar.
 
-**Quando migrar faria sentido**: vários serviços validando o mesmo login sem
-compartilhar banco (microsserviços, API pública). Numa rede social de um
-backend só — nunca.
+Migrar faz sentido quando vários serviços validam o mesmo login sem
+compartilhar banco (microsserviços, API pública). Numa rede social com um
+backend só, não faz.
 
-**Para estudar depois**: [jwt.io](https://jwt.io) (decodifique um token no
+Para estudar depois: [jwt.io](https://jwt.io) (decodifique um token no
 browser) e [PyJWT](https://pyjwt.readthedocs.io/) (a lib Python).
