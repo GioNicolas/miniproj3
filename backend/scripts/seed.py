@@ -1,7 +1,7 @@
 """Seed mínimo: 3 usuários para o slice de exemplo renderizar.
 
 A versão de verdade (com faker, posts, follows, likes...) é FEATURE DO NÚCLEO —
-é do trio. Rode com: make seed
+é do time. Rode com: make seed
 """
 
 import sys

@@ -1,4 +1,4 @@
-# `core/` — as estruturas de dados do seu trio
+# `core/` — as estruturas de dados do seu time
 
 Aqui vivem as estruturas de dados das suas features, como **Python puro**: sem
 SQLAlchemy, sem FastAPI, sem import de banco. Só dicts, sets, listas, deques,

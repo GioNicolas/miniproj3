@@ -1,48 +1,50 @@
-# Defesa oral — arquétipos de alteração
+# Defesa oral: arquétipos de alteração
 
-Na defesa, cada membro recebe **uma alteração sorteada da sua feature** e a
-implementa ao vivo, **sem IA**, em ~10 minutos (RUBRICA: escala 100/50/0).
-As alterações saem dos arquétipos abaixo — os `{parâmetros}` são sorteados **na
-hora**, então a pergunta literal não existe antes da banca. Treinar estes
-arquétipos com o seu próprio código é exatamente o estudo que a defesa quer
-provocar. Vá em frente.
+Na defesa, cada integrante recebe uma alteração sorteada em uma feature
+própria e a implementa ao vivo, sem IA, em ~10 minutos. A nota segue a escala
+×1 / ×0,5 / ×0 da `RUBRICA.md`. As alterações saem dos arquétipos abaixo. Os
+`{parâmetros}` são sorteados na hora, então a pergunta exata não existe antes
+da banca. Para se preparar, pratiquem estes arquétipos no código de vocês.
 
 ## Os arquétipos
 
-1. **Inverta a ordenação** de `{campo}` na listagem `{rota}` (ex.: feed do mais
+1. Inverta a ordenação de `{campo}` na listagem `{rota}` (ex.: feed do mais
    antigo primeiro; salvos por ordem alfabética do autor).
-2. **Mude o limite** de `{N}` para `{M}` (rate limit, capacidade do LRU, top-k,
+2. Mude o limite de `{N}` para `{M}` (rate limit, capacidade do LRU, top-k,
    maxlen dos visitantes, tamanho de página).
-3. **Inverta ou restrinja a permissão**: `{ação}` passa a ser permitida só para
+3. Inverta ou restrinja a permissão: `{ação}` passa a ser permitida só para
    `{papel}` (ex.: comentar só quem segue o autor; denunciar só quem não é o autor).
-4. **Adicione um campo derivado da estrutura** na resposta de `{rota}` (ex.:
-   `posicao_no_ranking` no top-k; `tamanho_da_fila` no GET de pedidos) — derivado
-   do `core/`, não de uma query nova.
-5. **Adicione um filtro**: `{listagem}` só devolve itens com `{condição}` (ex.:
+4. Adicione um campo derivado da estrutura na resposta de `{rota}` (ex.:
+   `posicao_no_ranking` no top-k; `tamanho_da_fila` no GET de pedidos). O valor
+   vem do `core/`, não de uma query nova.
+5. Adicione um filtro: `{listagem}` só devolve itens com `{condição}` (ex.:
    trending ignora a tag `{x}`; busca ignora palavras de 1 letra).
-6. **Troque o critério de desempate** de `{rota}` para `{campo}`.
-7. **Mostre no código** onde a estrutura do `core/` é **atualizada num write** e
-   diga o que quebra se essa linha sumir (e prove: comente-a, rode o teste).
-8. **Faça seu teste autoral falhar**: sabote a própria feature, rode o teste,
-   explique por que ficou vermelho, desfaça.
-9. **(Avançadas) Preveja antes de rodar**: "dobrando o N, o que acontece com o
-   tempo da sua estrutura e com o da versão ingênua?" — depois rode o
-   `make bench` e compare com a sua previsão.
-10. **(Features de estrutura avançada) Alteração estrutural**: uma mudança
+6. Troque o critério de desempate de `{rota}` para `{campo}`.
+7. Mostre no código onde a estrutura do `core/` é atualizada num write e diga
+   o que quebra se essa linha sumir. Provem comentando a linha e rodando o
+   teste.
+8. Faça seu teste autoral falhar: sabote a própria feature, rode o teste,
+   explique por que falhou e desfaça.
+9. (Avançadas) Preveja antes de rodar: "dobrando o N, o que acontece com o
+   tempo da sua estrutura e com o da versão ingênua?". Depois rode o
+   `make bench` e compare com a previsão.
+10. (Features de estrutura avançada) Alteração estrutural: uma mudança
     inviável sem a estrutura de verdade (ex.: no autocomplete, devolva também
-    QUANTAS palavras existem sob o prefixo — trivial na trie, caro sem ela;
-    no BFS, devolva o caminho, não só a distância).
+    quantas palavras existem sob o prefixo, o que é trivial na trie e caro sem
+    ela; no BFS, devolva o caminho, não só a distância).
 
-## As regras da banca
+## Regras da banca
 
-- Sorteia-se **1 feature por membro** (prioridade para intermediárias e
-  avançadas), e o arquétipo + parâmetros na hora.
-- Alterações calibradas: 1 função / 1 arquivo, verificável com 1 curl ou 1
-  teste, gabarito de ≤ 5 min.
-- **Sem IA**: editor sem assistentes (`code --disable-extensions`), terminal
-  limpo, navegador só em localhost / Swagger / CONTRATO.md. Autocomplete padrão
-  e LSP podem.
-- 100% = alterou e a verificação passa; 50% = apontou arquivo/função certos e
-  descreveu a mudança correta, mas não terminou; 0% = não soube onde mexer.
-- Reprovou (0%) → sorteia-se uma 2ª feature sua; reprovou as duas → as demais
-  features suas caem para 50% (RUBRICA).
+- A banca sorteia 1 feature por integrante, com prioridade para intermediárias
+  e avançadas, e sorteia o arquétipo e os parâmetros na hora.
+- Cada alteração cabe em 1 função ou 1 arquivo, é verificável com 1 curl ou 1
+  teste e tem gabarito de até 5 minutos.
+- Sem IA: desativem as extensões de IA do editor (Copilot, Codeium, Cursor
+  Tab e similares) antes da banca. Extensões de linguagem, autocomplete
+  padrão e LSP continuam permitidos. Terminal limpo e navegador só em
+  localhost, Swagger e documentação do projeto.
+- ×1: alterou e a verificação passa. ×0,5: achou o arquivo e a função certos e
+  explicou a mudança, mas não terminou. ×0: não soube onde nem como alterar.
+- **Quem tira 0 defende uma segunda feature. Se tirar 0 de novo, as duas
+  features sorteadas valem 0 e as outras features desse integrante caem para
+  50%.**

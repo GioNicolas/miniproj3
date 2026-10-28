@@ -1,15 +1,16 @@
-# Guia 06 — Upload de arquivos (tecnologia extra)
+# Guia 06: upload de arquivos
 
-Para a feature avançada **Posts com imagem** — a única do catálogo marcada
-"tecnologia extra" (dispensa `core/` e medição; os gates dela são o teste
-oculto e a defesa). Este guia mostra o upload de UM arquivo genérico; ligar
-isso ao post é trabalho seu.
+Este guia serve para a feature avançada Posts com imagem, a única do catálogo
+marcada como tecnologia extra. Ela não precisa de `core/` nem de benchmark. Os
+outros requisitos da rubrica valem igual: teste oculto, linha no
+`DECISIONS.md`, teste autoral e defesa. O guia mostra o upload de um arquivo
+genérico; ligar isso ao post fica com vocês.
 
 ## Backend
 
 ### 1. Receber o arquivo
 
-FastAPI recebe upload com `UploadFile` (é multipart, não JSON):
+O FastAPI recebe upload com `UploadFile`. O formato é multipart, não JSON:
 
 ```python
 import uuid
@@ -42,7 +43,7 @@ async def subir_arquivo(arquivo: UploadFile, user=Depends(get_current_user)):
     return {"url": f"/uploads/{nome}"}
 ```
 
-Por que `uuid` no nome: o filename vem do cliente — pode colidir, pode conter
+O nome usa `uuid` porque o filename vem do cliente: pode colidir e pode conter
 `../`. Gerar o nome no servidor resolve os dois.
 
 ### 2. Servir os arquivos
@@ -57,9 +58,9 @@ Path("uploads").mkdir(exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 ```
 
-### 3. Não commite os uploads
+### 3. Não commitem os uploads
 
-Adicione ao `.gitignore` do repo:
+Adicionem ao `.gitignore` do repo:
 
 ```
 uploads/
@@ -76,9 +77,9 @@ curl -s -X POST localhost:8000/upload -H "X-User-Id: 1" -F "arquivo=@alguma_foto
 
 ## Frontend
 
-`<input type="file">` + `FormData`. **O erro clássico**: setar `Content-Type`
-na mão. Não sete — o browser precisa colocar o boundary do multipart sozinho
-(o `apiPost` do `lib/api.ts` força JSON, então upload usa `fetch` puro):
+Usem `<input type="file">` e `FormData`. Não definam o `Content-Type` na mão:
+o browser precisa colocar o boundary do multipart sozinho. O `apiPost` do
+`lib/api.ts` força JSON, então o upload usa `fetch` puro:
 
 ```tsx
 const [arquivo, setArquivo] = useState<File | null>(null);
@@ -98,9 +99,9 @@ const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
 const { url } = await res.json();
 ```
 
-A `url` devolvida é relativa ao backend: para exibir, monte
+A `url` devolvida é relativa ao backend. Para exibir, montem
 `${NEXT_PUBLIC_API_URL}${url}` no `src` da imagem.
 
-Deu 422 sem entender? Confira na aba Network se o request é
-`multipart/form-data; boundary=...` — se estiver `application/json` ou sem
-boundary, você setou o Content-Type na mão (guia 04).
+Se der 422, confiram na aba Network se o request é
+`multipart/form-data; boundary=...`. Se estiver `application/json` ou sem
+boundary, o Content-Type foi definido na mão (guia 04).

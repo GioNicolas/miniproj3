@@ -39,7 +39,7 @@ def client():
 
 @pytest.fixture()
 def logar(client):
-    """Fábrica: cria usuário PELAS ROTAS DO SEU trio e devolve o header Authorization.
+    """Fábrica: cria usuário PELAS ROTAS DO SEU time e devolve o header Authorization.
 
     Use em qualquer teste que precise de gente logada:
         ana = logar("ana")
@@ -64,6 +64,6 @@ def logar(client):
 
 @pytest.fixture()
 def auth_client(client, logar):
-    """Client já autenticado (header fixado). Vermelho até a auth do trio existir."""
+    """Client já autenticado (header fixado). Vermelho até a auth do time existir."""
     client.headers.update(logar("tester_auth", "Tester"))
     return client

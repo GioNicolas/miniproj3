@@ -114,7 +114,7 @@ def test_linhas_de_menu_preenchidas_sao_validas():
 
 
 @pytest.mark.skip(
-    reason="Remova quando o trio definir as features: cada membro precisa ser dono de ≥1 feature de MENU M ou G"
+    reason="Remova quando o time definir as features: cada membro precisa ser dono de ≥1 feature de MENU M ou G"
 )
 def test_piso_cada_membro_tem_feature_media_ou_grande():
     donos: dict[str, list[str]] = {}

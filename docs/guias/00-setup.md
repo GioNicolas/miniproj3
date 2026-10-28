@@ -1,19 +1,19 @@
-# Guia 00 — Setup (do zero ao `make check` verde)
+# Guia 00: setup
 
-Meta deste guia: **todo mundo do trio** com o ambiente verde antes de começar. Se algo
-falhar, procure a mensagem na seção de erros no fim — cada uma tem o conserto
-exato. Não gaste mais de 1h nisso sozinho: travou, chame monitor.
+Todo mundo do time precisa estar com `make check` verde antes de começar. Se
+algo falhar, procurem a mensagem na seção de erros no fim; cada uma tem o
+conserto. Não gastem mais de 1h nisso sozinhos: travou, chamem monitor.
 
-## O que instalar (uma vez só)
+## O que instalar
 
-Você precisa de 4 coisas. Python **não** está na lista — o `uv` cuida dele.
+São 4 ferramentas. Python não está na lista porque o `uv` cuida dele.
 
 | Ferramenta | Para quê | Como instalar |
 |---|---|---|
-| **git** | versionar em equipe | já vem no macOS/Linux; Windows: dentro do WSL (abaixo) |
-| **uv** | Python + dependências do backend | https://docs.astral.sh/uv/getting-started/installation/ |
-| **node 20+** | rodar o frontend | de preferência via nvm: https://github.com/nvm-sh/nvm |
-| **make** | os comandos `make check`, `make test`... | macOS: `xcode-select --install` · Ubuntu/WSL: `sudo apt install make` |
+| git | versionar em equipe | já vem no macOS/Linux; Windows: dentro do WSL (abaixo) |
+| uv | Python + dependências do backend | https://docs.astral.sh/uv/getting-started/installation/ |
+| node 20+ | rodar o frontend | de preferência via nvm: https://github.com/nvm-sh/nvm |
+| make | os comandos `make check`, `make test`... | macOS: `xcode-select --install` · Ubuntu/WSL: `sudo apt install make` |
 
 ## macOS / Linux
 
@@ -30,11 +30,10 @@ node --version
 # → v22.x.x
 ```
 
-## Windows — use WSL2 (recomendação forte)
+## Windows: usem WSL2
 
-Todo o projeto (make, uvicorn, caminhos de arquivo) assume um terminal Linux.
-No Windows nativo até dá para sofrer, mas **ninguém vai te dar suporte nele**.
-O caminho suportado é WSL2:
+O projeto todo (make, uvicorn, caminhos de arquivo) assume um terminal Linux.
+No Windows nativo não há suporte. Usem WSL2:
 
 ```powershell
 # PowerShell como administrador:
@@ -42,20 +41,20 @@ wsl --install
 # reinicie o PC quando pedir; na primeira abertura do Ubuntu, crie usuário/senha
 ```
 
-A partir daqui, **tudo acontece dentro do terminal Ubuntu** (procure "Ubuntu"
-no menu iniciar): siga a seção "macOS / Linux" acima, incluindo
+Daqui em diante, tudo acontece dentro do terminal Ubuntu (procurem "Ubuntu"
+no menu iniciar). Sigam a seção "macOS / Linux" acima e rodem também
 `sudo apt update && sudo apt install make git`.
 
-No VS Code, instale a extensão **WSL** e abra o projeto com
-`code .` de dentro do Ubuntu — assim o editor, o terminal e os arquivos vivem
-no mesmo lugar. Clone o repo **dentro** do WSL (em `~/`), nunca em
-`/mnt/c/...` (é lento e dá problema de permissão).
+No VS Code, instalem a extensão WSL e abram o projeto com `code .` de dentro
+do Ubuntu. Assim editor, terminal e arquivos ficam no mesmo lugar. Clonem o
+repo dentro do WSL (em `~/`), nunca em `/mnt/c/...`: é lento e dá problema de
+permissão.
 
 ## Clonar e validar
 
 ```bash
-# aceite o link do GitHub Classroom (cria o repo do seu trio), depois:
-git clone <url-do-repo-do-seu-trio>
+# aceite o link do GitHub Classroom (cria o repo do seu time), depois:
+git clone <url-do-repo-do-seu-time>
 cd <nome-do-repo>
 
 # backend
@@ -83,35 +82,34 @@ check_setup — validando o ambiente
 tudo verde — próximos passos: make seed, make dev-back, make dev-front
 ```
 
-Verde? Vá para a seção **"Como começar"** do README. É lá que o projeto
-começa de verdade.
+Com tudo verde, sigam para a seção "Como começar" do README.
 
 ## Erros comuns de instalação
 
 **`✗ python 3.9 — precisa de 3.11+`** (ou qualquer versão velha)
-Causa clássica: Python da Anaconda ou do sistema na frente no PATH. Você
-**não precisa consertar o PATH**: o projeto roda tudo via `uv run`, que usa o
-Python certo (pinado em `backend/.python-version`). Rode:
+A causa costuma ser o Python da Anaconda ou do sistema na frente no PATH. Não
+precisa mexer no PATH: o projeto roda tudo via `uv run`, que usa o Python
+fixado em `backend/.python-version`. Rodem:
 ```bash
 cd backend && uv python install 3.12 && uv sync
 make check
 ```
-Se ainda acusar versão velha, você rodou `python scripts/...` direto — sempre
-`uv run python scripts/...` (o Makefile já faz isso por você).
+Se ainda acusar versão velha, vocês rodaram `python scripts/...` direto. Usem
+sempre `uv run python scripts/...` (o Makefile já faz isso).
 
 **`✗ node v16.x — precisa de 20+`**
 ```bash
 nvm install 22 && nvm use 22 && nvm alias default 22
 ```
-Sem nvm: desinstale o node antigo e instale o atual em https://nodejs.org.
+Sem nvm: desinstalem o node antigo e instalem o atual em https://nodejs.org.
 
 **`command not found: make`**
 macOS: `xcode-select --install`. Ubuntu/WSL: `sudo apt install make`.
-Windows fora do WSL: volte para a seção Windows — é sério.
+Windows fora do WSL: voltem para a seção Windows.
 
 **`command not found: uv` logo depois de instalar**
-O instalador mexeu no seu perfil de shell — feche e **reabra o terminal**.
+O instalador alterou o perfil do shell. Fechem e reabram o terminal.
 
-**`npm install` explode com erro de permissão ou de versão**
-Confira `node --version` (20+) e se você está na pasta `frontend/`. Em WSL,
-confira que o repo está em `~/...` e não em `/mnt/c/...`.
+**`npm install` falha com erro de permissão ou de versão**
+Confiram `node --version` (20+) e se estão na pasta `frontend/`. No WSL,
+confiram que o repo está em `~/...` e não em `/mnt/c/...`.

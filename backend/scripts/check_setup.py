@@ -1,4 +1,4 @@
-"""Valida o ambiente do trio e testa o slice de exemplo. Rode com: make check
+"""Valida o ambiente do time e testa o slice de exemplo. Rode com: make check
 
 Cada falha diz exatamente o que instalar. Verde aqui = pode começar.
 """

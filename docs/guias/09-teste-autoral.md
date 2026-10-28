@@ -1,12 +1,13 @@
-# Guia 09 — Escrevendo seu teste autoral
+# Guia 09: teste autoral
 
-Cada feature de menu exige ≥1 teste escrito pelo trio (`test_autoral_<feature>.py`),
-cobrindo um caso que o `CONTRATO.md` **não** especifica. Sem ele, a feature
-pontua ×0,7 (ver `RUBRICA.md`). Você nunca escreveu um teste? Este guia resolve.
+Cada feature de menu exige pelo menos um teste escrito pelo time
+(`test_autoral_<feature>.py`), cobrindo um caso que o `CONTRATO.md` não
+especifica. Sem ele, a feature vale ×0,7 (ver `RUBRICA.md`). Este guia serve
+para quem nunca escreveu um teste.
 
-## A anatomia: arrange → act → assert
+## Arrange, act, assert
 
-Todo teste tem 3 momentos. Disseque o modelo que já vem no repo,
+Todo teste tem três partes. Vejam o modelo que já vem no repo,
 `tests/test_autoral_exemplo.py`:
 
 ```python
@@ -23,31 +24,30 @@ def test_autoral_offset_alem_do_total_devolve_vazio_e_nao_erro(client):
     assert r.json()["total"] == 1
 ```
 
-Repare no que ele testa: paginar **além do fim** da lista. O contrato do slice
-diz o que `GET /usuarios` devolve — mas não diz o que acontece com
-`offset=50` quando só existe 1 usuário. *Isso* é um caso autoral: a borda que
-o contrato deixou em aberto, e que você decidiu que não pode explodir.
+Ele testa a paginação além do fim da lista. O contrato do slice diz o que
+`GET /usuarios` devolve, mas não diz o que acontece com `offset=50` quando só
+existe 1 usuário. Esse é um caso autoral: uma borda que o contrato deixou em
+aberto e que vocês decidiram que não pode dar erro.
 
-## A receita das 3 perguntas
+## Três perguntas
 
-Olhe para a sua feature e pergunte:
+Olhem para a feature e perguntem:
 
-1. **E se vier duplicado ou vazio?** (segunda curtida no mesmo post, hashtag
-   repetida no mesmo texto, texto de 0 caracteres...)
-2. **E sem permissão?** (marcar como lida a notificação de OUTRO usuário?
-   votar duas vezes na enquete? ver bookmark alheio?)
-3. **E além do limite?** (11º item do "últimos 10 visitantes", post nº N+1 do
-   rate limit, offset além do total...)
+1. E se vier duplicado ou vazio? (segunda curtida no mesmo post, hashtag
+   repetida no mesmo texto, texto de 0 caracteres)
+2. E sem permissão? (marcar como lida a notificação de outro usuário, votar
+   duas vezes na enquete, ver bookmark alheio)
+3. E além do limite? (11º item do "últimos 10 visitantes", post nº N+1 do
+   rate limit, offset além do total)
 
-Qualquer uma das três rende um teste autoral honesto. Escolha a mais provável
-de quebrar de verdade.
+Qualquer uma rende um teste autoral. Escolham a que tem mais chance de quebrar.
 
-## As fixtures que você já tem
+## Fixtures disponíveis
 
-O `tests/conftest.py` te dá tudo:
+O `tests/conftest.py` já traz:
 
-- **`client`** — API com banco zerado por teste. Peça como argumento e use.
-- **`logar`** — fábrica de usuário logado (depende da sua auth do guia 01):
+- `client`: API com banco zerado a cada teste. Peçam como argumento.
+- `logar`: cria um usuário logado (depende da auth do guia 01):
 
 ```python
 def test_autoral_nao_marco_notificacao_dos_outros(client, logar):
@@ -56,27 +56,26 @@ def test_autoral_nao_marco_notificacao_dos_outros(client, logar):
     # ... ana tenta mexer no que é da bia; espere 403/404
 ```
 
-Rode só o seu: `uv run pytest -q -k autoral`.
+Para rodar só os autorais: `uv run pytest -q -k autoral`.
 
-## O critério de validade (a rubrica confere ISTO)
+## Critério de validade
 
-> O teste deve ficar **vermelho se a feature for sabotada**.
+**O teste precisa falhar quando a feature é sabotada.** A rubrica confere isso.
 
-Verifique você mesmo, agora:
+Verifiquem assim:
 
-1. Quebre a sua feature de propósito (inverta o if da permissão, remova a
-   checagem de duplicata — uma linha).
-2. `uv run pytest -q -k autoral` → tem que **FALHAR**.
-3. Desfaça (`git checkout <arquivo>`). → volta a passar.
+1. Quebrem a feature de propósito, em uma linha: invertam o if da permissão ou
+   removam a checagem de duplicata.
+2. Rodem `uv run pytest -q -k autoral`. O teste tem que falhar.
+3. Desfaçam com `git checkout <arquivo>`. O teste volta a passar.
 
-Se o teste continuou verde com a feature quebrada, ele não testa nada — vale
+Se o teste continuou verde com a feature quebrada, ele não testa nada e conta
 como ausente.
 
-**Outra armadilha**: copiar o caminho feliz do `CONTRATO.md` ("crio bookmark,
-recebo 201") = teste ausente. O grader já testa o contrato; o autoral cobre o
-que o contrato **não** diz.
+Copiar o caminho feliz do `CONTRATO.md` ("crio bookmark, recebo 201") também
+conta como teste ausente. O corretor já testa o contrato; o autoral cobre o
+que o contrato não diz.
 
-**Sobre IA**: pode escrever o teste com IA — mas ele é matéria da defesa. O
-dono da feature responde na hora: *que caso esse teste cobre, por que o
-contrato não cobre, e me mostre ele falhando.* Se você não sabe responder, o
-teste não é seu.
+Podem escrever o teste com IA, mas ele cai na defesa. O dono da feature tem
+que responder na hora: que caso o teste cobre, por que o contrato não cobre, e
+mostrar o teste falhando. Quem não sabe responder não escreveu o teste.
