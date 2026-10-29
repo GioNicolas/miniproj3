@@ -2,15 +2,14 @@
 
 ## A ideia em 1 parágrafo
 
-Trie é um dict de dicts onde cada nível guarda **uma letra** — uma palavra é o
-caminho da raiz até um marcador de fim. A graça: palavras com o mesmo começo
-**compartilham** o caminho, então responder "quais palavras começam com
-`ca`?" é só descer duas letras e colher o que estiver pendurado ali — sem
-varrer a lista inteira, e custando O(len(prefixo)) para achar o ponto de
-partida, independente de quantas palavras existam.
+Trie é um dict de dicts onde cada nível guarda uma letra. Uma palavra é o
+caminho da raiz até um marcador de fim. Palavras com o mesmo começo
+compartilham o caminho. Para saber "quais palavras começam com `ca`?", desça
+duas letras e colha o que estiver abaixo, sem varrer a lista inteira. Achar o
+ponto de partida custa O(len(prefixo)), não importa quantas palavras existam.
 
-Exemplo deste guia (de propósito, fora do catálogo): **dicionário de palavras
-do português**.
+Exemplo deste guia (de propósito, fora do catálogo): dicionário de palavras do
+português.
 
 ```
 palavras: casa, caso, cama, moto
@@ -30,7 +29,7 @@ class DicionarioPorPrefixo:
     - inserir palavra: O(len(palavra))
     - buscar palavra exata: O(len(palavra))
     - listar por prefixo: O(len(prefixo) + tamanho do resultado)
-    (nenhuma operação depende do TOTAL de palavras — essa é a venda da trie)
+    (nenhuma operação depende do total de palavras)
     """
 
     FIM = "$"   # marca "aqui termina uma palavra" ("cas" não é palavra, "casa" é)
@@ -85,21 +84,21 @@ class DicionarioPorPrefixo:
 
 ## Big O honesto
 
-A comparação justa da trie NÃO é com a varredura burra — é com a **lista
-ordenada + `bisect`** que você já viu na busca binária:
+A comparação justa da trie é com a **lista ordenada + `bisect`** que você já
+viu na busca binária, não com a varredura simples:
 
 | Operação | Trie | Lista ordenada + bisect | Varredura (`startswith` em tudo) |
 |---|---|---|---|
-| inserir | O(len) | O(n) — insort desloca a lista | O(1) append |
+| inserir | O(len) | O(n), insort desloca a lista | O(1) append |
 | prefixo | O(len + resultado) | O(log n + resultado) | O(n · len) |
-| memória | ALTA — um dict por letra | baixa | baixa |
+| memória | alta, um dict por letra | baixa | baixa |
 
-Leia a tabela com honestidade: o bisect é O(log n), e log de 1 milhão é ~20 —
-na prática a trie e o bisect **empatam na consulta** para qualquer N deste
-projeto, e a trie perde feio em memória. Onde a trie ganha: inserções
-frequentes no meio (o insort desloca a lista inteira) e recursos extras
-(contar por prefixo, autocorreção). Medir trie vs bisect e explicar o
-resultado é exatamente a discussão que a rubrica quer.
+O bisect é O(log n), e o log de 1 milhão é ~20. Na consulta, a trie e o bisect
+empatam para qualquer N deste projeto, e a trie perde em memória. A trie ganha
+quando há muitas inserções no meio (o insort desloca a lista inteira) e quando
+você precisa de recursos extras, como contar por prefixo ou corrigir
+digitação. Medir trie contra bisect e explicar o resultado é a discussão que a
+rubrica quer.
 
 ## Como medir (10 linhas)
 
@@ -126,11 +125,12 @@ for n in (1_000, 10_000, 100_000):
           "bisect:", min(timeit.repeat(com_bisect, number=100, repeat=5)) / 100)
 ```
 
-Cole os números no `DECISIONS.md` + 1 frase de interpretação. Aqui é COMUM a
-versão "ingênua" (bisect) empatar ou ganhar — resultado válido que vale ponto
-se você explicar o porquê (log n minúsculo + dicts aninhados têm overhead).
+Cole os números no `DECISIONS.md` e escreva uma frase de interpretação. Aqui é
+comum a versão ingênua (bisect) empatar ou ganhar. O resultado é válido e vale
+ponto se você explicar o porquê: o log n é minúsculo e os dicts aninhados têm
+overhead.
 
 ## Onde isso aparece no mundo real
 
 Autocomplete de buscadores e teclados de celular, corretor ortográfico,
-roteamento de IP (prefixos binários), sugestão de hashtags/domínios.
+roteamento de IP (prefixos binários), sugestão de hashtags e domínios.

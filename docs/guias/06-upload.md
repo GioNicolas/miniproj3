@@ -1,10 +1,12 @@
 # Guia 06: upload de arquivos
 
-Este guia serve para a feature avançada Posts com imagem, a única do catálogo
-marcada como tecnologia extra. Ela não precisa de `core/` nem de benchmark. Os
-outros requisitos da rubrica valem igual: teste oculto, linha no
-`DECISIONS.md`, teste autoral e defesa. O guia mostra o upload de um arquivo
-genérico; ligar isso ao post fica com vocês.
+Este guia cobre a feature avançada Posts com imagem. Ela é a única que não
+precisa de `core/` nem de benchmark. Os outros requisitos da rubrica valem:
+teste oculto, linha no `DECISIONS.md` e teste autoral.
+
+O guia mostra o upload de um arquivo genérico. A rota do contrato é
+`POST /posts/{post_id}/imagem`, com resposta `{"imagem_url": ...}` e `413` para
+arquivo acima de 2 MB. Adaptar o exemplo a essa rota é com vocês.
 
 ## Backend
 
@@ -35,7 +37,7 @@ async def subir_arquivo(arquivo: UploadFile, user=Depends(get_current_user)):
 
     conteudo = await arquivo.read()
     if len(conteudo) > MAX_BYTES:
-        raise HTTPException(422, "arquivo maior que 2 MB")
+        raise HTTPException(413, "arquivo maior que 2 MB")
 
     PASTA.mkdir(exist_ok=True)
     nome = f"{uuid.uuid4().hex}{ext}"  # nunca confie no filename do cliente
@@ -93,7 +95,7 @@ form.append("arquivo", arquivo!);
 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
   method: "POST",
   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  // SEM "Content-Type" aqui — o browser põe multipart/form-data com boundary
+  // Sem "Content-Type" aqui: o browser define multipart/form-data com boundary
   body: form,
 });
 const { url } = await res.json();

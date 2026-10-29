@@ -1,93 +1,99 @@
-# Rede Social da Trilha: Mini-projeto 3 (FullStack)
+# Mini-projeto 3: rede social de nicho
 
-A turma tem 7 times: 4 de 4 pessoas e 3 de 3. Cada time vai construir uma rede
-social de nicho usando este esqueleto: FastAPI + SQLAlchemy + SQLite no backend
-e Next.js + TypeScript + Tailwind no frontend. Como dividir o trabalho:
-[guia 07](docs/guias/07-organizacao-do-time.md).
+Cada time constrói uma rede social para uma comunidade que escolhe (música,
+corrida, leitura, jogos do campus...). A turma tem 7 times: 4 de 4 pessoas e
+3 de 3. A stack é FastAPI + SQLAlchemy + SQLite no backend e Next.js +
+TypeScript + Tailwind no frontend. Todos partem do mesmo ponto: um exemplo que
+já funciona, só de usuários (do banco até a tela), e a lista de testes do
+núcleo, que cada time implementa. Depois do núcleo, cada time escolhe as
+features do catálogo que quer construir, e o nicho. Por isso cada rede acaba
+diferente da outra.
 
-O nicho pode ser música, corrida, leitura, jogos do campus ou qualquer outra
-comunidade escolhida pelo time. Todos seguem o mesmo contrato de API, mas a
-identidade do produto vive no conteúdo, no seed e na interface. Este é o treino
-final antes do hackathon de novembro.
+Este é o treino final antes do hackathon de novembro.
 
-**Como vocês são avaliados**: [RUBRICA.md](RUBRICA.md) (leiam hoje; a nota é
-calculada por script e o pseudocódigo está lá). O cardápio de features:
-[CATALOGO.md](CATALOGO.md). A API exata de cada feature de menu:
-[CONTRATO.md](CONTRATO.md). A defesa oral: [docs/defesa.md](docs/defesa.md).
+## O que ler
+
+| Documento | Para quê |
+|---|---|
+| [RUBRICA.md](RUBRICA.md) | Como a nota é calculada. Leiam hoje. |
+| [CATALOGO.md](CATALOGO.md) | As features que vocês podem escolher e quanto cada uma vale. |
+| [CONTRATO.md](CONTRATO.md) | Rota, campos e status das features de menu. Vale só para as que o time escolher. |
+| [DECISIONS.md](DECISIONS.md) | O que o time preenche: produto, donos, medições, uso de IA. |
+| [docs/guias/](docs/guias/) | Setup, autenticação, git em equipe, deploy e outros. |
 
 ## Como começar
 
-Na primeira vez, instalem as dependências do backend e do frontend:
+Instalem as dependências uma vez:
 
 ```bash
-cd backend
-uv sync
-cd ../frontend
-npm install
-cp .env.local.example .env.local
-cd ..
+cd backend && uv sync && cd ..
+cd frontend && npm install && cp .env.local.example .env.local && cd ..
 ```
 
-Depois, validem o ambiente e executem o projeto:
+Depois validem o ambiente:
 
 ```bash
-make check      # valida o ambiente; tudo precisa ficar verde
-make seed       # 3 usuários de exemplo
-make test       # → "6 passed, 11 skipped"
-
-# terminal 1
-make dev-back   # abra localhost:8000/docs (Swagger)
-
-# terminal 2
-make dev-front  # abra localhost:3000/usuarios
+make check      # tudo precisa ficar verde
+make seed       # cria 3 usuários de exemplo
+make test       # deve mostrar "6 passed, 11 skipped"
 ```
 
-Se algum comando falhar, consultem
-[`docs/guias/00-setup.md`](docs/guias/00-setup.md) antes de continuar.
+Para rodar o projeto, abram dois terminais:
 
-**Os testes são a especificação do núcleo.** `skipped` não é sucesso. É o
-backlog do time: cada
-`@skip` em `backend/tests/test_nucleo.py` é uma feature do núcleo esperando por
-vocês (remova o skip → veja falhar → implemente até passar). Os testes das
-features de menu são **ocultos**: rodam toda noite na infra do instrutor contra
-o repo do time, e `make grade` mostra o último relatório (PASS/FAIL por feature +
-uma dica citando o CONTRATO.md).
+```bash
+make dev-back   # API em localhost:8000, Swagger em localhost:8000/docs
+make dev-front  # site em localhost:3000/usuarios
+```
 
-Depois do `make check` verde: leiam o slice de exemplo (`/usuarios`, do model à
-página; toda feature de vocês imita esse caminho), escolham o nicho, preencham
-os **donos** no [DECISIONS.md](DECISIONS.md) e criem **1 issue por feature**
-(template pronto; o PR que entrega fecha com `Closes #N`).
+Se algum comando falhar, vejam o [guia 00](docs/guias/00-setup.md).
 
-## Regra central das features de menu
+## Primeiros passos do time
 
-Toda feature de menu exige a estrutura de dados em `backend/app/core/` como
-**Python puro**, e o endpoint tem que **usá-la de verdade**. O grader sabota o
-`core/` do time, e o endpoint tem que quebrar junto. Imitem `core/contadores.py`.
-Estrutura bonita que a API ignora = feature vale 0.
+1. Leiam o slice de exemplo (`/usuarios`, do model à página). Toda feature
+   nova segue o mesmo caminho.
+2. Escolham o nicho e comecem a seção Produto e a tabela de donos no
+   [DECISIONS.md](DECISIONS.md). Não precisa ficar pronto agora: o arquivo muda
+   junto com o projeto.
+3. Abram uma issue por feature (há um template). O PR que entrega a feature
+   fecha a issue com `Closes #N`.
+4. Façam o núcleo antes do menu. Divisão de trabalho sugerida: [guia 07](docs/guias/07-organizacao-do-time.md).
+
+## Como os testes funcionam
+
+- **Núcleo.** Os testes de `backend/tests/test_nucleo.py` são a especificação.
+  Um teste `skipped` é uma feature ainda não entregue: removam o `@skip`,
+  vejam o teste falhar e implementem até passar.
+- **Menu.** Os testes das features de menu são ocultos. Rodam toda noite
+  contra o repo do time, e `make grade` mostra o último relatório (PASS ou FAIL
+  por feature, com uma dica que cita o `CONTRATO.md`).
+
+## Regra das features de menu
+
+Toda feature de menu precisa de uma estrutura de dados em `backend/app/core/`,
+escrita em Python puro, e o endpoint tem que usá-la de verdade. O corretor
+sabota o `core/` do time e o endpoint deve quebrar junto. Se a API ignora a
+estrutura, a feature vale 0. Usem `core/contadores.py` como modelo.
 
 ## Uso de IA
 
-O uso de IA é permitido. O time deve registrar onde e como utilizou IA na seção
-"Uso de IA" do `DECISIONS.md`.
+IA é permitida. Registrem no `DECISIONS.md` onde e como vocês a usaram.
 
-Cada integrante precisa demonstrar domínio sobre o que foi entregue. Na defesa,
-vocês devem explicar as decisões, localizar o código e modificar uma feature ao
-vivo, sem IA. Entregar código que ninguém do time entende compromete a
-pontuação, independentemente de como ele foi produzido.
-
-## Datas
+## Prazos
 
 | Marco | Data |
 |---|---|
-| Início | **[DATA DE INÍCIO]** |
-| Entrega final | **24/10/2026** |
+| Início | `[DATA DE INÍCIO]` |
+| Entrega final | `[DATA DE ENTREGA]` |
 
-Achou um bug no grader? Vale o que o `CONTRATO.md` diz. Abra uma issue no repo da
-turma; correção em até ~48h e errata pública.
+## Bugs no corretor
+
+Vale o que o `CONTRATO.md` diz. Se o corretor discordar do contrato, abram uma
+issue neste repo. A correção sai em até 48 horas, com errata pública.
 
 ## Guias
 
-`docs/guias/`: 00-setup · 01-autenticacao (comece por aqui!) · 02-git-em-equipe ·
-03-boas-praticas · 04-erros-classicos · 05-jwt · 06-upload · 07-organizacao-do-time ·
-08-deploy · 09-teste-autoral · 10-do-zero-ao-esqueleto. Para as features avançadas, usem
-`docs/estruturas/` (grafos, árvores, heaps e tries).
+Os guias ficam em `docs/guias/`: 00 setup, 01 autenticação (comecem por aqui),
+02 git em equipe, 03 boas práticas, 04 erros clássicos, 05 JWT (opcional),
+06 upload, 07 organização do time, 08 deploy, 09 teste autoral, 10 do zero ao
+esqueleto. Para as features avançadas, vejam `docs/estruturas/` (grafos,
+árvores, heaps e tries).

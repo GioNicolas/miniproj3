@@ -39,7 +39,7 @@ def get_current_user(
     db: Session = Depends(get_db),
 ) -> User:
     # bypass de DESENVOLVIMENTO: só funciona com DEBUG=true.
-    # O grader NUNCA roda com DEBUG — sem a auth real, rota protegida = 401.
+    # O corretor nunca roda com DEBUG: sem a auth real, rota protegida dá 401.
     if os.environ.get("DEBUG") == "true" and x_user_id is not None:
         user = db.get(User, x_user_id)
         if user:
@@ -87,7 +87,7 @@ Com isso, quem pegou posts, feed ou curtidas já pode proteger rotas com
 
 ```bash
 cd backend && uv run pytest -q -k auth_registro
-# → FAILED ... assert 404 == 201        (a rota não existe — sua tarefa é essa)
+# → FAILED ... assert 404 == 201        (a rota não existe ainda; criá-la é a tarefa)
 ```
 
 **1.2** Adicionem a coluna do hash em `app/models/user.py`:

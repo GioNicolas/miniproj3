@@ -2,6 +2,9 @@
 
 **Time:** _(nomes e usernames do GitHub)_
 
+Este arquivo acompanha o projeto. Comecem com o que já sabem e atualizem quando
+as decisões mudarem.
+
 ## Produto
 
 Respondam antes de escolher features. O pitch sai daqui.

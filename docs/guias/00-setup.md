@@ -64,7 +64,7 @@ cd backend && uv sync && cd ..
 # frontend
 cd frontend && npm install && cp .env.local.example .env.local && cd ..
 
-# o momento da verdade:
+# valida o ambiente:
 make check
 ```
 
@@ -86,7 +86,7 @@ Com tudo verde, sigam para a seção "Como começar" do README.
 
 ## Erros comuns de instalação
 
-**`✗ python 3.9 — precisa de 3.11+`** (ou qualquer versão velha)
+**`✗ python 3.9 (precisa de 3.11+)`** ou qualquer versão antiga
 A causa costuma ser o Python da Anaconda ou do sistema na frente no PATH. Não
 precisa mexer no PATH: o projeto roda tudo via `uv run`, que usa o Python
 fixado em `backend/.python-version`. Rodem:
@@ -97,7 +97,7 @@ make check
 Se ainda acusar versão velha, vocês rodaram `python scripts/...` direto. Usem
 sempre `uv run python scripts/...` (o Makefile já faz isso).
 
-**`✗ node v16.x — precisa de 20+`**
+**`✗ node v16.x (precisa de 20+)`**
 ```bash
 nvm install 22 && nvm use 22 && nvm alias default 22
 ```

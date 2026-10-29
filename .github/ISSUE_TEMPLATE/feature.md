@@ -1,20 +1,20 @@
 ---
 name: Feature do catálogo
-about: 1 issue por feature pontuada — fechada pelo PR que a entrega (Closes #N)
+about: Uma issue por feature pontuada. O PR que a entrega fecha a issue com Closes #N.
 title: "[feature] "
 labels: feature
 ---
 
-**Feature do catálogo:** <!-- nome exato, ver CATALOGO.md -->
-**Faixa/pontos:** <!-- fácil 3 / média 5 / difícil 7 / avançada 8-10 -->
-**Dono:** <!-- @username — o mesmo do DECISIONS.md; é quem defende ao vivo -->
+**Feature do catálogo:** <!-- nome exato, como no CATALOGO.md -->
+**Esforço e pontos:** <!-- P = 3, M = 5, G = 7; avançada M = 8, G = 10 -->
+**Dono:** <!-- @username, o mesmo do DECISIONS.md. Quem responde pela feature. -->
 **Módulo em core/:** <!-- app.core.<nome> (features de menu) -->
 
-## Checklist da feature
+## Checklist
 
-- [ ] estrutura em `core/` (Python puro, imitando `core/contadores.py`)
-- [ ] endpoint usando o core (sobrevive à sabotagem)
-- [ ] página/UI
+- [ ] estrutura em `core/` (Python puro, como `core/contadores.py`)
+- [ ] endpoint que usa o `core/` (quebra se o `core/` for sabotado)
+- [ ] página no frontend
 - [ ] teste autoral (`test_autoral_<feature>.py`)
 - [ ] linha no `DECISIONS.md`
-- [ ] avançada: `scripts/bench_<feature>.py` + números + interpretação
+- [ ] só avançada: `scripts/bench_<feature>.py`, números e interpretação
