@@ -2,11 +2,12 @@
 
 Cada time constrói uma rede social para uma comunidade que escolhe (música,
 corrida, leitura, jogos do campus...). A turma tem 7 times: 4 de 4 pessoas e
-3 de 3. Todos partem do mesmo esqueleto (FastAPI + SQLAlchemy + SQLite no
-backend, Next.js + TypeScript + Tailwind no frontend) e do mesmo núcleo
-(cadastro, login, posts, feed, perfil, seguir, curtidas e comentários). Depois
-disso, cada time escolhe as features do catálogo que quer construir e o nicho,
-então cada rede acaba diferente da outra.
+3 de 3. A stack é FastAPI + SQLAlchemy + SQLite no backend e Next.js +
+TypeScript + Tailwind no frontend. Todos partem do mesmo ponto: um exemplo que
+já funciona, só de usuários (do banco até a tela), e a lista de testes do
+núcleo, que cada time implementa. Depois do núcleo, cada time escolhe as
+features do catálogo que quer construir, e o nicho. Por isso cada rede acaba
+diferente da outra.
 
 Este é o treino final antes do hackathon de novembro.
 
@@ -51,8 +52,9 @@ Se algum comando falhar, vejam o [guia 00](docs/guias/00-setup.md).
 
 1. Leiam o slice de exemplo (`/usuarios`, do model à página). Toda feature
    nova segue o mesmo caminho.
-2. Escolham o nicho e preencham a seção Produto e a tabela de donos no
-   [DECISIONS.md](DECISIONS.md).
+2. Escolham o nicho e comecem a seção Produto e a tabela de donos no
+   [DECISIONS.md](DECISIONS.md). Não precisa ficar pronto agora: o arquivo muda
+   junto com o projeto.
 3. Abram uma issue por feature (há um template). O PR que entrega a feature
    fecha a issue com `Closes #N`.
 4. Façam o núcleo antes do menu. Divisão de trabalho sugerida: [guia 07](docs/guias/07-organizacao-do-time.md).
