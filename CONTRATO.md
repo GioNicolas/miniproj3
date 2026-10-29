@@ -16,7 +16,6 @@ Convenções:
 
 - `GET` 🔒 `/tags/{tag}/posts?offset=&limit=` → `200`, página mais nova primeiro.
 - Tag: `[a-z0-9_]+`, casefold e sem duplicar a mesma tag no post.
-- O índice `tag → posts` fica em `core/` e é atualizado no `POST /posts`.
 
 ### Trending de hashtags
 
@@ -33,13 +32,11 @@ Convenções:
 
 - `GET` 🔒 `/busca/usuarios?prefixo=` → `200`, `{"items": [UserOut]}`.
 - Máximo 10, ordem alfabética e comparação casefold.
-- `core/`: lista atualizada com `bisect.insort` e consultada com `bisect_left`.
 
 ### Busca de posts por palavra
 
 - `GET` 🔒 `/busca/posts?q=&offset=&limit=` → `200`, página mais nova primeiro.
 - Termos seguem `[a-z0-9_]+` e casefold. Vários termos usam interseção.
-- `core/`: índice `palavra → set[post_id]`, atualizado no `POST /posts`.
 
 ### Enquetes
 
@@ -49,7 +46,6 @@ Convenções:
 - `GET` 🔒 `/enquetes/{id}` → `200`,
   `{"pergunta", "opcoes": [{"texto", "votos"}], "total_votos", "ja_votei"}`.
 - O índice da opção começa em zero. Segundo voto → `409`; índice inválido → `422`.
-- `core/`: contagem por opção e set de votantes.
 
 ### Feed ranqueado 'Em alta'
 
@@ -63,7 +59,6 @@ Convenções:
   `{"id", "texto", "autor", "created_at"}`.
 - `GET` 🔒 `/stories` → `200`, `{"items": [stories]}`, mais nova primeiro.
 - Mostra stories próprios e de quem o usuário segue, criados nas últimas 24 horas.
-- `core/`: fila FIFO por timestamp.
 
 ### Nota/review com estrelas
 
@@ -71,7 +66,6 @@ Convenções:
   `{"media_estrelas": float, "avaliacoes": int}`.
 - Aceita 1 a 5. Reavaliar substitui a nota anterior.
 - `GET /posts/{id}` ganha `media_estrelas` e `avaliacoes`; média é `null` sem notas.
-- `core/`: média incremental.
 
 ## Social
 
@@ -129,7 +123,7 @@ Convenções:
 - `POST` 🔒 `/grupos/{id}/posts`, body `{"texto": str}` → `201`.
 - `GET` 🔒 `/grupos/{id}/posts?offset=&limit=` → `200`, página cronológica.
 - Nome repetido → `409`; entrar é idempotente; postar sem ser membro → `403`.
-- Posts do grupo não entram no feed pessoal. `core/`: posts e membros por grupo.
+- Posts do grupo não entram no feed pessoal.
 
 ## Engajamento e sistemas
 
@@ -140,13 +134,12 @@ Convenções:
 - `GET` 🔒 `/notificacoes/nao-lidas` → `200`, `{"contagem": int}`.
 - `POST` 🔒 `/notificacoes/ler` → `204`, marca todas como lidas.
 - Tipos: `curtiu`, `comentou`, `seguiu` e `mencionou` quando disponível.
-- Ação própria não notifica. `core/`: fila de eventos e set de lidas.
+- Ação própria não notifica.
 
 ### Streak de atividade
 
 - `GET` 🔒 `/usuarios/{username}` → `200`, perfil com `streak: int`.
 - Conta dias consecutivos com post, terminando hoje ou ontem.
-- `core/`: set de datas.
 
 ### Badges/conquistas
 
@@ -189,7 +182,7 @@ Convenções:
 
 - `POST` 🔒 `/posts` mantém o contrato do núcleo; o sexto post em 60 segundos
   retorna `429`, `{"detail": str}`.
-- Limite: cinco posts por usuário. `core/`: deque com janela deslizante.
+- Limite: cinco posts por usuário.
 
 ### Fila de moderação de denúncias
 
@@ -207,7 +200,7 @@ Convenções:
   `{"hits": int, "misses": int, "tamanho": int, "capacidade": 50}`.
 - `GET /usuarios/{username}` usa o LRU; `PATCH /usuarios/eu` invalida a entrada.
 - Dois GETs seguidos do mesmo perfil aumentam `hits`.
-- `core/`: dict + deque, sem `functools.lru_cache`.
+- Implementem o LRU, sem `functools.lru_cache`.
 
 ## Avançadas
 
@@ -216,14 +209,14 @@ Convenções:
 - `GET` 🔒 `/usuarios/{username}/distancia` → `200`,
   `{"graus": int | null, "caminho": [username]}`.
 - Grafo não-direcionado. Sem conexão: `null` e lista vazia. Eu para eu: zero.
-- BFS usa deque e predecessores. Benchmark: BFS contra varredura.
+- Benchmark: BFS contra varredura.
 
 ### Top-K com heap
 
 - `GET` 🔒 `/top/semana?k=` → `200`, `{"items": [posts]}`.
 - `k` padrão 10 e máximo 50. Considera curtidas dos últimos sete dias.
 - Maior número de curtidas primeiro; empate pelo post mais novo.
-- Usa `heapq.nlargest`; benchmark contra ordenar tudo.
+- Benchmark: heap contra ordenar tudo.
 
 ### Comentários em árvore
 
@@ -250,7 +243,7 @@ Convenções:
   conversas pela mensagem mais recente.
 - `GET` 🔒 `/dms/{username}?offset=&limit=` → `200`, página mais antiga primeiro.
 - DM para si mesmo → `422`; entre usuários bloqueados → `404`.
-- `core/`: conversa por par de usuários. Benchmark contra varredura das mensagens.
+- Benchmark: estrutura de vocês contra varredura de todas as mensagens.
 
 ### Posts com imagem (upload)
 
