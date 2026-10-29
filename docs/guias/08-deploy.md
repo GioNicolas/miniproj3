@@ -1,7 +1,7 @@
 # Guia 08: deploy público (bônus +5)
 
 A receita é uma só: backend no Render (free) e front na Vercel (free). A banca
-confere o bônus na defesa. Ela abre a URL de vocês e faz cadastro → login →
+confere o bônus abrindo a URL de vocês e fazendo cadastro → login →
 post → follow → feed. Gravar o vídeo na URL pública é recomendado, mas não
 obrigatório.
 
@@ -11,7 +11,7 @@ obrigatório.
    pasta `uploads/` somem. Para uma demo isso basta, desde que o banco volte
    populado (passo 2).
 2. Sem tráfego, o Render hiberna o serviço e a primeira request demora ~1
-   minuto. Abram a URL uns minutos antes da demo ou da defesa.
+   minuto. Abram a URL uns minutos antes da conferência.
 3. **Nunca liguem `DEBUG=true` em produção.** O bypass de auth vira porta
    aberta.
 
@@ -71,11 +71,11 @@ curl -s https://SEU-BACK.onrender.com/usuarios | head -c 120
 ```
 
 Depois, na URL da Vercel, façam cadastro → login → post → follow → feed, o
-mesmo fluxo do vídeo. Se funcionou aí, funciona na defesa.
+mesmo fluxo do vídeo. Se funcionou aí, funciona na conferência.
 
-## Depois da defesa: portfólio
+## Depois da entrega: portfólio
 
-O repo vira público depois da defesa. Com uns 15 minutos dá para transformar a
+O repo vira público depois da entrega. Com uns 15 minutos dá para transformar a
 entrega em portfólio:
 
 - [ ] README com o pitch do nicho (2 parágrafos), 2–3 screenshots e a URL pública no topo

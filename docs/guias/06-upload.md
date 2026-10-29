@@ -2,7 +2,7 @@
 
 Este guia cobre a feature avançada Posts com imagem. Ela é a única que não
 precisa de `core/` nem de benchmark. Os outros requisitos da rubrica valem:
-teste oculto, linha no `DECISIONS.md`, teste autoral e defesa.
+teste oculto, linha no `DECISIONS.md` e teste autoral.
 
 O guia mostra o upload de um arquivo genérico. A rota do contrato é
 `POST /posts/{post_id}/imagem`, com resposta `{"imagem_url": ...}` e `413` para

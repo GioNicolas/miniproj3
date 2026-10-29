@@ -7,7 +7,7 @@ labels: feature
 
 **Feature do catálogo:** <!-- nome exato, como no CATALOGO.md -->
 **Esforço e pontos:** <!-- P = 3, M = 5, G = 7; avançada M = 8, G = 10 -->
-**Dono:** <!-- @username, o mesmo do DECISIONS.md. Quem defende ao vivo. -->
+**Dono:** <!-- @username, o mesmo do DECISIONS.md. Quem responde pela feature. -->
 **Módulo em core/:** <!-- app.core.<nome> (features de menu) -->
 
 ## Checklist

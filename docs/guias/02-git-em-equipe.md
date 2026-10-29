@@ -2,8 +2,7 @@
 
 A rubrica pede de cada integrante pelo menos 5 commits relevantes e 2 PRs
 aprovados por outro membro. Toda feature que pontua tem uma issue, fechada
-pelo PR do dono com `Closes #N`. Issues, commits e reviews não entram na nota,
-mas a banca olha para eles na hora de escolher o que cada pessoa defende.
+pelo PR do dono com `Closes #N`. Issues, commits e reviews não entram na nota.
 Commitem todo dia.
 
 ## O fluxo diário
