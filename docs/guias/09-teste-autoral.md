@@ -76,6 +76,6 @@ Copiar o caminho feliz do `CONTRATO.md` ("crio bookmark, recebo 201") também
 conta como teste ausente. O corretor já testa o contrato; o autoral cobre o
 que o contrato não diz.
 
-Podem escrever o teste com IA, mas ele cai na defesa. O dono da feature tem
-que responder na hora: que caso o teste cobre, por que o contrato não cobre, e
-mostrar o teste falhando. Quem não sabe responder não escreveu o teste.
+Podem escrever o teste com IA, mas o dono da feature precisa saber explicar que
+caso o teste cobre, por que o contrato não cobre, e como mostrá-lo falhando.
+Quem não sabe explicar não escreveu o teste.

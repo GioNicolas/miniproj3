@@ -5,9 +5,8 @@ mesmos para todos.
 
 ## Ninguém fica só no front
 
-Na defesa, cada pessoa altera ao vivo uma feature de menu própria, e isso
-mexe em `core/`, endpoint e teste. Por isso o dono de uma feature faz ela
-inteira: `core/`, endpoint, teste autoral e tela.
+Cada pessoa aprende mais fazendo uma feature de ponta a ponta. Por isso o dono
+de uma feature faz ela inteira: `core/`, endpoint, teste autoral e tela.
 
 Além das features, cada pessoa cuida de uma área e revisa os PRs que mexem
 nela.

@@ -38,14 +38,8 @@ Upload é exceção: não precisa de `core/` nem de benchmark.
 
 ### Quanto ela vale
 
-O valor da feature (3, 5, 7, 8 ou 10) é multiplicado por:
-
-| Situação | Multiplicador |
-|---|---|
-| Sem teste autoral, ou o teste não falha quando a feature é sabotada | × 0,7 |
-| Defesa: alterou e passou | × 1 |
-| Defesa: achou e explicou, mas não terminou | × 0,5 |
-| Defesa: não soube onde nem como alterar | × 0 |
+O valor da feature (3, 5, 7, 8 ou 10) cai para 70% (× 0,7) quando não há
+teste autoral ou quando o teste não falha ao sabotar a feature.
 
 O teste autoral fica em `test_autoral_<feature>.py` e testa algo que o
 contrato não cobre.
@@ -82,14 +76,14 @@ Um time fictício:
 | | Sugestões de quem seguir (M) | 5 |
 | | Hashtags com índice invertido (M) | 5 |
 | | Notificações (M), sem teste autoral: 5 × 0,7 | 3,5 |
-| | Enquetes (M), defesa pela metade: 5 × 0,5 | 2,5 |
+| | Enquetes (M) | 5 |
 | | Trending, Bookmarks, Streak e Amigos em comum (P): só 3 contam | 9 |
 | | Graus de separação, sem benchmark: vira G | 7 |
-| | Total do intermediário | 39 |
+| | Total do intermediário (41,5, o bloco para em 40) | 40 |
 | Avançado | Top-K (M) + Autocomplete (G) | 18 |
 | Produto | vídeo com 5 de 6 itens + pitch completo | 9 |
 | Bônus | deploy funcionando | +5 |
-| **Total** | | **93,5** |
+| **Total** | | **94,5** |
 
 ## Trabalho em time
 
@@ -103,30 +97,11 @@ Times de 3 e de 4 seguem as mesmas regras e limites. Sugestão de divisão no
 - Cada integrante tem pelo menos 5 commits relevantes e 2 PRs aprovados por
   outro membro.
 
-Issues, commits e reviews não entram na nota. A banca olha para eles na hora
-de escolher o que cada pessoa defende.
-
-## Defesa
-
-Cada integrante altera ao vivo uma feature própria, sem IA. A feature é
-sorteada, com prioridade para intermediárias e avançadas. Os tipos de
-alteração estão em [`docs/defesa.md`](docs/defesa.md).
-
-O integrante também explica o próprio teste autoral e sabota a feature para
-mostrar o teste falhando. Em feature avançada, diz o que espera do benchmark
-antes de rodar.
-
-Quem tira 0 defende uma segunda feature. Se tirar 0 de novo, as duas features
-sorteadas valem 0 e as outras features desse integrante caem para 50%.
-
-Durante a defesa vale editor sem assistente de IA, autocomplete comum e LSP,
-terminal limpo e navegador só em localhost, Swagger e documentação do projeto.
+Issues, commits e reviews não entram na nota.
 
 ## Uso de IA
 
 IA é permitida. Registrem no `DECISIONS.md` qual ferramenta usaram e para quê.
-Na defesa não tem IA: quem não souber alterar o próprio código perde os pontos
-da feature.
 
 ## Produto
 

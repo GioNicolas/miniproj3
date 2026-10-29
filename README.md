@@ -18,7 +18,6 @@ Este é o treino final antes do hackathon de novembro.
 | [CATALOGO.md](CATALOGO.md) | As features que vocês podem escolher e quanto cada uma vale. |
 | [CONTRATO.md](CONTRATO.md) | Rota, campos e status das features de menu. Vale só para as que o time escolher. |
 | [DECISIONS.md](DECISIONS.md) | O que o time preenche: produto, donos, medições, uso de IA. |
-| [docs/defesa.md](docs/defesa.md) | Como é a defesa oral. |
 | [docs/guias/](docs/guias/) | Setup, autenticação, git em equipe, deploy e outros. |
 
 ## Como começar
@@ -76,10 +75,6 @@ estrutura, a feature vale 0. Usem `core/contadores.py` como modelo.
 ## Uso de IA
 
 IA é permitida. Registrem no `DECISIONS.md` onde e como vocês a usaram.
-
-Na defesa cada integrante explica as decisões, localiza o código e altera uma
-feature ao vivo, sem IA. Código que ninguém do time entende perde pontos,
-independente de quem o escreveu.
 
 ## Prazos
 

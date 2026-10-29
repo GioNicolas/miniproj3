@@ -7,7 +7,7 @@ Uma feature de menu só pontua com os quatro requisitos da
 [`RUBRICA.md`](RUBRICA.md): teste oculto passando, estrutura em
 `backend/app/core/` (Python puro), endpoint que usa essa estrutura e linha
 válida no `DECISIONS.md`. Para features do núcleo e do menu intermediário, o
-time escolhe a estrutura, e a banca pergunta o porquê na defesa.
+time escolhe a estrutura e explica o porquê no `DECISIONS.md`.
 
 Esforço: P = pequeno, M = médio, G = grande.
 
