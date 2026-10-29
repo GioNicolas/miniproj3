@@ -2,9 +2,11 @@
 
 Cada time constrói uma rede social para uma comunidade que escolhe (música,
 corrida, leitura, jogos do campus...). A turma tem 7 times: 4 de 4 pessoas e
-3 de 3. Todos usam o mesmo esqueleto (FastAPI + SQLAlchemy + SQLite no backend,
-Next.js + TypeScript + Tailwind no frontend) e o mesmo contrato de API. O que
-diferencia o produto é o nicho: conteúdo, seed e interface.
+3 de 3. Todos partem do mesmo esqueleto (FastAPI + SQLAlchemy + SQLite no
+backend, Next.js + TypeScript + Tailwind no frontend) e do mesmo núcleo
+(cadastro, login, posts, feed, perfil, seguir, curtidas e comentários). Depois
+disso, cada time escolhe as features do catálogo que quer construir e o nicho,
+então cada rede acaba diferente da outra.
 
 Este é o treino final antes do hackathon de novembro.
 
@@ -14,7 +16,7 @@ Este é o treino final antes do hackathon de novembro.
 |---|---|
 | [RUBRICA.md](RUBRICA.md) | Como a nota é calculada. Leiam hoje. |
 | [CATALOGO.md](CATALOGO.md) | As features que vocês podem escolher e quanto cada uma vale. |
-| [CONTRATO.md](CONTRATO.md) | Rota, campos e status exatos de cada feature de menu. |
+| [CONTRATO.md](CONTRATO.md) | Rota, campos e status das features de menu. Vale só para as que o time escolher. |
 | [DECISIONS.md](DECISIONS.md) | O que o time preenche: produto, donos, medições, uso de IA. |
 | [docs/defesa.md](docs/defesa.md) | Como é a defesa oral. |
 | [docs/guias/](docs/guias/) | Setup, autenticação, git em equipe, deploy e outros. |
