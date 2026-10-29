@@ -66,7 +66,7 @@ Façam o commit e o Render faz o redeploy sozinho.
 
 ```bash
 curl -s https://SEU-BACK.onrender.com/usuarios | head -c 120
-# (a primeira pode demorar ~1 min — cold start)
+# (a primeira pode demorar ~1 min por causa do cold start)
 # → {"items":[...],"total":...}
 ```
 

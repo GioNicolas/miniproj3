@@ -1,10 +1,12 @@
 # Defesa oral: arquétipos de alteração
 
-Na defesa, cada integrante recebe uma alteração sorteada em uma feature
-própria e a implementa ao vivo, sem IA, em ~10 minutos. A nota segue a escala
-×1 / ×0,5 / ×0 da `RUBRICA.md`. As alterações saem dos arquétipos abaixo. Os
-`{parâmetros}` são sorteados na hora, então a pergunta exata não existe antes
-da banca. Para se preparar, pratiquem estes arquétipos no código de vocês.
+Cada integrante recebe uma alteração sorteada numa feature própria e a
+implementa ao vivo, sem IA, em cerca de 10 minutos. A nota usa a escala ×1,
+×0,5 e ×0 da `RUBRICA.md`.
+
+As alterações saem dos arquétipos abaixo. A banca sorteia os `{parâmetros}` na
+hora, então a pergunta exata só aparece na defesa. Para se preparar, pratiquem
+estes arquétipos no código de vocês.
 
 ## Os arquétipos
 
@@ -45,6 +47,6 @@ da banca. Para se preparar, pratiquem estes arquétipos no código de vocês.
   localhost, Swagger e documentação do projeto.
 - ×1: alterou e a verificação passa. ×0,5: achou o arquivo e a função certos e
   explicou a mudança, mas não terminou. ×0: não soube onde nem como alterar.
-- **Quem tira 0 defende uma segunda feature. Se tirar 0 de novo, as duas
+- Quem tira 0 defende uma segunda feature. Se tirar 0 de novo, as duas
   features sorteadas valem 0 e as outras features desse integrante caem para
-  50%.**
+  50%.

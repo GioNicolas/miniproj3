@@ -3,15 +3,13 @@
 ## A ideia em 1 parágrafo
 
 Um grafo é um conjunto de coisas (nós) e conexões entre elas (arestas). Você já
-conhece a peça que o representa: um **dict de sets** — cada chave é um nó, o
-set são os vizinhos diretos. A pergunta nova que o grafo responde é "**dá para
-chegar de A até B? em quantos passos? por qual caminho?**" — e quem responde é
-a BFS (busca em largura), que é só um loop com a `deque` que você já usa:
-visita todo mundo a 1 passo de distância, depois todo mundo a 2 passos, e
-assim por diante.
+conhece a peça que o representa: um **dict de sets**. Cada chave é um nó, e o
+set guarda os vizinhos diretos. O grafo responde a perguntas como "dá para
+chegar de A até B? Em quantos passos? Por qual caminho?". Quem responde é a BFS
+(busca em largura), um loop com a `deque` que você já usa. Ela visita quem está
+a 1 passo de distância, depois quem está a 2 passos, e assim por diante.
 
-Exemplo deste guia (de propósito, fora do catálogo): **cidades e rotas de
-ônibus**.
+Exemplo deste guia (de propósito, fora do catálogo): cidades e rotas de ônibus.
 
 ```
   Recife ──── Caruaru ──── Arcoverde
@@ -25,7 +23,7 @@ Exemplo deste guia (de propósito, fora do catálogo): **cidades e rotas de
 
 ## A estrutura em Python puro
 
-No estilo do `core/contadores.py` — sem SQL, sem FastAPI, só dados simples:
+No estilo do `core/contadores.py`, sem SQL e sem FastAPI, só dados simples:
 
 ```python
 from collections import deque
@@ -35,7 +33,7 @@ class MapaDeRotas:
     """Grafo não-direcionado: dict cidade -> set de cidades vizinhas.
 
     - adicionar rota / consultar vizinhos: O(1)
-    - reconstruir do zero: O(n rotas) — só no startup
+    - reconstruir do zero: O(n rotas), só no startup
     - caminho mais curto (BFS): O(nós + arestas)
     """
 
@@ -48,15 +46,16 @@ class MapaDeRotas:
             self.adicionar_rota(a, b)
 
     def adicionar_rota(self, a: str, b: str) -> None:
-        """O(1) — dois inserts em set."""
+        """O(1): dois inserts em set."""
         self._vizinhos.setdefault(a, set()).add(b)
         self._vizinhos.setdefault(b, set()).add(a)  # não-direcionado: vale nos 2 sentidos
 
     def caminho_mais_curto(self, origem: str, destino: str) -> list[str] | None:
         """BFS com dict de predecessores. Devolve [origem, ..., destino] ou None.
 
-        A deque garante a ordem "todo mundo a K passos antes de K+1 passos" —
-        por isso o PRIMEIRO jeito de chegar ao destino é sempre o mais curto.
+        A deque garante a ordem "todas as cidades a K passos antes das de K+1
+        passos". Por isso o primeiro jeito de chegar ao destino é sempre o
+        mais curto.
         """
         if origem not in self._vizinhos or destino not in self._vizinhos:
             return None
@@ -68,7 +67,7 @@ class MapaDeRotas:
         visitadas = {origem}
 
         while fila:
-            atual = fila.popleft()            # popleft = FIFO = busca em LARGURA
+            atual = fila.popleft()            # popleft = FIFO = busca em largura
             for vizinha in self._vizinhos[atual]:
                 if vizinha in visitadas:
                     continue                  # sem isso, ciclos = loop infinito
@@ -87,28 +86,26 @@ class MapaDeRotas:
         return list(reversed(caminho))
 ```
 
-Troque `popleft()` por `pop()` e a MESMA função vira DFS (busca em
-profundidade) — que acha *um* caminho, não o *mais curto*. Esse é o papel da
-deque aqui.
+Troque `popleft()` por `pop()` e a mesma função vira DFS (busca em
+profundidade), que acha um caminho qualquer, não o mais curto. A `deque` é o
+que faz a BFS achar o mais curto.
 
 ## Big O honesto
 
 | Operação | MapaDeRotas | Ingênua (lista de pares (a, b)) |
 |---|---|---|
-| adicionar rota | O(1) | O(1) — empata! |
-| vizinhos de X | O(1) | O(n rotas) — varre tudo |
+| adicionar rota | O(1) | O(1), empata |
+| vizinhos de X | O(1) | O(n rotas), varre tudo |
 | caminho mais curto | O(nós + arestas) | O(nós × arestas) ou pior, refazendo a varredura a cada passo |
-| memória | O(nós + arestas) | O(rotas) — empata |
+| memória | O(nós + arestas) | O(rotas), empata |
 
-Com 50 cidades, a diferença é invisível (qualquer coisa < 1 ms). A estrutura
-começa a pagar o próprio custo quando o grafo cresce ou quando você faz
-MUITAS consultas — meça, não acredite.
+Com 50 cidades, a diferença é invisível (menos de 1 ms). A estrutura começa a
+compensar quando o grafo cresce ou quando você faz muitas consultas. Meça.
 
 ## Como medir (10 linhas)
 
-Receita: gere N nós com conexões aleatórias, **construa fora do timer**, meça
-só a operação, repita ≥ 5 vezes, tire a média. Compare N = 1_000 / 10_000 /
-100_000.
+Gere N nós com conexões aleatórias, construa fora do timer, meça só a operação,
+repita pelo menos 5 vezes e tire a média. Compare N = 1_000 / 10_000 / 100_000.
 
 ```python
 import random
@@ -131,9 +128,9 @@ for n in (1_000, 10_000, 100_000):
     print(n, "grafo:", min(t) / 10)
 ```
 
-Cole os números no `DECISIONS.md` **+ 1 frase de interpretação**. Se a versão
-ingênua ganhar com N pequeno, isso é um resultado VÁLIDO — a rubrica pontua a
-interpretação, não a vitória da estrutura chique.
+Cole os números no `DECISIONS.md` e escreva uma frase de interpretação. Se a
+versão ingênua ganhar com N pequeno, o resultado é válido. A rubrica pontua a
+interpretação, não a vitória da estrutura mais sofisticada.
 
 ## Onde isso aparece no mundo real
 

@@ -2,22 +2,21 @@
 
 ## A ideia em 1 parágrafo
 
-Heap é uma lista organizada de um jeito esperto onde **o menor item está sempre
-na posição 0** — e manter essa promessa custa só O(log n) por inserção/remoção,
-em vez de reordenar tudo (O(n log n)). É a estrutura de quem vive perguntando
-"**quem é o próximo?**" ou "**quais são os top K?**" sem precisar da lista
-inteira ordenada. Python já traz pronta: módulo `heapq` da stdlib, funcionando
-em cima de uma `list` comum.
+Heap é uma lista organizada de modo que o **menor item fica sempre na posição
+0**. Manter isso custa O(log n) por inserção ou remoção, em vez de reordenar
+tudo (O(n log n)). Use quando você pergunta toda hora "quem é o próximo?" ou
+"quais são os top K?" e não precisa da lista inteira ordenada. O Python já traz
+o módulo `heapq` na stdlib, que funciona sobre uma `list` comum.
 
-Exemplo deste guia (de propósito, fora do catálogo): **fila de atendimento de
-um hospital por gravidade**.
+Exemplo deste guia (de propósito, fora do catálogo): fila de atendimento de um
+hospital por gravidade.
 
 ```
 chegada:  (3, "dor de cabeça") (1, "infarto") (2, "braço quebrado")
 
-heap:            (1, "infarto")          ← heap[0] é SEMPRE o menor
+heap:            (1, "infarto")          ← heap[0] é sempre o menor
                 /               \
-      (3, "dor de cabeça")   (2, "braço quebrado")   ← o resto, "meio ordenado"
+      (3, "dor de cabeça")   (2, "braço quebrado")   ← o resto, parcialmente ordenado
 ```
 
 ## A estrutura em Python puro
@@ -40,7 +39,7 @@ class FilaDeAtendimento:
         self._ordem = 0                               # desempate: quem chegou antes
 
     def chegar(self, gravidade: int, nome: str) -> None:
-        """O(log n). gravidade 1 = mais urgente (heapq é de MÍNIMO)."""
+        """O(log n). gravidade 1 = mais urgente (heapq é de mínimo)."""
         # a tupla compara elemento a elemento: gravidade, depois ordem de chegada.
         # sem o desempate, dois pacientes de gravidade igual = comparar strings.
         heapq.heappush(self._fila, (gravidade, self._ordem, nome))
@@ -52,7 +51,7 @@ class FilaDeAtendimento:
         return nome
 
     def proximo(self) -> str | None:
-        """Espia sem remover. O(1) — o menor está sempre em self._fila[0]."""
+        """Espia sem remover. O(1): o menor está sempre em self._fila[0]."""
         return self._fila[0][2] if self._fila else None
 
     def mais_graves(self, k: int) -> list[str]:
@@ -60,22 +59,22 @@ class FilaDeAtendimento:
         return [nome for _, _, nome in heapq.nsmallest(k, self._fila)]
 ```
 
-Duas pegadinhas do `heapq`: (1) ele é de **mínimo** — para "maior primeiro",
-guarde a chave negada (`-pontos`); (2) só a posição 0 é garantida — o resto da
-lista NÃO está ordenado, não itere achando que está.
+Dois cuidados com o `heapq`: (1) ele é de **mínimo**. Para "maior primeiro",
+guarde a chave negada (`-pontos`). (2) Só a posição 0 é garantida. O resto da
+lista não está ordenado, então não itere esperando ordem.
 
 ## Big O honesto
 
 | Operação | Heap | Ingênua (ordenar a lista toda) |
 |---|---|---|
-| inserir | O(log n) | O(1) append… |
-| pegar o próximo | O(log n) | …mas O(n log n) no sort na hora de ler |
-| top K | O(n log k) | O(n log n) ordena tudo e fatia `[:k]` |
-| ler TUDO em ordem | O(n log n) — empata | O(n log n) |
+| inserir | O(log n) | O(1), append |
+| pegar o próximo | O(log n) | O(n log n), o sort na hora de ler |
+| top K | O(n log k) | O(n log n), ordena tudo e fatia `[:k]` |
+| ler tudo em ordem | O(n log n), empata | O(n log n) |
 
-Se você lê a lista inteira ordenada uma vez por dia, `sorted()` empata e é
-mais simples — o heap paga quando as perguntas "próximo?"/"top K?" são
-frequentes e intercaladas com inserções. Com n = 100, tanto faz; meça.
+Se você lê a lista inteira ordenada uma vez por dia, `sorted()` empata e é mais
+simples. O heap compensa quando as perguntas "próximo?" e "top K?" são
+frequentes e intercaladas com inserções. Com n = 100, tanto faz. Meça.
 
 ## Como medir (10 linhas)
 
@@ -98,10 +97,10 @@ for n in (1_000, 10_000, 100_000):
           "sort:", min(timeit.repeat(ingenua, number=20, repeat=5)) / 20)
 ```
 
-Cole os números no `DECISIONS.md` + 1 frase de interpretação ("o heap só
-descola a partir de ~N porque..."). Se o `sorted()` ganhar em N pequeno,
-resultado válido — o Timsort do Python é brutalmente otimizado, e ESSA
-observação vale ponto.
+Cole os números no `DECISIONS.md` e escreva uma frase de interpretação ("o heap
+só passa a compensar a partir de ~N porque..."). Se o `sorted()` ganhar com N
+pequeno, o resultado é válido. O Timsort do Python é muito rápido nessa faixa, e
+essa observação vale ponto.
 
 ## Onde isso aparece no mundo real
 

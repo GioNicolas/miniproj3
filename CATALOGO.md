@@ -1,26 +1,20 @@
 # Catálogo de features
 
-O time escolhe um nicho, mas segue o mesmo contrato de API. Personalizem
-conteúdo, seed e interface. Não mudem rotas ou campos do
-[`CONTRATO.md`](CONTRATO.md).
+Cada time escolhe um nicho e personaliza conteúdo, seed e interface. Rotas e
+campos seguem o [`CONTRATO.md`](CONTRATO.md) e não mudam.
 
-Features de menu precisam de:
+Uma feature de menu só pontua com os quatro requisitos da
+[`RUBRICA.md`](RUBRICA.md): teste oculto passando, estrutura em
+`backend/app/core/` (Python puro), endpoint que usa essa estrutura e linha
+válida no `DECISIONS.md`. Para features do núcleo e do menu intermediário, o
+time escolhe a estrutura, e a banca pergunta o porquê na defesa.
 
-1. estrutura em `backend/app/core/` como Python puro;
-2. endpoint usando essa estrutura;
-3. dono e justificativa no `DECISIONS.md`;
-4. pelo menos um teste autoral.
-
-Nas features do núcleo e do menu intermediário, a escolha da estrutura é do
-time, e a banca pergunta o porquê na defesa.
-
-P = pequeno, M = médio, G = grande. A pontuação completa está na
-[`RUBRICA.md`](RUBRICA.md).
+Esforço: P = pequeno, M = médio, G = grande.
 
 ## Núcleo
 
-O núcleo vale 25 pontos e é definido pelos testes `@skip` em
-`backend/tests/test_nucleo.py`.
+O núcleo vale 25 pontos. Os testes dele estão em `backend/tests/test_nucleo.py`,
+marcados com `@skip` até o time implementar.
 
 | Feature | Esforço | Descrição |
 |---|---|---|
@@ -75,8 +69,8 @@ Cada avançada exige `scripts/bench_<feature>.py`, execução por `make bench`,
 resultado no `DECISIONS.md` e uma frase interpretando a comparação. Sem medição
 válida, vale 7 pontos e entra no bloco intermediário.
 
-Upload é tecnologia extra: não exige `core/` nem benchmark. DMs compara o dict
-de conversas com uma varredura linear das mensagens.
+Upload não exige `core/` nem benchmark. Em DMs, o benchmark compara o dict de
+conversas com uma varredura linear das mensagens.
 
 | Feature | Estrutura de dados | Esforço | Pontos | Descrição |
 |---|---|---|---|---|
@@ -87,7 +81,4 @@ de conversas com uma varredura linear das mensagens.
 | DMs 1-para-1 | dict de conversas + fila | G | 10 | Mensagens privadas por conversa. |
 | Autocomplete com trie | trie | G | 10 | Sugestões de tags ou usernames por prefixo. |
 
-## Apêndice
-
-Features fora deste catálogo podem melhorar o produto, mas não recebem pontos
-próprios.
+Features fora deste catálogo podem melhorar o produto, mas não recebem pontos.

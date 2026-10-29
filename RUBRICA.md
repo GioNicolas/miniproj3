@@ -164,12 +164,7 @@ tiradas da seção Produto do `DECISIONS.md`:
 - **Melhor `DECISIONS.md` da turma: +2.** Ganha o que explica melhor para
   quem é a rede, o que ficou de fora e o que o benchmark mostrou.
 
-## Datas
+## Datas e erros do corretor
 
-| Marco | Data |
-|---|---|
-| Início | **[DATA DE INÍCIO]** |
-| Entrega final | **24/10/2026** |
-
-Se o corretor discordar do `CONTRATO.md`, vale o contrato. Abram uma issue no
-repositório da turma.
+As datas estão no [README](README.md#prazos). Se o corretor discordar do
+`CONTRATO.md`, vale o contrato: abram uma issue neste repo.
