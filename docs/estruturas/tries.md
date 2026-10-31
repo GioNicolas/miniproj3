@@ -97,8 +97,8 @@ O bisect é O(log n), e o log de 1 milhão é ~20. Na consulta, a trie e o bisec
 empatam para qualquer N deste projeto, e a trie perde em memória. A trie ganha
 quando há muitas inserções no meio (o insort desloca a lista inteira) e quando
 você precisa de recursos extras, como contar por prefixo ou corrigir
-digitação. Medir trie contra bisect e explicar o resultado é a discussão que a
-rubrica quer.
+digitação. Medir trie contra bisect e explicar o resultado é uma boa discussão
+para o `DECISIONS.md`.
 
 ## Como medir (10 linhas)
 
@@ -126,8 +126,8 @@ for n in (1_000, 10_000, 100_000):
 ```
 
 Cole os números no `DECISIONS.md` e escreva uma frase de interpretação. Aqui é
-comum a versão ingênua (bisect) empatar ou ganhar. O resultado é válido e vale
-ponto se você explicar o porquê: o log n é minúsculo e os dicts aninhados têm
+comum a versão ingênua (bisect) empatar ou ganhar. O resultado é válido e fica
+bom se você explicar o porquê: o log n é minúsculo e os dicts aninhados têm
 overhead.
 
 ## Onde isso aparece no mundo real

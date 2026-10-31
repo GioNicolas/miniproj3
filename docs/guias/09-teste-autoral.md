@@ -1,9 +1,7 @@
-# Guia 09: teste autoral
+# Guia 09: escrever um teste seu (opcional)
 
-Cada feature de menu exige pelo menos um teste escrito pelo time
-(`test_autoral_<feature>.py`), cobrindo um caso que o `CONTRATO.md` não
-especifica. Sem ele, a feature vale ×0,7 (ver `RUBRICA.md`). Este guia serve
-para quem nunca escreveu um teste.
+Escrever um teste seu para uma feature é uma boa prática e ajuda a pegar bug
+cedo. Não vale nota. Este guia serve para quem nunca escreveu um teste.
 
 ## Arrange, act, assert
 
@@ -58,24 +56,12 @@ def test_autoral_nao_marco_notificacao_dos_outros(client, logar):
 
 Para rodar só os autorais: `uv run pytest -q -k autoral`.
 
-## Critério de validade
+## Um bom teste falha quando a feature quebra
 
-**O teste precisa falhar quando a feature é sabotada.** A rubrica confere isso.
+Para conferir, quebre a feature de propósito, em uma linha (inverta o if da
+permissão ou tire a checagem de duplicata), rode `uv run pytest -q -k autoral`
+e veja o teste ficar vermelho. Depois desfaça com `git checkout <arquivo>`.
+Se o teste continuou verde com a feature quebrada, ele não está testando nada.
 
-Verifiquem assim:
-
-1. Quebrem a feature de propósito, em uma linha: invertam o if da permissão ou
-   removam a checagem de duplicata.
-2. Rodem `uv run pytest -q -k autoral`. O teste tem que falhar.
-3. Desfaçam com `git checkout <arquivo>`. O teste volta a passar.
-
-Se o teste continuou verde com a feature quebrada, ele não testa nada e conta
-como ausente.
-
-Copiar o caminho feliz do `CONTRATO.md` ("crio bookmark, recebo 201") também
-conta como teste ausente. O corretor já testa o contrato; o autoral cobre o
-que o contrato não diz.
-
-Podem escrever o teste com IA, mas o dono da feature precisa saber explicar que
-caso o teste cobre, por que o contrato não cobre, e como mostrá-lo falhando.
-Quem não sabe explicar não escreveu o teste.
+Copiar o caminho feliz ("crio bookmark, recebo 201") serve pouco. O teste vale
+mais quando cobre o que a sugestão do `CONTRATO.md` não diz.

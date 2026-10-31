@@ -41,26 +41,27 @@ Exemplo:
 
 ## Features
 
-No núcleo, preencham Feature e Dono. Nas features de menu, preencham todas as
-colunas. `make test` valida o formato, e o corretor usa o mesmo parser: não
-mudem o número de colunas.
+Listem as features que o time vai construir, quem é o dono de cada uma e por
+que ela entra no produto. A lista muda junto com o projeto: acrescentem e
+tirem linhas quando mudarem de ideia.
 
-| Feature | Dono | Módulo em core/ (app.core.<nome>) | Endpoint que usa | Big O da operação principal | Por quê essa estrutura (1 frase) | Caso autoral (1 frase) |
-|---|---|---|---|---|---|---|
-| Auth (núcleo) | | - | - | - | - | - |
-| Posts (núcleo) | | - | - | - | - | - |
-| Feed (núcleo) | | - | - | - | - | - |
-| Perfil (núcleo) | | - | - | - | - | - |
-| Follow (núcleo) | | - | - | - | - | - |
-| Curtidas (núcleo) | | - | - | - | - | - |
-| Comentários (núcleo) | | - | - | - | - | - |
-| Seed fake (núcleo) | | - | - | - | - | - |
+| Feature | Dono | Por quê (1 frase) |
+|---|---|---|
+| Auth (núcleo) | | |
+| Posts (núcleo) | | |
+| Feed (núcleo) | | |
+| Perfil (núcleo) | | |
+| Follow (núcleo) | | |
+| Curtidas (núcleo) | | |
+| Comentários (núcleo) | | |
+| Seed fake (núcleo) | | |
 
-## Medições
+## Uma escolha técnica
 
-Para cada feature avançada, colem a saída do `make bench` e uma frase dizendo
-o que os números mostram. Se a versão simples ganhou, digam até que tamanho de
-dado isso vale.
+Contem uma escolha técnica que o time fez e por quê. Por exemplo, por que usou
+uma estrutura de dados no `core/`, qual o Big O da operação principal, ou o
+que mudaria se a rede crescesse 100 vezes. Se mediram com `make bench`, colem a
+saída e uma frase dizendo o que os números mostram.
 
 ## Uso de IA
 

@@ -1,9 +1,9 @@
-"""MODELO de teste autoral (ver RUBRICA.md) — sobre o slice de exemplo, de
-propósito: não entrega nenhuma feature de menu.
+"""MODELO de teste escrito pelo time (guia 09) — sobre o slice de exemplo, de
+propósito: não entrega nenhuma feature.
 
-Um teste autoral cobre um caso que o CONTRATO.md NÃO especifica. Receita de 3
+Um teste seu cobre um caso que o CONTRATO.md NÃO especifica. Receita de 3
 perguntas (guia 09): e se vier duplicado/vazio? e sem permissão? e além do
-limite? Critério de validade: ele deve ficar VERMELHO se a feature for sabotada.
+limite? Um bom teste fica VERMELHO se a feature for quebrada.
 """
 
 

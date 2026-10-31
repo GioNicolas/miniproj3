@@ -80,6 +80,6 @@ entrega em portfólio:
 
 - [ ] README com o pitch do nicho (2 parágrafos), 2–3 screenshots e a URL pública no topo
 - [ ] `RUBRICA.md`/`CATALOGO.md` movidos para `docs/`, porque são material da disciplina e não do produto
-- [ ] `DECISIONS.md` mantido, com os benchmarks. Mostrar que mediram trie
-      contra bisect, com os números, é o que conta num portfólio
+- [ ] `DECISIONS.md` mantido. Mostrar as decisões de produto e uma escolha
+      técnica explicada (com números, se mediram algo) é o que conta num portfólio
 - [ ] URL no ar (o free tier hiberna, mas volta sozinho)
