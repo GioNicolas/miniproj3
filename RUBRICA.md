@@ -57,7 +57,7 @@ Quem quiser medir uma estrutura (`make bench`) e mostrar o resultado no
 
 ## Bônus
 
-- **Deploy público: +5.** A banca testa cadastro → login → post → follow →
+- **Deploy público: +10.** A banca testa cadastro → login → post → follow →
   feed na URL.
 - **Destaque da turma: +2.** Para o `DECISIONS.md` que melhor explica para quem
   é a rede, o que ficou de fora e por quê.

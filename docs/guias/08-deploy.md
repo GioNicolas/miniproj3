@@ -1,4 +1,4 @@
-# Guia 08: deploy público (bônus +5)
+# Guia 08: deploy público (bônus +10)
 
 A receita é uma só: backend no Render (free) e front na Vercel (free). A banca
 confere o bônus abrindo a URL de vocês e fazendo cadastro → login →
