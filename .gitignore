@@ -24,7 +24,7 @@ out/
 .idea/
 
 # material do instrutor NUNCA entra neste repo — ele vive no repo privado
-# (testes ocultos, grader, gabaritos da banca, roteiros). Se aparecer aqui,
+# (gabaritos da banca, roteiros). Se aparecer aqui,
 # é engano: mova para ../miniproj3-instrutor.
 instrutor/
 TODO.md

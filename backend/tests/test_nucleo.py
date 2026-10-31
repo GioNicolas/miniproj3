@@ -1,10 +1,10 @@
 """NÚCLEO — a spec executável. Cada @skip é uma tarefa sua.
 
 Ciclo: remova o @skip → make test → veja FALHAR → implemente até ficar verde.
-`skipped` conta como não-entregue na correção. Núcleo = 25 pts × (verdes ÷ 10).
+`skipped` é uma tarefa que ainda falta. Estes testes são um roteiro, não valem nota.
 
-Estes testes SÃO o contrato do núcleo: rota, corpo e resposta que o corretor
-espera. Renomear rota = teste falha = feature não entregue.
+Eles fixam o contrato do núcleo: rota, corpo e resposta. Renomear uma rota faz o
+teste falhar, então mudem o teste junto se mudarem o contrato.
 """
 
 import pytest

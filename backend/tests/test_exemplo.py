@@ -31,11 +31,11 @@ def test_cria_usuario_e_aparece_na_lista(client):
 
 
 def test_sabotagem_exemplo_core_e_usado_de_verdade(client, monkeypatch):
-    """TESTE-SABOTAGEM (o grader faz isso com as SUAS features de menu):
+    """TESTE-SABOTAGEM (um jeito de checar o seu próprio core/):
 
     quebra a estrutura do core/ e verifica que o endpoint quebra junto.
-    Se o endpoint continuasse respondendo 200, o core/ seria "de teatro"
-    — bonito no arquivo, ignorado pela API — e a feature valeria 0.
+    Se o endpoint continuasse respondendo 200, o core/ seria "de teatro":
+    bonito no arquivo, ignorado pela API.
     """
     from app.core import contadores
 

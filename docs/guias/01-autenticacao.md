@@ -39,7 +39,7 @@ def get_current_user(
     db: Session = Depends(get_db),
 ) -> User:
     # bypass de DESENVOLVIMENTO: só funciona com DEBUG=true.
-    # O corretor nunca roda com DEBUG: sem a auth real, rota protegida dá 401.
+    # Em produção não existe DEBUG: sem a auth real, rota protegida dá 401.
     if os.environ.get("DEBUG") == "true" and x_user_id is not None:
         user = db.get(User, x_user_id)
         if user:
@@ -189,8 +189,8 @@ curl -s -X POST localhost:8000/auth/login \
 
 **3.2** Troquem o corpo do `get_current_user` do Passo 0: leiam o header
 `Authorization`, aceitem só o formato `Bearer <token>`, busquem a sessão e
-devolvam o dono. O bypass de DEBUG continua no topo e não atrapalha, porque o
-grader roda sem DEBUG.
+devolvam o dono. O bypass de DEBUG continua no topo e não atrapalha, porque em
+produção não existe DEBUG.
 
 ```python
 import os

@@ -100,7 +100,7 @@ for n in (1_000, 10_000, 100_000):
 Cole os números no `DECISIONS.md` e escreva uma frase de interpretação ("o heap
 só passa a compensar a partir de ~N porque..."). Se o `sorted()` ganhar com N
 pequeno, o resultado é válido. O Timsort do Python é muito rápido nessa faixa, e
-essa observação vale ponto.
+essa observação é boa de contar no `DECISIONS.md`.
 
 ## Onde isso aparece no mundo real
 

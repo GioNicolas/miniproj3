@@ -2,8 +2,8 @@
 
 Aqui ficam as estruturas de dados das features, em Python puro: sem
 SQLAlchemy, sem FastAPI, sem import de banco. Só dicts, sets, listas, deques,
-heaps e a lógica deles. A rubrica pontua isso, e o corretor sabota este
-diretório para checar que o endpoint realmente o usa.
+heaps e a lógica deles. A banca olha isso no critério de organização do código: a lógica das
+estruturas fica aqui, e o endpoint a usa de verdade.
 
 ## O padrão
 

@@ -1,14 +1,15 @@
 # Contrato da API
 
-O grader testa exatamente este contrato. Rota, campo ou status diferente faz a
-feature falhar. O núcleo é definido por `backend/tests/test_nucleo.py`.
+Sugestão de rotas, campos e status para as ideias do [`CATALOGO.md`](CATALOGO.md).
+Não é obrigatório: sigam se ajudar, mudem se o produto de vocês pedir outra
+coisa. O núcleo é definido por `backend/tests/test_nucleo.py`.
 
 Convenções:
 
 - 🔒 exige `Authorization: Bearer <token>`;
 - página significa `{"items": [...], "total", "offset", "limit"}`;
 - datas usam ISO 8601 UTC;
-- decisões não especificadas aqui devem ser cobertas pelos testes autorais.
+- o que não está aqui é decisão do time.
 
 ## Descoberta e conteúdo
 
@@ -209,14 +210,14 @@ Convenções:
 - `GET` 🔒 `/usuarios/{username}/distancia` → `200`,
   `{"graus": int | null, "caminho": [username]}`.
 - Grafo não-direcionado. Sem conexão: `null` e lista vazia. Eu para eu: zero.
-- Benchmark: BFS contra varredura.
+- Benchmark (opcional): BFS contra varredura.
 
 ### Top-K com heap
 
 - `GET` 🔒 `/top/semana?k=` → `200`, `{"items": [posts]}`.
 - `k` padrão 10 e máximo 50. Considera curtidas dos últimos sete dias.
 - Maior número de curtidas primeiro; empate pelo post mais novo.
-- Benchmark: heap contra ordenar tudo.
+- Benchmark (opcional): heap contra ordenar tudo.
 
 ### Comentários em árvore
 
@@ -232,7 +233,7 @@ Convenções:
 - `GET` 🔒 `/autocomplete?prefixo=&tipo=` → `200`, `{"sugestoes": [str]}`.
 - `tipo`: `usuarios` ou `tags`. Máximo 10, ordem alfabética.
 - Trie alimentada no registro e na extração de tags.
-- Benchmark obrigatório: trie contra bisect.
+- Benchmark (opcional): trie contra bisect.
 
 ### DMs 1-para-1
 
@@ -243,7 +244,7 @@ Convenções:
   conversas pela mensagem mais recente.
 - `GET` 🔒 `/dms/{username}?offset=&limit=` → `200`, página mais antiga primeiro.
 - DM para si mesmo → `422`; entre usuários bloqueados → `404`.
-- Benchmark: estrutura de vocês contra varredura de todas as mensagens.
+- Benchmark (opcional): estrutura de vocês contra varredura de todas as mensagens.
 
 ### Posts com imagem (upload)
 
@@ -251,4 +252,4 @@ Convenções:
   `{"imagem_url": str}`.
 - Só o autor → `403`. Aceita jpg, png e webp até 2 MB; excesso → `413`.
 - `GET /posts/{id}` ganha `imagem_url`, `null` sem imagem.
-- Arquivo servido como estático. Esta feature não exige `core/` nem benchmark.
+- Arquivo servido como estático.

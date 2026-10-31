@@ -1,7 +1,7 @@
 # Guia 05: JWT (opcional)
 
 Vocês não precisam disto para o projeto. A auth do guia 01 (token opaco em
-tabela) é auth de verdade e vale todos os pontos. JWT não vale ponto extra.
+tabela) é auth de verdade. JWT não é necessário.
 
 JWT (JSON Web Token) é um token que carrega os próprios dados (user_id,
 validade...) com assinatura criptográfica. O servidor não guarda nada: ele

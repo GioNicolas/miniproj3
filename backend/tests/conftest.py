@@ -1,6 +1,6 @@
 """Infra dos testes: banco descartável + client + helpers de auth.
 
-Os testes falam com a API só por HTTP (TestClient) — exatamente como o grader.
+Os testes falam com a API só por HTTP (TestClient) — exatamente como o frontend.
 """
 
 import os

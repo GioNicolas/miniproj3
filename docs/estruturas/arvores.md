@@ -107,8 +107,8 @@ for n in (1_000, 10_000, 100_000):
 ```
 
 Cole os números no `DECISIONS.md` e escreva uma frase de interpretação. Se as
-duas versões empatam com N pequeno, o resultado é válido. Explique o porquê e
-ganhe os pontos.
+duas versões empatam com N pequeno, o resultado é válido. Explique o porquê no
+`DECISIONS.md`.
 
 ## Onde isso aparece no mundo real
 

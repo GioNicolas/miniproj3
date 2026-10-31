@@ -1,12 +1,11 @@
 # Guia 06: upload de arquivos
 
-Este guia cobre a feature avançada Posts com imagem. Ela é a única que não
-precisa de `core/` nem de benchmark. Os outros requisitos da rubrica valem:
-teste oculto, linha no `DECISIONS.md` e teste autoral.
+Este guia cobre a ideia de feature Posts com imagem. Ela não precisa de `core/`
+nem de benchmark.
 
-O guia mostra o upload de um arquivo genérico. A rota do contrato é
+O guia mostra o upload de um arquivo genérico. A rota sugerida no contrato é
 `POST /posts/{post_id}/imagem`, com resposta `{"imagem_url": ...}` e `413` para
-arquivo acima de 2 MB. Adaptar o exemplo a essa rota é com vocês.
+arquivo acima de 2 MB. Adaptar o exemplo a ela, ou à rota que o time preferir, é com vocês.
 
 ## Backend
 

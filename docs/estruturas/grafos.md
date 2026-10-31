@@ -129,7 +129,7 @@ for n in (1_000, 10_000, 100_000):
 ```
 
 Cole os números no `DECISIONS.md` e escreva uma frase de interpretação. Se a
-versão ingênua ganhar com N pequeno, o resultado é válido. A rubrica pontua a
+versão ingênua ganhar com N pequeno, o resultado é válido. O que importa é a
 interpretação, não a vitória da estrutura mais sofisticada.
 
 ## Onde isso aparece no mundo real
