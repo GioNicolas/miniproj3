@@ -1,7 +1,10 @@
 # Catálogo de features
 
-Cada time escolhe um nicho e personaliza conteúdo, seed e interface. Rotas e
-campos seguem o [`CONTRATO.md`](CONTRATO.md) e não mudam.
+Este catálogo é um cardápio de ideias de features. Cada time escolhe as que
+fazem sentido para o seu nicho e personaliza conteúdo, seed e interface. Para
+as features do catálogo, rotas e campos seguem o [`CONTRATO.md`](CONTRATO.md).
+Só elas têm teste oculto, então só elas pontuam. Ideias fora do catálogo podem
+melhorar o produto, mas não recebem pontos.
 
 Uma feature de menu só pontua com os quatro requisitos da
 [`RUBRICA.md`](RUBRICA.md): teste oculto passando, estrutura em
@@ -80,5 +83,3 @@ conversas com uma varredura linear das mensagens.
 | Comentários em árvore | árvore + recursão | G | 10 | Respostas aninhadas. |
 | DMs 1-para-1 | dict de conversas + fila | G | 10 | Mensagens privadas por conversa. |
 | Autocomplete com trie | trie | G | 10 | Sugestões de tags ou usernames por prefixo. |
-
-Features fora deste catálogo podem melhorar o produto, mas não recebem pontos.
