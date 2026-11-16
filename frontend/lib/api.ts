@@ -9,24 +9,47 @@ function headers(): HeadersInit {
   return h;
 }
 
-export async function apiGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, { headers: headers(), cache: "no-store" });
-  if (!res.ok) throw new Error(`GET ${path} → ${res.status}`);
+async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method,
+    headers: headers(),
+    body: body === undefined ? undefined : JSON.stringify(body),
+    cache: "no-store",
+  });
+
+  // 401 com token salvo = token que não vale mais (ex.: o banco foi apagado ou o
+  // servidor do deploy reiniciou). Joga o token fora e volta para o login.
+  if (res.status === 401 && typeof window !== "undefined" && localStorage.getItem("token")) {
+    localStorage.removeItem("token");
+    if (window.location.pathname !== "/login") window.location.href = "/login";
+  }
+
+  if (!res.ok) {
+    // 422 = corpo inválido; 409 = conflito (ex.: username repetido). Ver guia 04.
+    const erro = await res.json().catch(() => null);
+    const detail = typeof erro?.detail === "string" ? erro.detail : null;
+    throw new Error(detail ?? `${method} ${path} → ${res.status}`);
+  }
+
+  // 204 No Content (seguir, curtir, apagar...) não tem corpo: não há JSON para ler.
+  if (res.status === 204) return undefined as T;
   return res.json();
 }
 
-export async function apiPost<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    method: "POST",
-    headers: headers(),
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    // 422 = corpo inválido; 409 = conflito (ex.: username repetido). Ver guia 04.
-    const detail = await res.json().catch(() => null);
-    throw new Error(detail?.detail ?? `POST ${path} → ${res.status}`);
-  }
-  return res.json();
+export function apiGet<T>(path: string): Promise<T> {
+  return request<T>("GET", path);
+}
+
+export function apiPost<T>(path: string, body?: unknown): Promise<T> {
+  return request<T>("POST", path, body);
+}
+
+export function apiPatch<T>(path: string, body: unknown): Promise<T> {
+  return request<T>("PATCH", path, body);
+}
+
+export function apiDelete<T = void>(path: string): Promise<T> {
+  return request<T>("DELETE", path);
 }
 
 // ---- tipos do slice de exemplo (espelham backend/app/schemas/user.py) ----

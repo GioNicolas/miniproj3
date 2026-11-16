@@ -80,8 +80,8 @@ IA é permitida. Registrem no `DECISIONS.md` onde e como vocês a usaram.
 
 | Marco | Data |
 |---|---|
-| Início | `[DATA DE INÍCIO]` |
-| Entrega final | `[DATA DE ENTREGA]` |
+| Início | segunda, 16/11/2026 |
+| Entrega final | sexta, 27/11/2026 |
 
 ## Guias
 

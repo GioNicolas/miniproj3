@@ -18,6 +18,8 @@ cima (guia 03, item 5).
 | contador/estrutura do core/ zera sozinho | [8](#8-core-zerando) |
 | conflito em `app.db` | [9](#9-conflito-binario) |
 | `error reading bcrypt version` | [10](#10-bcrypt) |
+| `ValueError: Invalid salt` (login dá 500) | [11](#11-invalid-salt) |
+| `Unexpected end of JSON input` | [12](#12-resposta-sem-corpo) |
 
 ## 1. 422 no POST
 
@@ -83,7 +85,8 @@ Causa: o token não está indo no request. O login foi feito, mas falta o Passo
 Conserto: F12 → Network → cliquem no request e vejam se o header
 `Authorization: Bearer ...` existe. Se não existe, façam o Passo 4. Se existe
 e mesmo assim dá 401, o token não está na tabela `sessions` (o banco foi
-apagado?). Façam login de novo.
+apagado?). O `lib/api.ts` já apaga esse token e manda para `/login`; é só
+logar de novo.
 
 ## 6. token some no refresh
 
@@ -151,6 +154,37 @@ instalou o `passlib` por conta própria, seguindo algum tutorial.
 Conserto: não usem passlib. O projeto fixa o `bcrypt` no `pyproject.toml` e o
 guia 01 usa `bcrypt.hashpw`/`bcrypt.checkpw` direto. Removam o passlib com
 `uv remove passlib` e sigam o guia 01, Passo 1.4.
+
+## 11. invalid salt
+
+```
+POST /auth/login → 500
+ValueError: Invalid salt
+```
+
+Causa: o usuário não tem senha. Quem veio do `POST /usuarios` do slice de
+exemplo, ou de um seed sem `password_hash`, tem o hash vazio, e
+`bcrypt.checkpw` com hash vazio explode em vez de devolver `False`.
+
+Conserto: no login, tratem hash vazio como senha errada (`401`), e deem senha
+aos usuários do seed. O código está no guia 01, Passos 1.2 e 2.3.
+
+## 12. resposta sem corpo
+
+```
+SyntaxError: Unexpected end of JSON input
+```
+
+Sintoma: a ação funcionou (o follow aparece no Swagger), mas a tela mostra
+erro.
+
+Causa: a rota respondeu `204 No Content`, que não tem corpo, e o código chamou
+`res.json()` mesmo assim. Acontece com follow, curtir, apagar e qualquer rota
+`204`.
+
+Conserto: usem `apiPost`, `apiPatch` e `apiDelete` do `lib/api.ts`, que já
+tratam o `204`. Se escreverem um `fetch` próprio (como no upload), confiram
+`res.status === 204` antes de chamar `res.json()`.
 
 ---
 
