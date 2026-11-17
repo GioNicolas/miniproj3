@@ -96,6 +96,21 @@ cd backend && uv run pytest -q -k auth_registro
 password_hash: Mapped[str] = mapped_column(String(100), default="")
 ```
 
+Deem uma senha aos usuários do seed, senão ninguém consegue logar como eles.
+Em `scripts/seed.py`:
+
+```python
+import bcrypt
+
+SENHA_SEED = "senha-forte-123"  # a mesma para todo usuário do seed; anotem no README
+HASH_SEED = bcrypt.hashpw(SENHA_SEED.encode(), bcrypt.gensalt()).decode()
+
+USUARIOS = [
+    User(username="ada", name="Ada Lovelace", bio="...", password_hash=HASH_SEED),
+    # ... o mesmo para os outros
+]
+```
+
 O SQLite não altera a tabela sozinho. Apaguem o `app.db` e rodem `make seed`
 de novo. Se aparecer "no such column", faltou isso (ver guia 04).
 
@@ -172,6 +187,18 @@ sessão com `secrets.token_urlsafe(32)` e devolvam `{"token": ...}`.
 Senha errada e username inexistente devolvem o mesmo 401 genérico. Responder
 "usuário não existe" revela quais usuários existem para quem está chutando.
 
+Usuário sem senha também é 401. Quem foi criado pelo `POST /usuarios` do slice
+de exemplo, ou por um seed sem `password_hash`, tem o hash vazio, e
+`bcrypt.checkpw` com hash vazio não devolve `False`: ele explode com
+`ValueError: Invalid salt` e o login vira `500`. Confiram o hash antes:
+
+```python
+if not user or not user.password_hash or not bcrypt.checkpw(
+    dados.password.encode(), user.password_hash.encode()
+):
+    raise HTTPException(status_code=401, detail="usuário ou senha inválidos")
+```
+
 **2.4** Verificação:
 
 ```bash
@@ -180,7 +207,7 @@ uv run pytest -q -k auth_login
 curl -s -X POST localhost:8000/auth/login \
   -H 'Content-Type: application/json' \
   -d '{"username":"ada","password":"errada"}'
-# → {"detail":"..."} com status 401
+# → {"detail":"..."} com status 401  (se vier 500, faltou checar o hash vazio)
 ```
 
 ### Passo 3: o `get_current_user` real (`test_auth_eu`)
@@ -238,7 +265,7 @@ Apaguem a `/eu-temporario` do Passo 0.
 uv run pytest -q -k auth
 # → 3 passed
 curl -s -X POST localhost:8000/auth/login -H 'Content-Type: application/json' \
-  -d '{"username":"ada","password":"<a senha que você registrou>"}'
+  -d '{"username":"ada","password":"senha-forte-123"}'
 # copie o token e:
 curl -s localhost:8000/auth/eu -H "Authorization: Bearer <token>"
 # → seu usuário
@@ -300,6 +327,11 @@ export function useExigeLogin() {
   }, [router]);
 }
 ```
+
+O hook só confere se existe um token, não se ele ainda vale. Token que deixou
+de valer (banco apagado, servidor do deploy reiniciado) é tratado no
+`lib/api.ts`: qualquer `401` com token salvo apaga o token e manda para
+`/login`. Não removam essa parte.
 
 ### Verificação ponta a ponta
 
