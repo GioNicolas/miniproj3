@@ -37,11 +37,16 @@ def deixar_de_seguir(db: Session, seguidor: User, username: str) -> None:
     grafo_follows.deixar_de_seguir(seguidor.id, seguido.id)
 
 
-def contadores(user_id: int) -> dict[str, int]:
-    """Para o perfil: `{"seguidores": n, "seguindo": n}` em O(1)."""
+def contadores(user_id: int, visitante_id: int) -> dict[str, int | bool]:
+    """Para o perfil, em O(1): `{"seguidores", "seguindo", "eu_sigo"}`.
+
+    `eu_sigo` diz se quem está vendo o perfil já segue o dono, para a tela
+    mostrar "Seguir" ou "Deixar de seguir".
+    """
     return {
         "seguidores": grafo_follows.qtd_seguidores(user_id),
         "seguindo": grafo_follows.qtd_seguindo(user_id),
+        "eu_sigo": grafo_follows.segue(visitante_id, user_id),
     }
 
 

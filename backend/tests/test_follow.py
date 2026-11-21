@@ -83,6 +83,11 @@ def test_contadores_para_o_perfil(client, como):
     client.post("/usuarios/ana/follow", headers=bia)
 
     with SessionLocal() as db:
-        ana_id = db.scalar(select(User.id).where(User.username == "ana"))
+        ids = {username: id_ for username, id_ in db.execute(select(User.username, User.id))}
 
-    assert contadores(ana_id) == {"seguidores": 1, "seguindo": 2}
+    assert contadores(ids["ana"], visitante_id=ids["bia"]) == {
+        "seguidores": 1,
+        "seguindo": 2,
+        "eu_sigo": True,
+    }
+    assert contadores(ids["ana"], visitante_id=ids["caio"])["eu_sigo"] is False

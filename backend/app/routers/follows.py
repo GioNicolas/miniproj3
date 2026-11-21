@@ -1,7 +1,8 @@
 """Follow: seguir, deixar de seguir e as listas de seguidores/seguindo.
 
-Os contadores (`seguidores`, `seguindo`) aparecem no GET /usuarios/{username},
-que é do Perfil: ele chama `services.follows.contadores(user.id)`.
+Os contadores (`seguidores`, `seguindo`, `eu_sigo`) aparecem no
+GET /usuarios/{username}, que é do Perfil: ele chama
+`services.follows.contadores(dono.id, visitante_id=eu.id)`.
 """
 
 from fastapi import APIRouter, Depends, Query, Response
