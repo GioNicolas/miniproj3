@@ -1,6 +1,9 @@
 # Decisões do time
 
-**Time:** _(nomes e usernames do GitHub)_
+**Time:** Nícolas ([@GioNicolas](https://github.com/GioNicolas)), Sofia
+([@SofiaLimar](https://github.com/SofiaLimar)), Eduardo Travassos
+([@EduardoSanturbano](https://github.com/EduardoSanturbano)) e Davi
+([@davicgois](https://github.com/davicgois)).
 
 Este arquivo acompanha o projeto. Comecem com o que já sabem e atualizem quando
 as decisões mudarem.
@@ -9,12 +12,20 @@ as decisões mudarem.
 
 Respondam antes de escolher features. O pitch sai daqui.
 
-- **Público:** _(quem usa a rede, o mais específico possível: "corredores
-  iniciantes da UFPB", não "pessoas que gostam de esporte")_
-- **Problema:** _(o que essa pessoa tenta fazer hoje e onde isso falha)_
-- **Como a rede resolve:** _(uma ou duas frases)_
-- **Como saberíamos que funcionou:** _(um sinal observável: "a pessoa volta
-  no dia seguinte para ver o treino dos amigos")_
+> Rascunho tirado da reunião do time. A versão final sai na issue #15.
+
+- **Público:** estudantes da UFPB que estão começando na calistenia e treinam
+  na barra da praça, do campus ou em casa.
+- **Problema:** o iniciante treina sozinho, não sabe a ordem certa das
+  progressões (tenta a barra fixa antes da australiana e não sai do lugar) e
+  desiste nas primeiras semanas por falta de constância. O Instagram só mostra
+  quem já é monstro, e o grupo de WhatsApp não acompanha a evolução de ninguém.
+- **Como a rede resolve:** transforma a constância em jogo. Cada treino
+  registrado alimenta um frango que evolui e definha se você some, a Granja da
+  Semana compara quem não faltou entre as pessoas que você segue, e a árvore de
+  progressões mostra o próximo passo possível com o equipamento que você tem.
+- **Como saberíamos que funcionou:** a pessoa registra treino em pelo menos 3
+  dias por semana durante 4 semanas seguidas, e o frango dela chega a Galo.
 
 ## Decisões de produto
 
@@ -47,14 +58,20 @@ tirem linhas quando mudarem de ideia.
 
 | Feature | Dono | Por quê (1 frase) |
 |---|---|---|
-| Auth (núcleo) | | |
-| Posts (núcleo) | | |
-| Feed (núcleo) | | |
-| Perfil (núcleo) | | |
-| Follow (núcleo) | | |
-| Curtidas (núcleo) | | |
-| Comentários (núcleo) | | |
-| Seed fake (núcleo) | | |
+| Auth (núcleo) | @SofiaLimar | Sem conta não existe frango, treino nem granja. |
+| Posts (núcleo) | @GioNicolas | É onde o frango conta o treino do dia e tira dúvida. |
+| Feed + Explorar (núcleo) | @GioNicolas | Ver quem da granja já treinou hoje; quem chegou agora não vê tela vazia. |
+| Perfil (núcleo) | @davicgois | A carteirinha do frango: nível, progressões dominadas e treinos. |
+| Follow (núcleo) | @EduardoSanturbano | Quem você segue forma a sua Granja da Semana. |
+| Curtidas (núcleo) | @EduardoSanturbano | O "tamo junto" que faz o iniciante voltar. |
+| Comentários (núcleo) | @GioNicolas | Onde o iniciante pergunta como o outro fez a negativa. |
+| Seed fake (núcleo) | @EduardoSanturbano | A banca precisa ver uma comunidade viva de calistenia, não Lorem ipsum. |
+| Identidade visual e navegação | @SofiaLimar | O nicho precisa aparecer na interface. |
+| Registro de treino | @GioNicolas | É o dado que mede a constância e alimenta o frango e a granja. |
+| Árvore de progressões | @davicgois | Mostra a ordem certa das progressões e o próximo passo possível. |
+| O Frango | @SofiaLimar | Dá motivo para voltar: o frango definha se você some. |
+| Granja da Semana | @EduardoSanturbano | Competição por constância, que zera toda segunda. |
+| Deploy público | @davicgois | A banca usa a rede de verdade, numa URL. |
 
 ## Uma escolha técnica
 
