@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Avatar } from "@/components/Avatar";
-import { apiDelete, apiPatch, type Post } from "@/lib/api";
+import { apiDelete, apiPatch, type Post, type Treino } from "@/lib/api";
 
 const LIMITE_TEXTO = 500;
 
@@ -25,6 +25,13 @@ function tempoRelativo(iso: string): string {
     }
   }
   return "agora";
+}
+
+function resumoTreino(treino: Treino): string {
+  const { progressao, series, reps } = treino;
+  const volume =
+    series && reps ? `${series}×${reps}` : series ? `${series} séries` : reps ? `${reps} reps` : null;
+  return ["treino", progressao?.split("_").join(" "), volume].filter(Boolean).join(" · ");
 }
 
 type Props = {
@@ -74,7 +81,7 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
   }
 
   return (
-    <article className="space-y-2 rounded-lg border bg-white p-3">
+    <article className={`space-y-2 rounded-lg border bg-white p-3 ${post.treino ? "border-emerald-300" : ""}`}>
       <header className="flex items-center gap-3">
         <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
         <div className="min-w-0 flex-1">
@@ -122,7 +129,14 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
           </div>
         </div>
       ) : (
-        <p className="whitespace-pre-wrap break-words">{post.texto}</p>
+        <>
+          {post.treino && (
+            <p className="inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-800">
+              {resumoTreino(post.treino)}
+            </p>
+          )}
+          <p className="whitespace-pre-wrap break-words">{post.texto}</p>
+        </>
       )}
 
       <footer className="flex gap-4 text-sm text-zinc-500">

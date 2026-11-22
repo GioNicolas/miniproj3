@@ -78,6 +78,12 @@ export type Autor = {
   avatar_url: string;
 };
 
+export type Treino = {
+  progressao: string | null;
+  series: number | null;
+  reps: number | null;
+};
+
 export type Post = {
   id: number;
   texto: string;
@@ -86,4 +92,5 @@ export type Post = {
   curtidas: number;
   comentarios: number;
   eu_curti: boolean;
+  treino: Treino | null;
 };
