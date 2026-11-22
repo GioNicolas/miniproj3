@@ -23,6 +23,14 @@ class AutorOut(BaseModel):
     avatar_url: str
 
 
+class TreinoOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    progressao: str | None
+    series: int | None
+    reps: int | None
+
+
 class PostOut(BaseModel):
     """Contrato único de post (issue #2): feed, perfil e explorar devolvem isto.
 
@@ -39,6 +47,7 @@ class PostOut(BaseModel):
     curtidas: int = 0
     comentarios: int = 0
     eu_curti: bool = False
+    treino: TreinoOut | None = None
 
     @field_validator("created_at")
     @classmethod
