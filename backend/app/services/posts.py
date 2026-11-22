@@ -46,6 +46,18 @@ def apagar(db: Session, post_id: int, eu: User) -> None:
     db.commit()
 
 
+def explorar(db: Session, offset: int, limit: int) -> tuple[list[Post], int]:
+    """Posts de toda a rede, mais novo primeiro.
+
+    Quando as curtidas (#6) entrarem, os mais curtidos dos últimos 7 dias sobem.
+    """
+    total = db.scalar(select(func.count()).select_from(Post)) or 0
+    pagina = db.scalars(
+        select(Post).order_by(Post.created_at.desc(), Post.id.desc()).offset(offset).limit(limit)
+    )
+    return list(pagina), total
+
+
 def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
     """Único ponto que transforma Post em PostOut, para uma página inteira.
 
