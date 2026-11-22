@@ -62,6 +62,7 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
       onApagado?.(post.id);
     } catch (err) {
       setErro(err instanceof Error ? err.message : "erro ao apagar o post");
+    } finally {
       setSalvando(false);
     }
   }
