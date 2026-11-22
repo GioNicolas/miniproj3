@@ -69,3 +69,21 @@ export type Page<T> = {
   offset: number;
   limit: number;
 };
+
+// ---- posts (espelham backend/app/schemas/post.py) ----
+
+export type Autor = {
+  username: string;
+  name: string;
+  avatar_url: string;
+};
+
+export type Post = {
+  id: number;
+  texto: string;
+  autor: Autor;
+  created_at: string;
+  curtidas: number;
+  comentarios: number;
+  eu_curti: boolean;
+};
