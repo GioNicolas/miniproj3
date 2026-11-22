@@ -1,31 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { Avatar } from "@/components/Avatar";
 import { apiDelete, apiPatch, type Post, type Treino } from "@/lib/api";
+import { tempoRelativo } from "@/lib/tempo";
 
 const LIMITE_TEXTO = 500;
-
-const UNIDADES: [Intl.RelativeTimeFormatUnit, number][] = [
-  ["year", 365 * 24 * 3600],
-  ["month", 30 * 24 * 3600],
-  ["day", 24 * 3600],
-  ["hour", 3600],
-  ["minute", 60],
-];
-
-const relativo = new Intl.RelativeTimeFormat("pt-BR", { numeric: "auto" });
-
-function tempoRelativo(iso: string): string {
-  const segundos = Math.round((new Date(iso).getTime() - Date.now()) / 1000);
-  for (const [unidade, tamanho] of UNIDADES) {
-    if (Math.abs(segundos) >= tamanho) {
-      return relativo.format(Math.round(segundos / tamanho), unidade);
-    }
-  }
-  return "agora";
-}
 
 function resumoTreino(treino: Treino): string {
   const { progressao, series, reps } = treino;
@@ -141,7 +123,9 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
 
       <footer className="flex gap-4 text-sm text-zinc-500">
         <span>{post.curtidas} curtidas</span>
-        <span>{post.comentarios} comentários</span>
+        <Link href={`/posts/${post.id}`} className="hover:text-zinc-900">
+          {post.comentarios} comentários
+        </Link>
       </footer>
 
       {erro && <p className="text-sm text-red-700">{erro}</p>}
