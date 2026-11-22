@@ -56,7 +56,7 @@ export function ListaDeConexoes({ username, tipo }: Props) {
   return (
     <div className="space-y-4">
       <div>
-        <Link href={`/usuarios/${username}`} className="text-sm text-zinc-500 hover:underline">
+        <Link href={`/u/${username}`} className="text-sm text-zinc-500 hover:underline">
           ← @{username}
         </Link>
         <h1 className="text-2xl font-bold">{TITULO[tipo]}</h1>
@@ -71,7 +71,7 @@ export function ListaDeConexoes({ username, tipo }: Props) {
       <ul className="space-y-2">
         {usuarios.map((u) => (
           <li key={u.id}>
-            <Link href={`/usuarios/${u.username}`}>
+            <Link href={`/u/${u.username}`}>
               <UserCard user={u} />
             </Link>
           </li>
