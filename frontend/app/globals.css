@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+/*
+ * Tokens da Frangaria (paleta Osso). Use SEMPRE estes nomes, nunca cor solta:
+ * bg-fundo, bg-superficie, text-tinta, text-suave, border-borda,
+ * bg-destaque, text-destaque-texto, font-titulo, font-corpo...
+ * Mudar uma cor aqui muda a rede inteira.
+ */
+@theme {
+  --color-fundo: #f3f3f1;
+  --color-superficie: #ffffff;
+  --color-superficie-escura: #161616;
+  --color-tinta: #161616;
+  --color-tinta-clara: #f3f3f1;
+  --color-suave: #5f5f5a;
+  --color-borda: #deded9;
+
+  /* laranja-fogo: áreas grandes (botão, destaque). Texto pequeno em fundo claro usa destaque-texto. */
+  --color-destaque: #ff4d1a;
+  --color-destaque-texto: #d93a0b;
+
+  --color-perigo: #b3261e;
+  --color-perigo-fundo: #fbeae6;
+  --color-sucesso: #1f7a3a;
+
+  /* cores das patentes do frango (#11) */
+  --color-patente-frango: #9a9a94;
+  --color-patente-granja: #c27a45;
+  --color-patente-galo: #a9aeb5;
+  --color-patente-monstro: #e8b23a;
+
+  --font-titulo: var(--font-bebas), "Arial Narrow", sans-serif;
+  --font-corpo: var(--font-inter), system-ui, sans-serif;
+}

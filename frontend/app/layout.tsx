@@ -1,30 +1,30 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import type { Metadata, Viewport } from "next";
+import { Bebas_Neue, Inter } from "next/font/google";
+
+import { Navbar } from "@/components/Navbar";
+import { GLOSSARIO } from "@/lib/glossario";
 import "./globals.css";
 
+const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"], variable: "--font-bebas" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
 export const metadata: Metadata = {
-  title: "Rede Social da Trilha",
-  description: "Mini-projeto 3 — troque este título pelo nome do seu nicho",
+  title: GLOSSARIO.rede,
+  description: "Rede de calistenia para iniciantes da UFPB. Constância vence força.",
 };
+
+// viewportFit "cover" libera o env(safe-area-inset-bottom) usado na barra do celular.
+export const viewport: Viewport = { viewportFit: "cover" };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
-      <body className="min-h-screen bg-zinc-50 text-zinc-900">
-        <nav className="border-b bg-white">
-          <div className="mx-auto flex max-w-3xl items-center gap-6 px-4 py-3">
-            <Link href="/" className="font-bold">
-              {/* troque pelo nome/logo do seu nicho */}
-              Rede da Trilha
-            </Link>
-            <Link href="/usuarios" className="text-sm text-zinc-600 hover:text-zinc-900">
-              Usuários
-            </Link>
-          </div>
-        </nav>
-        <main className="mx-auto max-w-3xl px-4 py-6">{children}</main>
+    <html lang="pt-BR" className={`${bebas.variable} ${inter.variable}`}>
+      <body className="min-h-screen bg-fundo font-corpo text-tinta">
+        <Navbar />
+        {/* pb-24: espaço para a barra inferior do celular não cobrir o conteúdo */}
+        <main className="mx-auto max-w-3xl px-4 pb-24 pt-6 md:pb-6">{children}</main>
       </body>
     </html>
   );
