@@ -28,3 +28,8 @@ class UserPage(BaseModel):
     total: int
     offset: int
     limit: int
+
+
+class UserUpdate(BaseModel):
+    bio: str | None = Field(default=None, max_length=280)
+    avatar_url: str | None = Field(default=None, max_length=300)
