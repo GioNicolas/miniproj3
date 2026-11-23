@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Avatar } from "@/components/Avatar";
+import { BotaoTamoJunto } from "@/components/BotaoTamoJunto";
 import { apiDelete, apiPatch, type Post } from "@/lib/api";
 
 const LIMITE_TEXTO = 500;
@@ -126,7 +127,7 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
       )}
 
       <footer className="flex gap-4 text-sm text-zinc-500">
-        <span>{post.curtidas} curtidas</span>
+        <BotaoTamoJunto postId={post.id} curtidasIniciais={post.curtidas} euCurtiInicial={post.eu_curti} />
         <span>{post.comentarios} comentários</span>
       </footer>
 
