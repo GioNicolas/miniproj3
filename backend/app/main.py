@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -23,9 +24,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Rede Social da Trilha", lifespan=lifespan)
 
+origens_permitidas = ["http://localhost:3000"]
+if os.getenv("FRONTEND_URL"):
+    origens_permitidas.append(os.getenv("FRONTEND_URL"))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=origens_permitidas,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
