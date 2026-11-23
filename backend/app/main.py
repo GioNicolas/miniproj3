@@ -7,7 +7,7 @@ from sqlalchemy import select
 from app.core.contadores import contador_iniciais
 from app.db import Base, SessionLocal, engine
 from app.models.user import User
-from app.routers import comentarios, posts, treinos, users
+from app.routers import auth, comentarios, posts, treinos, users
 
 
 @asynccontextmanager
@@ -33,6 +33,7 @@ app.add_middleware(
 
 # 1 linha por feature — registre o seu router aqui.
 app.include_router(users.router)
+app.include_router(auth.router)
 app.include_router(posts.router)
 app.include_router(treinos.router)
 app.include_router(comentarios.router)
