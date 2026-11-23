@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Avatar } from "@/components/Avatar";
-import { apiDelete, apiPatch, type Post } from "@/lib/api";
+import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
 
 const LIMITE_TEXTO = 500;
 
@@ -25,6 +25,12 @@ function tempoRelativo(iso: string): string {
     }
   }
   return "agora";
+}
+
+function resumoExercicio({ progressao, series, reps }: Exercicio): string {
+  const volume =
+    series && reps ? `${series}×${reps}` : series ? `${series} séries` : reps ? `${reps} reps` : null;
+  return [progressao.split("_").join(" "), volume].filter(Boolean).join(" · ");
 }
 
 type Props = {
@@ -74,7 +80,7 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
   }
 
   return (
-    <article className="space-y-2 rounded-lg border bg-white p-3">
+    <article className={`space-y-2 rounded-lg border bg-white p-3 ${post.treino ? "border-emerald-300" : ""}`}>
       <header className="flex items-center gap-3">
         <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
         <div className="min-w-0 flex-1">
@@ -122,7 +128,19 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
           </div>
         </div>
       ) : (
-        <p className="whitespace-pre-wrap break-words">{post.texto}</p>
+        <>
+          {post.treino && (
+            <ul aria-label="Treino do dia" className="flex flex-wrap gap-1.5">
+              <li className="rounded-full bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-800">treino</li>
+              {post.treino.exercicios.map((exercicio, i) => (
+                <li key={i} className="rounded-full bg-emerald-50 px-2 py-0.5 text-sm text-emerald-800">
+                  {resumoExercicio(exercicio)}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="whitespace-pre-wrap break-words">{post.texto}</p>
+        </>
       )}
 
       <footer className="flex gap-4 text-sm text-zinc-500">
