@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.contadores import contador_iniciais
 from app.models.user import User
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserUpdate
 
 
 def listar(db: Session, offset: int, limit: int) -> tuple[list[User], int]:
@@ -28,4 +28,20 @@ def criar(db: Session, dados: UserCreate, password_hash: str = "") -> User:
     db.refresh(user)
 
     contador_iniciais.incrementar(user.username)
+    return user
+
+
+def atualizar(db: Session, eu: User, dados: UserUpdate) -> User:
+    mudancas = dados.model_dump(exclude_unset=True)
+    for campo, valor in mudancas.items():
+        setattr(eu, campo, valor)
+    db.commit()
+    db.refresh(eu)
+    return eu
+
+
+def buscar_por_username(db: Session, username: str) -> User:
+    user = db.scalar(select(User).where(User.username == username))
+    if user is None:
+        raise HTTPException(status_code=404, detail="usuário não encontrado")
     return user
