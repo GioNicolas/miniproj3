@@ -1,13 +1,14 @@
 from datetime import date
 
-from sqlalchemy import ForeignKey, Index, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import ForeignKey, Index
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
+from app.models.exercicio import Exercicio
 
 
 class Treino(Base):
-    """Check-in: os detalhes do treino de um post. O texto fica no post."""
+    """Check-in: o treino do dia de um post. O texto fica no post."""
 
     __tablename__ = "treinos"
     # frango e granja perguntam "em quais dias fulano treinou desde X"
@@ -17,6 +18,8 @@ class Treino(Base):
     post_id: Mapped[int] = mapped_column(ForeignKey("posts.id"), unique=True)
     autor_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     dia: Mapped[date]
-    progressao: Mapped[str | None] = mapped_column(String(50))
-    series: Mapped[int | None]
-    reps: Mapped[int | None]
+
+    # selectin: os exercícios de uma página inteira de posts vêm numa query só.
+    exercicios: Mapped[list[Exercicio]] = relationship(
+        lazy="selectin", order_by=Exercicio.id, cascade="all, delete-orphan"
+    )

@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.datas import dia_em_recife
+from app.models.exercicio import Exercicio
 from app.models.post import Post
 from app.models.treino import Treino
 from app.models.user import User
@@ -18,9 +19,7 @@ def registrar(db: Session, eu: User, dados: TreinoCreate) -> Post:
     post.treino = Treino(
         autor_id=eu.id,
         dia=dia_em_recife(agora),
-        progressao=dados.progressao,
-        series=dados.series,
-        reps=dados.reps,
+        exercicios=[Exercicio(**exercicio.model_dump()) for exercicio in dados.exercicios],
     )
     db.add(post)
     db.commit()

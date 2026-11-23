@@ -78,10 +78,14 @@ export type Autor = {
   avatar_url: string;
 };
 
-export type Treino = {
-  progressao: string | null;
+export type Exercicio = {
+  progressao: string;
   series: number | null;
   reps: number | null;
+};
+
+export type Treino = {
+  exercicios: Exercicio[];
 };
 
 export type Post = {
