@@ -17,12 +17,12 @@ def listar(db: Session, offset: int, limit: int) -> tuple[list[User], int]:
     return users, total
 
 
-def criar(db: Session, dados: UserCreate) -> User:
+def criar(db: Session, dados: UserCreate, password_hash: str = "") -> User:
     ja_existe = db.scalar(select(User).where(User.username == dados.username))
     if ja_existe:
         raise HTTPException(status_code=409, detail="username já existe")
 
-    user = User(**dados.model_dump())
+    user = User(**dados.model_dump(), password_hash=password_hash)
     db.add(user)
     db.commit()
     db.refresh(user)
