@@ -25,8 +25,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Rede Social da Trilha", lifespan=lifespan)
 
 origens_permitidas = ["http://localhost:3000"]
-if os.getenv("FRONTEND_URL"):
-    origens_permitidas.append(os.getenv("FRONTEND_URL"))
+# O navegador manda a origem sem barra no fim; "https://x.app/" nunca casaria.
+frontend_url = os.getenv("FRONTEND_URL", "").rstrip("/")
+if frontend_url:
+    origens_permitidas.append(frontend_url)
 
 app.add_middleware(
     CORSMiddleware,
