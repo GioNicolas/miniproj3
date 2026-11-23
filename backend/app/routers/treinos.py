@@ -21,11 +21,14 @@ def registrar_treino(
     return posts.montar_post(db, service.registrar(db, eu, dados), eu)
 
 
-@router.get("/usuarios/{username}/treinos", response_model=DiasTreinadosOut)
+@router.get(
+    "/usuarios/{username}/treinos",
+    response_model=DiasTreinadosOut,
+    dependencies=[Depends(get_current_user)],
+)
 def dias_treinados(
     username: str,
     dias: int = Query(default=28, ge=1, le=365),
-    eu: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     return DiasTreinadosOut(dias=service.dias_do_usuario(db, username, dias))
