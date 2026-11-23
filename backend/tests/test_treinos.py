@@ -27,14 +27,19 @@ def hoje() -> str:
     return dia_em_recife(datetime.now(timezone.utc)).isoformat()
 
 
-def test_treino_vira_post_no_feed_com_os_detalhes(client, usuarios):
+def test_treino_do_dia_vira_um_post_com_todos_os_exercicios(client, usuarios):
     usuarios("ana")
-    corpo = {"texto": "3x8 de australiana", "progressao": "australiana", "series": 3, "reps": 8}
-    resposta = client.post("/treinos", json=corpo)
+    exercicios = [
+        {"progressao": "australiana", "series": 3, "reps": 8},
+        {"progressao": "flexao_inclinada", "series": 3, "reps": 10},
+        {"progressao": "prancha", "series": None, "reps": None},
+    ]
+    resposta = client.post("/treinos", json={"texto": "treino na praça", "exercicios": exercicios})
     assert resposta.status_code == 201
     post = resposta.json()
-    assert post["texto"] == "3x8 de australiana"
-    assert post["treino"] == {"progressao": "australiana", "series": 3, "reps": 8}
+    assert post["texto"] == "treino na praça"
+    # a ordem em que a pessoa registrou é a ordem em que o post mostra
+    assert post["treino"] == {"exercicios": exercicios}
 
     assert client.get(f"/posts/{post['id']}").json()["treino"] == post["treino"]
     assert client.get("/usuarios/ana/treinos").json() == {"dias": [hoje()]}
@@ -75,9 +80,24 @@ def test_treinos_sao_de_cada_um(client, usuarios):
     assert client.get("/usuarios/ninguem/treinos").status_code == 404
 
 
+def test_treino_sem_exercicios_tambem_conta_o_dia(client, usuarios):
+    # quem ainda não sabe o nome da progressão não pode ficar sem registrar
+    usuarios("ana")
+    post = client.post("/treinos", json={"texto": "treinei, não sei o nome"}).json()
+    assert post["treino"] == {"exercicios": []}
+    assert client.get("/usuarios/ana/treinos").json() == {"dias": [hoje()]}
+
+
 @pytest.mark.parametrize(
     "extra",
-    [{"progressao": "Barra Fixa!"}, {"series": 0}, {"reps": 0}, {"texto": "   "}],
+    [
+        {"exercicios": [{"progressao": "Barra Fixa!"}]},
+        {"exercicios": [{"series": 3, "reps": 8}]},
+        {"exercicios": [{"progressao": "australiana", "series": 0}]},
+        {"exercicios": [{"progressao": "australiana", "reps": 0}]},
+        {"exercicios": [{"progressao": "prancha"}] * 21},
+        {"texto": "   "},
+    ],
 )
 def test_treino_invalido(client, usuarios, extra):
     usuarios("ana")

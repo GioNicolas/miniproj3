@@ -4,16 +4,15 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { Avatar } from "@/components/Avatar";
-import { apiDelete, apiPatch, type Post, type Treino } from "@/lib/api";
+import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
 import { tempoRelativo } from "@/lib/tempo";
 
 const LIMITE_TEXTO = 500;
 
-function resumoTreino(treino: Treino): string {
-  const { progressao, series, reps } = treino;
+function resumoExercicio({ progressao, series, reps }: Exercicio): string {
   const volume =
     series && reps ? `${series}×${reps}` : series ? `${series} séries` : reps ? `${reps} reps` : null;
-  return ["treino", progressao?.split("_").join(" "), volume].filter(Boolean).join(" · ");
+  return [progressao.split("_").join(" "), volume].filter(Boolean).join(" · ");
 }
 
 type Props = {
@@ -113,9 +112,14 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
       ) : (
         <>
           {post.treino && (
-            <p className="inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-800">
-              {resumoTreino(post.treino)}
-            </p>
+            <ul aria-label="Treino do dia" className="flex flex-wrap gap-1.5">
+              <li className="rounded-full bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-800">treino</li>
+              {post.treino.exercicios.map((exercicio, i) => (
+                <li key={i} className="rounded-full bg-emerald-50 px-2 py-0.5 text-sm text-emerald-800">
+                  {resumoExercicio(exercicio)}
+                </li>
+              ))}
+            </ul>
           )}
           <p className="whitespace-pre-wrap break-words">{post.texto}</p>
         </>

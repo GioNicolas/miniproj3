@@ -32,12 +32,18 @@ class AutorOut(BaseModel):
     avatar_url: str
 
 
+class ExercicioOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    progressao: str
+    series: int | None
+    reps: int | None
+
+
 class TreinoOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    progressao: str | None
-    series: int | None
-    reps: int | None
+    exercicios: list[ExercicioOut]
 
 
 class PostOut(BaseModel):
