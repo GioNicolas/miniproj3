@@ -8,7 +8,7 @@ from sqlalchemy import select
 from app.core.contadores import contador_iniciais
 from app.db import Base, SessionLocal, engine
 from app.models.user import User
-from app.routers import auth, posts, treinos, users
+from app.routers import auth, comentarios, posts, treinos, users
 
 
 @asynccontextmanager
@@ -43,3 +43,4 @@ app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(posts.router)
 app.include_router(treinos.router)
+app.include_router(comentarios.router)

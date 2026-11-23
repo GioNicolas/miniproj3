@@ -98,3 +98,11 @@ export type Post = {
   eu_curti: boolean;
   treino: Treino | null;
 };
+
+export type Comentario = {
+  id: number;
+  post_id: number;
+  texto: string;
+  autor: Autor;
+  created_at: string;
+};
