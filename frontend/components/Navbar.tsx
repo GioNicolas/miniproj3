@@ -37,7 +37,7 @@ export function Navbar() {
       {/* computador: barra no topo */}
       <header className="sticky top-0 z-20 hidden border-b border-borda bg-superficie md:block">
         <nav aria-label="Navegação principal" className="mx-auto flex max-w-3xl items-center gap-6 px-4 py-3">
-          <Link href="/" className="mr-auto font-titulo text-3xl tracking-wide">
+          <Link href="/" className="mr-auto font-titulo text-xl">
             {GLOSSARIO.rede}
           </Link>
           {ITENS.map((item) => (
@@ -58,7 +58,7 @@ export function Navbar() {
 
       {/* celular: só a marca e o Sair no topo; a navegação fica na barra de baixo */}
       <header className="flex items-center justify-between border-b border-borda bg-superficie px-4 py-2 md:hidden">
-        <Link href="/" className="font-titulo text-2xl tracking-wide">
+        <Link href="/" className="font-titulo text-lg">
           {GLOSSARIO.rede}
         </Link>
         <button type="button" onClick={sair} className="min-h-11 px-2 text-sm text-suave">

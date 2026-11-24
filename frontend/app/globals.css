@@ -1,34 +1,82 @@
 @import "tailwindcss";
 
 /*
- * Tokens da Frangaria (paleta Osso). Use SEMPRE estes nomes, nunca cor solta:
- * bg-fundo, bg-superficie, text-tinta, text-suave, border-borda,
- * bg-destaque, text-destaque-texto, font-titulo, font-corpo...
+ * Tokens da Frangaria (paleta Madrugada + Milho, tema escuro). Use SEMPRE estes
+ * nomes, nunca cor solta: bg-fundo, bg-superficie, text-tinta, text-suave,
+ * border-borda, bg-destaque, text-sobre-destaque, font-titulo, font-placar...
  * Mudar uma cor aqui muda a rede inteira.
+ *
+ * Cada cor de apoio tem uma função, e só essa:
+ *   milho (destaque) = ação e constância: botão principal, dia treinado, sequência
+ *   céu   = conversa e informação: comentários, dúvidas, "como faz"
+ *   folha = conquista: Comprovado, skill dominada, subiu no ranking
+ *   brasa = alerta e prazo: erro, definhando, caiu no ranking
  */
 @theme {
-  --color-fundo: #f3f3f1;
-  --color-superficie: #ffffff;
-  --color-superficie-escura: #161616;
-  --color-tinta: #161616;
-  --color-tinta-clara: #f3f3f1;
-  --color-suave: #5f5f5a;
-  --color-borda: #deded9;
+  --color-fundo: #0e0f11;
+  --color-superficie: #18191c;
+  --color-superficie-2: #232429;
+  --color-superficie-escura: #232429;
+  --color-tinta: #f1f0ea;
+  --color-tinta-clara: #f1f0ea;
+  --color-suave: #a3a29b;
+  --color-borda: #2c2d32;
+  --color-borda-forte: #3a3b41;
 
-  /* laranja-fogo: áreas grandes (botão, destaque). Texto pequeno em fundo claro usa destaque-texto. */
-  --color-destaque: #ff4d1a;
-  --color-destaque-texto: #d93a0b;
+  /* milho: preenche botões e marcas; texto em cima dele usa sobre-destaque */
+  --color-destaque: #ffb81c;
+  --color-destaque-texto: #ffb81c;
+  --color-sobre-destaque: #141414;
+  --color-destaque-fundo: #2a2210;
+  --color-destaque-borda: #4a3a14;
 
-  --color-perigo: #b3261e;
-  --color-perigo-fundo: #fbeae6;
-  --color-sucesso: #1f7a3a;
+  --color-ceu: #7fb2ff;
+  --color-ceu-fundo: #141c2a;
+  --color-ceu-borda: #24324a;
 
-  /* cores das patentes do frango (#11) */
-  --color-patente-frango: #9a9a94;
-  --color-patente-granja: #c27a45;
-  --color-patente-galo: #a9aeb5;
-  --color-patente-monstro: #e8b23a;
+  --color-folha: #7dd69a;
+  --color-folha-fundo: #13221a;
+  --color-folha-borda: #24402e;
 
-  --font-titulo: var(--font-bebas), "Arial Narrow", sans-serif;
-  --font-corpo: var(--font-inter), system-ui, sans-serif;
+  --color-brasa: #ff8a5c;
+  --color-brasa-fundo: #2c1712;
+
+  /* nomes antigos, mantidos para quem já usa: perigo = brasa, sucesso = folha */
+  --color-perigo: #ff8a5c;
+  --color-perigo-fundo: #2c1712;
+  --color-sucesso: #7dd69a;
+
+  /* cores das patentes do frango (#11): claridades bem diferentes entre si */
+  --color-patente-frango: #85817a;
+  --color-patente-granja: #d08850;
+  --color-patente-galo: #aeb8c6;
+  --color-patente-monstro: #ffd95a;
+
+  --font-corpo: var(--font-archivo), system-ui, sans-serif;
+}
+
+/*
+ * Tipografia em três papéis:
+ *   font-titulo = impacto (Archivo larga, 900, itálica, maiúscula): títulos, marca, patentes, botões
+ *   font-placar = números (Big Shoulders Stencil): força, dias, séries, ranking
+ *   font-corpo  = leitura (Archivo normal): todo o resto
+ * A fonte de impacto é larga: use tamanhos ~30% menores que os de uma fonte condensada.
+ */
+@utility font-titulo {
+  font-family: var(--font-archivo), "Arial Black", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  font-stretch: 125%;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+@utility font-placar {
+  font-family: var(--font-stencil), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+html {
+  color-scheme: dark;
 }

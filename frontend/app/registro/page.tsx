@@ -38,7 +38,7 @@ export default function RegistroPage() {
         setErro("Conta criada, mas não foi possível entrar automaticamente. Acesse a tela de login para entrar.");
       }
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "não consegui criar a conta");
+      setErro(err instanceof Error ? err.message : "não deu pra criar a conta");
     } finally {
       setEnviando(false);
     }
@@ -47,8 +47,8 @@ export default function RegistroPage() {
   return (
     <div className="mx-auto max-w-sm space-y-6 pt-6">
       <div className="text-center">
-        <h1 className="font-titulo text-5xl tracking-wide">Bota teu frango pra treinar</h1>
-        <p className="text-suave">{GLOSSARIO.slogan}</p>
+        <h1 className="font-titulo text-2xl leading-tight">Bota seu frango pra treinar</h1>
+        <p className="mt-2 font-semibold text-destaque">{GLOSSARIO.slogan}</p>
       </div>
 
       <Card>
@@ -63,12 +63,12 @@ export default function RegistroPage() {
           />
           <Campo
             rotulo="Usuário"
-            dica="3 a 30 caracteres: letras minúsculas, números e _"
+            dica="Só letras minúsculas, números e _ (de 3 a 30)"
             value={username}
             onChange={(e) => setUsername(e.target.value.toLowerCase())}
             autoComplete="username"
             pattern="[a-z0-9_]{3,30}"
-            title="3 a 30 caracteres: letras minúsculas, números e _"
+            title="Só letras minúsculas, números e _ (de 3 a 30)"
             required
           />
           <Campo
@@ -94,7 +94,7 @@ export default function RegistroPage() {
 
       <p className="text-center text-sm text-suave">
         Já tem conta?{" "}
-        <Link href="/login" className="font-semibold text-destaque-texto underline">
+        <Link href="/login" className="font-semibold text-destaque underline">
           Entrar
         </Link>
       </p>

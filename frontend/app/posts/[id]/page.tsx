@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { Carregando } from "@/components/Carregando";
 import { Comentarios } from "@/components/Comentarios";
 import { PostCard } from "@/components/PostCard";
 import { apiGet, type Post } from "@/lib/api";
@@ -16,13 +17,17 @@ export default function PostPage() {
   useEffect(() => {
     apiGet<Post>(`/posts/${id}`)
       .then(setPost)
-      .catch((err) => setErro(err instanceof Error ? err.message : "erro ao carregar o post"));
+      .catch((err) => setErro(err instanceof Error ? err.message : "não deu pra carregar o post"));
   }, [id]);
 
   if (erro) {
-    return <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{erro}</p>;
+    return (
+      <p role="alert" className="rounded-lg bg-brasa-fundo px-3 py-2 text-sm text-brasa">
+        {erro}
+      </p>
+    );
   }
-  if (!post) return <p className="text-zinc-500">carregando...</p>;
+  if (!post) return <Carregando />;
 
   return (
     <div className="space-y-6">

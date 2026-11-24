@@ -8,7 +8,7 @@ export function Campo({ rotulo, dica, className = "", ...props }: Props) {
     <label className="flex flex-col gap-1 text-sm font-semibold">
       {rotulo}
       <input
-        className={`min-h-11 rounded-lg border border-borda bg-superficie px-3 font-normal text-tinta outline-none focus:border-destaque ${className}`}
+        className={`min-h-11 rounded-lg border border-borda-forte bg-superficie-2 px-3 font-normal text-tinta outline-none placeholder:text-suave focus:border-destaque ${className}`}
         {...props}
       />
       {dica && <span className="text-xs font-normal text-suave">{dica}</span>}

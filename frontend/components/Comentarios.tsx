@@ -31,7 +31,7 @@ export function Comentarios({ postId, onComentou }: Props) {
         setTotal(pagina.total);
         setErro(null);
       } catch (err) {
-        setErro(err instanceof Error ? err.message : "erro ao carregar os comentários");
+        setErro(err instanceof Error ? err.message : "não deu pra carregar os comentários");
       }
     },
     [postId]
@@ -52,7 +52,7 @@ export function Comentarios({ postId, onComentou }: Props) {
       setErro(null);
       onComentou?.();
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "erro ao comentar");
+      setErro(err instanceof Error ? err.message : "não deu pra comentar");
     } finally {
       setEnviando(false);
     }
@@ -60,18 +60,20 @@ export function Comentarios({ postId, onComentou }: Props) {
 
   return (
     <section className="space-y-3">
-      <h2 className="font-semibold">Comentários ({total})</h2>
+      <h2 className="font-titulo text-base">
+        Comentários <span className="font-placar text-lg not-italic text-suave">{total}</span>
+      </h2>
 
       <ul className="space-y-2">
         {comentarios.map((c) => (
-          <li key={c.id} className="flex gap-3 rounded-lg border bg-white p-3">
+          <li key={c.id} className="flex gap-3 rounded-2xl border border-borda bg-superficie p-3">
             <Avatar name={c.autor.name} avatarUrl={c.autor.avatar_url} />
             <div className="min-w-0">
-              <p className="text-sm text-zinc-500">
-                <span className="font-medium text-zinc-900">{c.autor.name}</span> @{c.autor.username} ·{" "}
+              <p className="text-sm text-suave">
+                <span className="font-semibold text-tinta">{c.autor.name}</span> @{c.autor.username} ·{" "}
                 <time dateTime={c.created_at}>{tempoRelativo(c.created_at)}</time>
               </p>
-              <p className="whitespace-pre-wrap break-words">{c.texto}</p>
+              <p className="whitespace-pre-wrap break-words leading-relaxed">{c.texto}</p>
             </div>
           </li>
         ))}
@@ -81,33 +83,34 @@ export function Comentarios({ postId, onComentou }: Props) {
         <button
           type="button"
           onClick={() => carregar(comentarios.length)}
-          className="text-sm text-zinc-600 underline hover:text-zinc-900"
+          className="min-h-11 text-sm font-semibold text-ceu hover:underline"
         >
-          carregar mais
+          Ver comentários mais antigos
         </button>
       )}
 
-      <form onSubmit={comentar} className="space-y-2 rounded-lg border bg-white p-3">
+      <form onSubmit={comentar} className="space-y-2 rounded-2xl border border-ceu-borda bg-ceu-fundo p-3">
         <textarea
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="Manda a dica ou a dúvida"
+          aria-label="Seu comentário"
           maxLength={LIMITE_TEXTO}
           rows={2}
-          className="w-full rounded border px-2 py-1"
+          className="w-full rounded-lg border border-borda-forte bg-superficie-2 px-3 py-2 text-tinta outline-none placeholder:text-suave focus:border-ceu"
         />
         <div className="flex justify-end">
           <button
             type="submit"
             disabled={enviando || !texto.trim()}
-            className="rounded bg-zinc-900 px-3 py-1.5 text-sm text-white disabled:opacity-50"
+            className="min-h-11 rounded-lg bg-ceu px-4 font-titulo text-sm text-sobre-destaque transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50 motion-reduce:transition-none"
           >
-            {enviando ? "comentando..." : "comentar"}
+            {enviando ? "Comentando..." : "Comentar"}
           </button>
         </div>
       </form>
 
-      {erro && <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{erro}</p>}
+      {erro && <p role="alert" className="rounded-lg bg-brasa-fundo px-3 py-2 text-sm text-brasa">{erro}</p>}
     </section>
   );
 }

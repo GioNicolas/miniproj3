@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { Avatar } from "@/components/Avatar";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
+import { GLOSSARIO } from "@/lib/glossario";
 import { tempoRelativo } from "@/lib/tempo";
 
 const LIMITE_TEXTO = 500;
@@ -13,6 +14,10 @@ function resumoExercicio({ progressao, series, reps }: Exercicio): string {
   const volume =
     series && reps ? `${series}×${reps}` : series ? `${series} séries` : reps ? `${reps} reps` : null;
   return [progressao.split("_").join(" "), volume].filter(Boolean).join(" · ");
+}
+
+function rotuloComentarios(n: number): string {
+  return n === 1 ? "1 comentário" : `${n} comentários`;
 }
 
 type Props = {
@@ -36,7 +41,7 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
       setErro(null);
       onAtualizado?.(atualizado);
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "erro ao editar o post");
+      setErro(err instanceof Error ? err.message : "não deu pra salvar a edição");
     } finally {
       setSalvando(false);
     }
@@ -49,7 +54,7 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
       await apiDelete(`/posts/${post.id}`);
       onApagado?.(post.id);
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "erro ao apagar o post");
+      setErro(err instanceof Error ? err.message : "não deu pra apagar o post");
     } finally {
       setSalvando(false);
     }
@@ -62,12 +67,12 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
   }
 
   return (
-    <article className={`space-y-2 rounded-lg border bg-white p-3 ${post.treino ? "border-emerald-300" : ""}`}>
+    <article className="space-y-3 rounded-2xl border border-borda bg-superficie p-4">
       <header className="flex items-center gap-3">
         <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
         <div className="min-w-0 flex-1">
-          <p className="truncate font-medium">{post.autor.name}</p>
-          <p className="truncate text-sm text-zinc-500">
+          <p className="truncate font-semibold">{post.autor.name}</p>
+          <p className="truncate text-sm text-suave">
             @{post.autor.username} ·{" "}
             <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
               {tempoRelativo(post.created_at)}
@@ -75,12 +80,17 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
           </p>
         </div>
         {souAutor && !editando && (
-          <div className="flex gap-2 text-sm text-zinc-500">
-            <button type="button" onClick={() => setEditando(true)} disabled={salvando} className="hover:text-zinc-900">
-              editar
+          <div className="flex gap-1 text-sm text-suave">
+            <button
+              type="button"
+              onClick={() => setEditando(true)}
+              disabled={salvando}
+              className="min-h-11 px-2 hover:text-tinta"
+            >
+              Editar
             </button>
-            <button type="button" onClick={apagar} disabled={salvando} className="hover:text-red-700">
-              apagar
+            <button type="button" onClick={apagar} disabled={salvando} className="min-h-11 px-2 hover:text-brasa">
+              Apagar
             </button>
           </div>
         )}
@@ -93,46 +103,68 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
             onChange={(e) => setRascunho(e.target.value)}
             maxLength={LIMITE_TEXTO}
             rows={3}
-            className="w-full rounded border px-2 py-1"
+            aria-label="Texto do post"
+            className="w-full rounded-lg border border-borda-forte bg-superficie-2 px-3 py-2 text-tinta outline-none focus:border-destaque"
           />
           <div className="flex justify-end gap-2 text-sm">
-            <button type="button" onClick={cancelar} disabled={salvando} className="rounded px-3 py-1.5">
-              cancelar
+            <button
+              type="button"
+              onClick={cancelar}
+              disabled={salvando}
+              className="min-h-11 rounded-lg px-3 text-suave hover:text-tinta"
+            >
+              Cancelar
             </button>
             <button
               type="button"
               onClick={salvar}
               disabled={salvando || !rascunho.trim()}
-              className="rounded bg-zinc-900 px-3 py-1.5 text-white disabled:opacity-50"
+              className="min-h-11 rounded-lg bg-destaque px-4 font-titulo text-sm text-sobre-destaque transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50 motion-reduce:transition-none"
             >
-              {salvando ? "salvando..." : "salvar"}
+              {salvando ? "Salvando..." : "Salvar"}
             </button>
           </div>
         </div>
       ) : (
         <>
+          {/* Card do treino: fundo de milho, porque treino registrado é constância */}
           {post.treino && (
-            <ul aria-label="Treino do dia" className="flex flex-wrap gap-1.5">
-              <li className="rounded-full bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-800">treino</li>
-              {post.treino.exercicios.map((exercicio, i) => (
-                <li key={i} className="rounded-full bg-emerald-50 px-2 py-0.5 text-sm text-emerald-800">
-                  {resumoExercicio(exercicio)}
-                </li>
-              ))}
-            </ul>
+            <div className="flex items-center gap-4 rounded-xl border border-destaque-borda bg-destaque-fundo px-4 py-3">
+              <div className="flex w-12 shrink-0 flex-col items-center">
+                <span className="font-placar text-4xl leading-none text-destaque">
+                  {post.treino.exercicios.length}
+                </span>
+                <span className="text-[11px] text-suave">
+                  {post.treino.exercicios.length === 1 ? "exercício" : "exercícios"}
+                </span>
+              </div>
+              <ul aria-label="Treino do dia" className="min-w-0 flex-1 space-y-0.5">
+                {post.treino.exercicios.map((exercicio, i) => (
+                  <li key={i} className="truncate font-titulo text-xs leading-snug">
+                    {resumoExercicio(exercicio)}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
-          <p className="whitespace-pre-wrap break-words">{post.texto}</p>
+          <p className="whitespace-pre-wrap break-words leading-relaxed">{post.texto}</p>
         </>
       )}
 
-      <footer className="flex gap-4 text-sm text-zinc-500">
-        <span>{post.curtidas} curtidas</span>
-        <Link href={`/posts/${post.id}`} className="hover:text-zinc-900">
-          {post.comentarios} comentários
+      <footer className="flex items-center gap-4 text-sm">
+        <span className="text-suave">
+          <span className="font-placar text-base text-tinta">{post.curtidas}</span> {GLOSSARIO.curtida.toLowerCase()}
+        </span>
+        <Link href={`/posts/${post.id}`} className="min-h-11 content-center font-semibold text-ceu hover:underline">
+          {rotuloComentarios(post.comentarios)}
         </Link>
       </footer>
 
-      {erro && <p className="text-sm text-red-700">{erro}</p>}
+      {erro && (
+        <p role="alert" className="rounded-lg bg-brasa-fundo px-3 py-2 text-sm text-brasa">
+          {erro}
+        </p>
+      )}
     </article>
   );
 }
