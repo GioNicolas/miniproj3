@@ -1,0 +1,16 @@
+// Um nome por coisa, igual em todas as telas (issue #8).
+// Precisa trocar um texto da rede? Troque aqui e todas as telas acompanham.
+
+export const GLOSSARIO = {
+  rede: "Frangaria",
+  slogan: "Constância vence força.",
+  curtida: "Tamo junto",
+  registrarTreino: "Registrar treino",
+  ranking: "Granja da semana",
+  conversa: "Chat",
+  perfil: "Meu frango",
+  comprovado: "Comprovado",
+} as const;
+
+export const PATENTES = ["Frango", "Frango de granja", "Galo", "Monstro"] as const;
+export type Patente = (typeof PATENTES)[number];

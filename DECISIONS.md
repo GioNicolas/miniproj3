@@ -41,21 +41,7 @@ A **Frangaria** é uma rede social de calistenia para quem está começando.
   colocariam o iniciante para competir com o monstro da praça, e a rede existe
   para o iniciante.
 
-### 2. O frango perde força aos poucos, em vez de zerar a sequência
-
-- **Contexto:** o streak, como o do Duolingo, motiva enquanto dura, mas, quando
-  quebra, a pessoa perde tudo de uma vez e costuma largar o hábito junto.
-- **Opções:** streak que zera ao faltar um dia, ou uma força que sobe com os
-  treinos e desce aos poucos com as faltas.
-- **Escolha:** cada dia com treino dá força ao frango. Um dia de descanso não
-  pune. A partir do segundo dia seguido sem treino, o frango perde um pouco de
-  força por dia e aparece **definhando**. Os níveis são Frango, Frango de
-  granja, Galo e Monstro.
-- **O que cortamos e por quê:** a sequência que zera. Ela castiga quem falta
-  três dias como se tivesse largado tudo, e esse é o momento em que o iniciante
-  mais precisa de um motivo para voltar.
-
-### 3. Registro de treino sem prova obrigatória
+### 2. Registro de treino sem prova obrigatória
 
 - **Contexto:** os apps de desafio de treino pedem selfie ou vídeo em todo
   check-in, para ninguém trapacear no placar.
@@ -69,31 +55,32 @@ A **Frangaria** é uma rede social de calistenia para quem está começando.
   que queremos resolver. Trapacear no ranking de quem você segue não rende
   nada para ninguém.
 
-### 4. Feed cronológico; o Explorar só aparece para quem acabou de chegar
+### 3. Feed cronológico; quem acabou de chegar começa pelo Explorar
 
 - **Contexto:** quem abre a rede quer saber quem da sua granja já treinou hoje.
   Quem acabou de criar a conta não segue ninguém e veria uma tela vazia.
 - **Opções:** feed ranqueado por engajamento, ou feed cronológico de quem você
   segue com o Explorar como porta de entrada.
-- **Escolha:** feed cronológico, mais novo primeiro, só com quem você segue.
-  Quem ainda não segue ninguém vê o Explorar, com os posts da rede toda e o
-  aviso "Você ainda não segue nenhum frango: olha o que a galera tá treinando".
+- **Escolha:** a home tem duas abas. **Seguindo** é cronológico, mais novo
+  primeiro, com os posts de quem você segue e os seus. Quem ainda não segue
+  ninguém abre direto no **Explorar**, com os posts da rede toda e o aviso
+  "Você ainda não segue nenhum frango: olha o que a galera tá treinando".
 - **O que cortamos e por quê:** o "Em alta" no feed principal. O post mais
   curtido costuma ser o de quem já é forte, e o feed tem que mostrar o treino de
   hoje dos amigos, por menor que seja.
 
-### 5. A árvore mostra o próximo passo, não uma planilha de treino
+### 4. Follow instantâneo em vez de pedido de amizade
 
-- **Contexto:** o iniciante se machuca ou desiste quando pula etapa, por
-  exemplo ao tentar a barra fixa sem ter feito a negativa e a australiana.
-- **Opções:** planilha de treino completa, catálogo solto de exercícios, ou uma
-  árvore de progressões com pré-requisitos.
-- **Escolha:** uma árvore com trilhas (puxar, empurrar, pernas, core). Cada
-  skill só libera quando os pré-requisitos estão dominados, e a rede destaca o
-  próximo passo possível com o equipamento que a pessoa tem.
-- **O que cortamos e por quê:** a planilha de treino completa e a dieta. As duas
-  viram outro app, e o iniciante não precisa de um plano perfeito: precisa
-  saber o próximo passo e voltar amanhã.
+- **Contexto:** é uma rede de calistenia que encoraja interagir e mostrar o
+  progresso. Na reunião surgiu a ideia de um sistema de amizade com envio e
+  aceite de pedidos.
+- **Opções:** follow simples e instantâneo, ou pedido de amizade que o outro
+  precisa aceitar.
+- **Escolha:** follow simples e instantâneo. Se o usuário posta um treino ou
+  participa da plataforma, ele ganha seguidores e faz amizades.
+- **O que cortamos e por quê:** o pedido de amizade, por enquanto. Mais tarde
+  pode voltar junto com a opção de perfil privado, para quem quiser menos
+  exposição.
 
 ## O que ficou de fora e por quê
 
@@ -102,9 +89,17 @@ A **Frangaria** é uma rede social de calistenia para quem está começando.
   iniciante precisa voltar amanhã, não de mais números.
 - **Nutrição e dieta:** é outro problema, com outro público e outra
   responsabilidade.
-- **Fila "se sobrar tempo"** (batalha de frangos, conta privada, chat direto,
-  grupos de treino, IA que monta o treino e validação por vídeo): _fechamos esta
-  lista em 26/11 com o que não entrar e o motivo de cada corte._
+- **Validação por vídeo:** contradiz a decisão 2. A prova obrigatória afasta
+  justamente quem tem vergonha do próprio treino.
+- **Batalha de frangos:** um contra um volta a colocar o iniciante frente a
+  frente com quem é mais forte, o que a decisão 1 evita.
+- **Conta privada:** só faz sentido junto com o pedido de amizade, que ficou de
+  fora na decisão 4.
+- **Chat direto e grupos de treino:** o grupo de WhatsApp já faz isso. A dúvida
+  sobre um exercício fica nos comentários do post, onde outros iniciantes
+  também aprendem.
+- **IA que monta o treino:** vira uma planilha de treino, que é outro app, e
+  montar treino para quem nunca treinou, sem ninguém acompanhar, é arriscado.
 
 ## Features
 
