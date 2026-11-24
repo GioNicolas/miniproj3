@@ -17,17 +17,26 @@ export default function RegistroPage() {
   const [password, setPassword] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [contaCriada, setContaCriada] = useState(false);
 
   async function criarConta(e: React.FormEvent) {
     e.preventDefault();
+    if (new TextEncoder().encode(password).length > 72) {
+      setErro("A senha deve ter no máximo 72 bytes em UTF-8. Caracteres acentuados podem ocupar mais de um byte.");
+      return;
+    }
     setEnviando(true);
     setErro(null);
     try {
       await apiPost("/auth/registro", { username, name, password });
-      // conta criada: já entra direto, sem obrigar a digitar tudo de novo
-      const { token } = await apiPost<{ token: string }>("/auth/login", { username, password });
-      localStorage.setItem("token", token);
-      router.push("/");
+      setContaCriada(true);
+      try {
+        const { token } = await apiPost<{ token: string }>("/auth/login", { username, password });
+        localStorage.setItem("token", token);
+        router.push("/");
+      } catch {
+        setErro("Conta criada, mas não foi possível entrar automaticamente. Acesse a tela de login para entrar.");
+      }
     } catch (err) {
       setErro(err instanceof Error ? err.message : "não consegui criar a conta");
     } finally {
@@ -65,7 +74,7 @@ export default function RegistroPage() {
           <Campo
             rotulo="Senha"
             type="password"
-            dica="Pelo menos 8 caracteres"
+            dica="Pelo menos 8 caracteres e no máximo 72 bytes em UTF-8"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
@@ -77,7 +86,7 @@ export default function RegistroPage() {
               {erro}
             </p>
           )}
-          <Botao type="submit" disabled={enviando} className="w-full">
+          <Botao type="submit" disabled={enviando || contaCriada} className="w-full">
             {enviando ? "Criando..." : "Criar conta"}
           </Botao>
         </form>
