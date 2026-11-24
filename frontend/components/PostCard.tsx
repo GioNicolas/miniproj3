@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
+import { Botao } from "@/components/Botao";
+import { Card } from "@/components/Card";
+import { Erro } from "@/components/Erro";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
+import { useEu } from "@/lib/eu";
 import { tempoRelativo } from "@/lib/tempo";
 
 const LIMITE_TEXTO = 500;
@@ -15,14 +20,19 @@ function resumoExercicio({ progressao, series, reps }: Exercicio): string {
   return [progressao.split("_").join(" "), volume].filter(Boolean).join(" · ");
 }
 
+function contagem(n: number, singular: string, plural: string): string {
+  return `${n} ${n === 1 ? singular : plural}`;
+}
+
 type Props = {
   post: Post;
-  souAutor?: boolean;
   onAtualizado?: (post: Post) => void;
   onApagado?: (id: number) => void;
 };
 
-export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Props) {
+export function PostCard({ post, onAtualizado, onApagado }: Props) {
+  const eu = useEu();
+  const souAutor = eu?.username === post.autor.username;
   const [editando, setEditando] = useState(false);
   const [rascunho, setRascunho] = useState(post.texto);
   const [salvando, setSalvando] = useState(false);
@@ -62,77 +72,77 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
   }
 
   return (
-    <article className={`space-y-2 rounded-lg border bg-white p-3 ${post.treino ? "border-emerald-300" : ""}`}>
-      <header className="flex items-center gap-3">
-        <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-medium">{post.autor.name}</p>
-          <p className="truncate text-sm text-zinc-500">
-            @{post.autor.username} ·{" "}
-            <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
-              {tempoRelativo(post.created_at)}
-            </time>
-          </p>
-        </div>
-        {souAutor && !editando && (
-          <div className="flex gap-2 text-sm text-zinc-500">
-            <button type="button" onClick={() => setEditando(true)} disabled={salvando} className="hover:text-zinc-900">
-              editar
-            </button>
-            <button type="button" onClick={apagar} disabled={salvando} className="hover:text-red-700">
-              apagar
-            </button>
+    // Post de treino ganha a faixa laranja na esquerda: é o check-in que conta pro frango.
+    <Card className={post.treino ? "border-l-4 border-l-destaque" : ""}>
+      <article className="space-y-3">
+        <header className="flex items-center gap-3">
+          <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-semibold">{post.autor.name}</p>
+            <p className="truncate text-sm text-suave">
+              @{post.autor.username} ·{" "}
+              <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
+                {tempoRelativo(post.created_at)}
+              </time>
+            </p>
           </div>
-        )}
-      </header>
-
-      {editando ? (
-        <div className="space-y-2">
-          <textarea
-            value={rascunho}
-            onChange={(e) => setRascunho(e.target.value)}
-            maxLength={LIMITE_TEXTO}
-            rows={3}
-            className="w-full rounded border px-2 py-1"
-          />
-          <div className="flex justify-end gap-2 text-sm">
-            <button type="button" onClick={cancelar} disabled={salvando} className="rounded px-3 py-1.5">
-              cancelar
-            </button>
-            <button
-              type="button"
-              onClick={salvar}
-              disabled={salvando || !rascunho.trim()}
-              className="rounded bg-zinc-900 px-3 py-1.5 text-white disabled:opacity-50"
-            >
-              {salvando ? "salvando..." : "salvar"}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          {post.treino && (
-            <ul aria-label="Treino do dia" className="flex flex-wrap gap-1.5">
-              <li className="rounded-full bg-emerald-50 px-2 py-0.5 text-sm font-medium text-emerald-800">treino</li>
-              {post.treino.exercicios.map((exercicio, i) => (
-                <li key={i} className="rounded-full bg-emerald-50 px-2 py-0.5 text-sm text-emerald-800">
-                  {resumoExercicio(exercicio)}
-                </li>
-              ))}
-            </ul>
+          {souAutor && !editando && (
+            <div className="flex gap-3 text-sm text-suave">
+              <button type="button" onClick={() => setEditando(true)} disabled={salvando} className="min-h-11 hover:text-tinta">
+                editar
+              </button>
+              <button type="button" onClick={apagar} disabled={salvando} className="min-h-11 hover:text-perigo">
+                apagar
+              </button>
+            </div>
           )}
-          <p className="whitespace-pre-wrap break-words">{post.texto}</p>
-        </>
-      )}
+        </header>
 
-      <footer className="flex gap-4 text-sm text-zinc-500">
-        <span>{post.curtidas} curtidas</span>
-        <Link href={`/posts/${post.id}`} className="hover:text-zinc-900">
-          {post.comentarios} comentários
-        </Link>
-      </footer>
+        {editando ? (
+          <div className="space-y-2">
+            <AreaDeTexto
+              value={rascunho}
+              onChange={(e) => setRascunho(e.target.value)}
+              maxLength={LIMITE_TEXTO}
+              rows={3}
+              aria-label="Texto do post"
+            />
+            <div className="flex justify-end gap-2">
+              <Botao variante="contorno" onClick={cancelar} disabled={salvando}>
+                Cancelar
+              </Botao>
+              <Botao onClick={salvar} disabled={salvando || !rascunho.trim()}>
+                {salvando ? "Salvando..." : "Salvar"}
+              </Botao>
+            </div>
+          </div>
+        ) : (
+          <>
+            {post.treino && (
+              <ul aria-label="Treino do dia" className="flex flex-wrap gap-1.5">
+                <li className="rounded-full bg-destaque px-2.5 py-0.5 font-titulo text-base tracking-wide text-tinta">
+                  Treino
+                </li>
+                {post.treino.exercicios.map((exercicio, i) => (
+                  <li key={i} className="rounded-full border border-borda bg-fundo px-2.5 py-0.5 text-sm">
+                    {resumoExercicio(exercicio)}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="whitespace-pre-wrap break-words">{post.texto}</p>
+          </>
+        )}
 
-      {erro && <p className="text-sm text-red-700">{erro}</p>}
-    </article>
+        <footer className="flex gap-4 text-sm text-suave">
+          <span>{contagem(post.curtidas, "curtida", "curtidas")}</span>
+          <Link href={`/posts/${post.id}`} className="hover:text-tinta hover:underline">
+            {contagem(post.comentarios, "comentário", "comentários")}
+          </Link>
+        </footer>
+
+        {erro && <Erro>{erro}</Erro>}
+      </article>
+    </Card>
   );
 }

@@ -2,6 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { Botao } from "@/components/Botao";
+import { Carregando } from "@/components/Carregando";
+import { Erro } from "@/components/Erro";
+import { EstadoVazio } from "@/components/EstadoVazio";
 import { PostCard } from "@/components/PostCard";
 import { apiGet, type Page, type Post } from "@/lib/api";
 
@@ -10,7 +14,7 @@ const POR_PAGINA = 20;
 type Props = {
   // rota que devolve página de PostOut: "/explorar", "/feed", "/usuarios/ana/posts"
   caminho: string;
-  vazio: string;
+  vazio: { titulo: string; texto?: string };
 };
 
 // Lista única de posts com "carregar mais": feed, explorar e perfil usam esta.
@@ -53,10 +57,9 @@ export function ListaDePosts({ caminho, vazio }: Props) {
     setTotal((t) => (t === null ? t : t - 1));
   }
 
-  if (erro) {
-    return <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{erro}</p>;
-  }
-  if (total === 0) return <p className="text-zinc-500">{vazio}</p>;
+  if (erro) return <Erro>{erro}</Erro>;
+  if (total === null) return <Carregando />;
+  if (total === 0) return <EstadoVazio titulo={vazio.titulo} texto={vazio.texto} />;
 
   return (
     <div className="space-y-3">
@@ -67,15 +70,10 @@ export function ListaDePosts({ caminho, vazio }: Props) {
           </li>
         ))}
       </ul>
-      {total !== null && posts.length < total && (
-        <button
-          type="button"
-          onClick={() => carregar(posts.length)}
-          disabled={carregando}
-          className="w-full rounded border bg-white py-2 text-sm text-zinc-600 hover:text-zinc-900 disabled:opacity-50"
-        >
-          {carregando ? "carregando..." : "carregar mais"}
-        </button>
+      {posts.length < total && (
+        <Botao variante="contorno" onClick={() => carregar(posts.length)} disabled={carregando} className="w-full">
+          {carregando ? "Carregando..." : "Carregar mais"}
+        </Botao>
       )}
     </div>
   );
