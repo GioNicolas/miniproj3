@@ -5,7 +5,9 @@ const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 function headers(): HeadersInit {
   const h: Record<string, string> = { "Content-Type": "application/json" };
-  // Parte 2 do guia 01: leia o token salvo no login e envie em Authorization.
+  // Token salvo no login (guia 01, Passo 4). Único lugar que monta o Authorization.
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  if (token) h["Authorization"] = `Bearer ${token}`;
   return h;
 }
 
