@@ -1,10 +1,19 @@
 from datetime import datetime, timezone
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, StringConstraints, field_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, StringConstraints
 
 # Espaços nas pontas saem antes de validar: post só com espaço vira 422.
 Texto = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)]
+
+
+def _em_utc(valor: datetime) -> datetime:
+    # SQLite devolve datetime sem fuso; o valor gravado já é UTC.
+    return valor if valor.tzinfo else valor.replace(tzinfo=timezone.utc)
+
+
+# Toda data que sai da API vai com fuso (Z), para o front não achar que é hora local.
+DataUTC = Annotated[datetime, AfterValidator(_em_utc)]
 
 
 class PostCreate(BaseModel):
@@ -23,6 +32,20 @@ class AutorOut(BaseModel):
     avatar_url: str
 
 
+class ExercicioOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    progressao: str
+    series: int | None
+    reps: int | None
+
+
+class TreinoOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    exercicios: list[ExercicioOut]
+
+
 class PostOut(BaseModel):
     """Contrato único de post (issue #2): feed, perfil e explorar devolvem isto.
 
@@ -35,13 +58,17 @@ class PostOut(BaseModel):
     id: int
     texto: str
     autor: AutorOut
-    created_at: datetime
+    created_at: DataUTC
     curtidas: int = 0
     comentarios: int = 0
     eu_curti: bool = False
+    treino: TreinoOut | None = None
 
-    @field_validator("created_at")
-    @classmethod
-    def em_utc(cls, valor: datetime) -> datetime:
-        # SQLite devolve datetime sem fuso; o valor gravado já é UTC.
-        return valor if valor.tzinfo else valor.replace(tzinfo=timezone.utc)
+
+class PostPage(BaseModel):
+    """Página de posts no padrão do projeto: feed, explorar e perfil devolvem isto."""
+
+    items: list[PostOut]
+    total: int
+    offset: int
+    limit: int

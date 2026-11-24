@@ -1,6 +1,8 @@
 from fastapi import HTTPException
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
+from app.models.comentario import Comentario
 from app.models.post import Post
 from app.models.user import User
 from app.schemas.post import PostCreate, PostOut, PostUpdate
@@ -38,8 +40,22 @@ def editar(db: Session, post_id: int, eu: User, dados: PostUpdate) -> Post:
 
 def apagar(db: Session, post_id: int, eu: User) -> None:
     post = _do_autor(db, post_id, eu)
+    # sem isso o SQLite deixa comentários órfãos apontando para um post que não existe
+    db.execute(delete(Comentario).where(Comentario.post_id == post.id))
     db.delete(post)
     db.commit()
+
+
+def explorar(db: Session, offset: int, limit: int) -> tuple[list[Post], int]:
+    """Posts de toda a rede, mais novo primeiro.
+
+    Quando as curtidas (#6) entrarem, os mais curtidos dos últimos 7 dias sobem.
+    """
+    total = db.scalar(select(func.count()).select_from(Post)) or 0
+    pagina = db.scalars(
+        select(Post).order_by(Post.created_at.desc(), Post.id.desc()).offset(offset).limit(limit)
+    )
+    return list(pagina), total
 
 
 def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
@@ -48,7 +64,20 @@ def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
     Recebe a lista toda para que curtidas (#6) e comentários (#7) sejam contados
     com uma query agrupada por página, e não uma por post.
     """
-    return [PostOut.model_validate(post) for post in posts]
+    ids = [post.id for post in posts]
+    comentarios = dict(
+        db.execute(
+            select(Comentario.post_id, func.count())
+            .where(Comentario.post_id.in_(ids))
+            .group_by(Comentario.post_id)
+        ).tuples().all()
+    )
+    saida = []
+    for post in posts:
+        out = PostOut.model_validate(post)
+        out.comentarios = comentarios.get(post.id, 0)
+        saida.append(out)
+    return saida
 
 
 def montar_post(db: Session, post: Post, eu: User) -> PostOut:
