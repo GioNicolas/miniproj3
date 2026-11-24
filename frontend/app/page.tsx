@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Card } from "@/components/Card";
 import { Carregando } from "@/components/Carregando";
 import { ListaDePosts } from "@/components/ListaDePosts";
 import { NovoPost } from "@/components/NovoPost";
-import { apiGet, type Page, type User } from "@/lib/api";
-import { useEu } from "@/lib/eu";
+import { useSeguindo } from "@/lib/seguindo";
 
 type Aba = "seguindo" | "explorar";
 
@@ -17,23 +16,14 @@ const ABAS: { id: Aba; rotulo: string }[] = [
 ];
 
 export default function Home() {
-  const eu = useEu();
-  // null até saber se a pessoa segue alguém: quem não segue ninguém abre no Explorar.
-  const [sigoAlguem, setSigoAlguem] = useState<boolean | null>(null);
-  const [aba, setAba] = useState<Aba>("seguindo");
+  const sigo = useSeguindo();
+  const sigoAlguem = sigo === null ? null : sigo.size > 0;
+  // A aba inicial sai da primeira resposta e depois fica: quem segue alguém pelo
+  // Explorar continua no Explorar para seguir mais gente.
+  const [aba, setAba] = useState<Aba | null>(null);
+  if (aba === null && sigoAlguem !== null) setAba(sigoAlguem ? "seguindo" : "explorar");
   // muda a cada post novo para a lista recarregar e mostrar o post no topo
   const [versao, setVersao] = useState(0);
-
-  useEffect(() => {
-    if (!eu) return;
-    apiGet<Page<User>>(`/usuarios/${eu.username}/seguindo?limit=1`)
-      .then((pagina) => {
-        setSigoAlguem(pagina.total > 0);
-        setAba(pagina.total > 0 ? "seguindo" : "explorar");
-      })
-      // se a contagem falhar, o feed ainda funciona: abre em Seguindo
-      .catch(() => setSigoAlguem(true));
-  }, [eu]);
 
   return (
     <div className="space-y-6">
@@ -57,7 +47,7 @@ export default function Home() {
           ))}
         </div>
 
-        {sigoAlguem === null ? (
+        {aba === null ? (
           <Carregando />
         ) : aba === "seguindo" ? (
           <ListaDePosts
@@ -73,7 +63,7 @@ export default function Home() {
           <>
             {!sigoAlguem && (
               <Card escuro>
-                <p className="text-sm">Você ainda não segue nenhum frango: olha o que a galera tá treinando.</p>
+                <p className="text-sm">Você ainda não segue nenhum frango: olha o que a galera tá treinando e toca em Seguir.</p>
               </Card>
             )}
             <ListaDePosts
