@@ -33,7 +33,20 @@ Registrem de 3 a 5 escolhas que mudaram o que a rede é. Boas candidatas: por
 que essas features e não outras, o que ficou de fora, como o seed e a interface
 refletem o nicho. Uma delas vai para o vídeo.
 
-### 1. _(título curto)_
+### 1. Follow instantâneo em vez de pedido de amizade (Eduardo)
+
+- **Contexto:** é uma rede de calistenia que encoraja interagir e mostrar o
+  progresso. Na reunião surgiu a ideia de um sistema de amizade com envio e
+  aceite de pedidos.
+- **Opções:** follow simples e instantâneo, ou pedido de amizade que o outro
+  precisa aceitar.
+- **Escolha:** inicialmente, follow simples e instantâneo. Se o usuário posta
+  uma foto ou participa da plataforma, ele ganha seguidores e faz amizades.
+- **O que cortamos e por quê:** o pedido de amizade, por enquanto.
+  Posteriormente pode ser considerado, junto com a opção de tornar o perfil
+  privado, para permitir menor exposição.
+
+### 2. _(título curto)_
 
 - **Contexto:** _(o que estava em jogo)_
 - **Opções:** _(o que vocês consideraram)_
