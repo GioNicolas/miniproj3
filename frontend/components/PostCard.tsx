@@ -10,6 +10,7 @@ import { Card } from "@/components/Card";
 import { Erro } from "@/components/Erro";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
+import { GLOSSARIO } from "@/lib/glossario";
 import { tempoRelativo } from "@/lib/tempo";
 
 const LIMITE_TEXTO = 500;
@@ -135,7 +136,7 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
         )}
 
         <footer className="flex gap-4 text-sm text-suave">
-          <span>{contagem(post.curtidas, "curtida", "curtidas")}</span>
+          <span>{GLOSSARIO.curtida} · {post.curtidas}</span>
           <Link href={`/posts/${post.id}`} className="hover:text-tinta hover:underline">
             {contagem(post.comentarios, "comentário", "comentários")}
           </Link>
