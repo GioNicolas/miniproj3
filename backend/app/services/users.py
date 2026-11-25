@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.core.contadores import contador_iniciais
 from app.models.user import User
-from app.schemas.user import UserCreate
+from app.schemas.user import PerfilOut, UserCreate, UserOut, UserUpdate
+from app.services import follows, frango
 
 
 def listar(db: Session, offset: int, limit: int) -> tuple[list[User], int]:
@@ -29,3 +30,28 @@ def criar(db: Session, dados: UserCreate, password_hash: str = "") -> User:
 
     contador_iniciais.incrementar(user.username)
     return user
+
+
+def atualizar(db: Session, eu: User, dados: UserUpdate) -> User:
+    mudancas = dados.model_dump(exclude_unset=True)
+    for campo, valor in mudancas.items():
+        setattr(eu, campo, valor)
+    db.commit()
+    db.refresh(eu)
+    return eu
+
+
+def buscar_por_username(db: Session, username: str) -> User:
+    user = db.scalar(select(User).where(User.username == username))
+    if user is None:
+        raise HTTPException(status_code=404, detail="usuário não encontrado")
+    return user
+
+
+def perfil(db: Session, username: str, eu: User) -> PerfilOut:
+    user = buscar_por_username(db, username)
+    return PerfilOut(
+        **UserOut.model_validate(user).model_dump(),
+        **follows.contadores(user.id, eu.id),
+        frango=frango.do_usuario(db, user.id),
+    )

@@ -30,6 +30,7 @@ class AutorOut(BaseModel):
     username: str
     name: str
     avatar_url: str
+    nivel: str | None = None  # nível do frango (#11), preenchido nos posts
 
 
 class ExercicioOut(BaseModel):

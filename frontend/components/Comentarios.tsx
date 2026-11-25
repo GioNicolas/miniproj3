@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { AreaDeTexto } from "@/components/AreaDeTexto";
@@ -78,7 +79,9 @@ export function Comentarios({ postId, onComentou }: Props) {
               <Avatar name={c.autor.name} avatarUrl={c.autor.avatar_url} />
               <div className="min-w-0">
                 <p className="text-sm text-suave">
-                  <span className="font-semibold text-tinta">{c.autor.name}</span> @{c.autor.username} ·{" "}
+                  <Link href={`/u/${c.autor.username}`} className="font-semibold text-tinta hover:underline">
+                    {c.autor.name}
+                  </Link> @{c.autor.username} ·{" "}
                   <time dateTime={c.created_at}>{tempoRelativo(c.created_at)}</time>
                 </p>
                 <p className="whitespace-pre-wrap break-words">{c.texto}</p>

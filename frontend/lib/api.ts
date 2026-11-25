@@ -1,6 +1,8 @@
 // Fetch tipado, único ponto de contato com o backend.
 // Já preparado para receber o token da auth (guia 01, Parte 2).
 
+import type { Patente } from "@/lib/glossario";
+
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 function headers(): HeadersInit {
@@ -78,6 +80,7 @@ export type Autor = {
   username: string;
   name: string;
   avatar_url: string;
+  nivel?: Patente | null; // patente do frango (#11), vem nos posts
 };
 
 export type Exercicio = {
@@ -107,6 +110,45 @@ export type Comentario = {
   texto: string;
   autor: Autor;
   created_at: string;
+};
+
+// ---- perfil (espelha PerfilOut de backend/app/schemas/user.py) ----
+
+export type Perfil = User & {
+  seguidores: number;
+  seguindo: number;
+  eu_sigo: boolean;
+  frango: Frango;
+};
+
+// espelha FrangoOut: o estado calculado por backend/app/core/frango.py (#11)
+export type Frango = {
+  nivel: Patente;
+  forca: number;
+  dias_sem_treinar: number | null; // null: nunca treinou
+  definhando: boolean;
+  proximo_nivel: Patente | null;
+  falta_para_proximo: number;
+};
+
+// ---- chat (espelham backend/app/schemas/conversa.py) ----
+
+export type Mensagem = {
+  id: number;
+  conversa_id: number;
+  texto: string;
+  autor: Autor;
+  created_at: string;
+};
+
+export type Conversa = {
+  id: number;
+  nome: string | null;
+  direta: boolean;
+  participantes: Autor[]; // inclui você
+  ultima_mensagem: Mensagem | null;
+  nao_lidas: number;
+  atualizada_em: string;
 };
 
 // ---- Granja da Semana (espelha backend/app/schemas/granja.py) ----

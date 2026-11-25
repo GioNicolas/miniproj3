@@ -9,6 +9,7 @@ import { Botao } from "@/components/Botao";
 import { BotaoTamoJunto } from "@/components/BotaoTamoJunto";
 import { Card } from "@/components/Card";
 import { Erro } from "@/components/Erro";
+import { SeloDaPatente } from "@/components/Frango";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
@@ -97,7 +98,12 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
         <header className="flex items-center gap-3">
           <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold">{post.autor.name}</p>
+            <p className="flex items-center gap-2">
+              <Link href={`/u/${post.autor.username}`} className="truncate font-semibold hover:underline">
+                {post.autor.name}
+              </Link>
+              {post.autor.nivel && <SeloDaPatente patente={post.autor.nivel} />}
+            </p>
             <p className="truncate text-sm text-suave">
               @{post.autor.username} ·{" "}
               <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>

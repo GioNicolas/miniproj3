@@ -9,6 +9,7 @@ from app.models.post import Post
 from app.models.user import User
 from app.schemas.post import PostCreate, PostOut, PostUpdate
 from app.services import curtidas as curtidas_service
+from app.services import frango
 
 
 def buscar(db: Session, post_id: int) -> Post:
@@ -86,6 +87,20 @@ def feed(db: Session, eu: User, offset: int, limit: int) -> tuple[list[Post], in
     return list(pagina), total
 
 
+def do_autor(db: Session, autor_id: int, offset: int, limit: int) -> tuple[list[Post], int]:
+    """Posts de uma pessoa, mais novo primeiro: a lista do perfil (#3)."""
+    filtro = Post.autor_id == autor_id
+    total = db.scalar(select(func.count()).select_from(Post).where(filtro)) or 0
+    pagina = db.scalars(
+        select(Post)
+        .where(filtro)
+        .order_by(Post.created_at.desc(), Post.id.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+    return list(pagina), total
+
+
 def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
     """Único ponto que transforma Post em PostOut, para uma página inteira.
 
@@ -101,12 +116,14 @@ def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
             .group_by(Comentario.post_id)
         ).tuples().all()
     )
+    niveis = frango.niveis(db, {post.autor_id for post in posts})
     saida = []
     for post in posts:
         out = PostOut.model_validate(post)
         out.comentarios = comentarios.get(post.id, 0)
         out.curtidas = curtidas.get(post.id, 0)
         out.eu_curti = post.id in eu_curti
+        out.autor.nivel = niveis.get(post.autor_id)
         saida.append(out)
     return saida
 
