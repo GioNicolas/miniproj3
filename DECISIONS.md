@@ -166,6 +166,37 @@ para os seus pré-requisitos.
   inteira a cada request; aí a tela passaria a pedir uma trilha por vez, e o
   catálogo iria para uma tabela versionada, para mudar sem deploy.
 
+### Granja da Semana: contagem em memória e top-K por heap
+
+A Granja é aberta toda vez que alguém entra no app, então montar o ranking não
+pode custar uma varredura nos posts.
+
+- **Escolha:** `core/granja.py` guarda, por semana e por pessoa, os dias com
+  treino num `dict` de `Counter`. A estrutura é reconstruída uma vez quando a API
+  sobe e atualizada a cada treino registrado ou apagado. O pódio sai de um heap
+  de tamanho `k`, com o pior colocado na raiz; o desempate é pelo username.
+- **Big O:** registrar ou apagar um treino custa O(1). O ranking de `n`
+  participantes custa O(n log k) em vez do O(n log n) de ordenar todo mundo. A
+  reconstrução custa O(t) no número de treinos, só na subida.
+- **Medido** (`make bench`, top 10, tempo médio por ranking):
+
+  | participantes | heap (`top_k`) | `sorted()[:k]` |
+  |---:|---:|---:|
+  | 100 | 0,075 ms | 0,031 ms |
+  | 1.000 | 0,49 ms | 0,39 ms |
+  | 10.000 | 4,7 ms | 5,2 ms |
+  | 100.000 | 47 ms | 71 ms |
+
+  Até mil participantes o `sorted()` do Python ganha, porque ele roda em C e o
+  heap paga uma comparação em Python por candidato. O heap só passa na frente a
+  partir de uns 10 mil. Hoje a Granja de cada um tem só quem a pessoa segue,
+  algumas dezenas de pessoas, então a escolha não acelera nada agora.
+- **Com 100 vezes mais usuários:** o heap passa a valer quando a Granja ganha um
+  ranking geral da rede, com dezenas de milhares de pessoas. Já a contagem em
+  memória deixa de caber num processo só quando a API roda em mais de uma
+  máquina: aí ela iria para um sorted set no Redis, com a mesma conta por dia
+  distinto.
+
 ## Uso de IA
 
 Ferramenta e para quê. Exemplo: "Claude para gerar o seed de 200 posts sobre
