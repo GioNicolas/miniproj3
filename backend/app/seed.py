@@ -101,16 +101,12 @@ TEXTOS_DE_TREINO = [
     "Saiu! Dei mais reps que semana passada.",
     "Treino curto antes da aula das 7h. Contou.",
     "Hoje doeu, mas o frango agradece.",
-    "Paralelas no Parque Solon de Lucena e depois uma volta na Lagoa.",
     "Treino na Praça da Paz com a galera dos Bancários.",
     "Fui só pra não quebrar a semana. Feito é melhor que perfeito.",
-    "Orla do Cabo Branco, pôr do sol e negativa. Não tem como errar.",
     "Choveu e treinei no corredor do CCHLA mesmo.",
     "Mais uma série do que eu achava que aguentava. Tamo junto, galera.",
     "Depois do RU, barra. Digestão que lute.",
     "Treino de sábado em Tambaú. Valeu quem colou!",
-    "Hoje foi só core. Prancha parecia que não acabava.",
-    "Pernas hoje. Amanhã descer a escada do CT vai ser um evento.",
     "Treino rápido no intervalo do estágio.",
     "Primeira vez que segurei a posição sem tremer.",
     "Voltei! Uma semana parado e o corpo sentiu.",
@@ -119,8 +115,22 @@ TEXTOS_DE_TREINO = [
     "Treino das 6h na orla. Tambaú vazia é outra coisa.",
     "Bati a meta de séries da semana.",
     "Treino leve, só pra manter a constância.",
-    "Hoje a negativa veio lenta e controlada, do jeito que o Matheus ensinou.",
 ]
+
+# Textos que falam de um exercício: o treino registrado tem que bater com eles.
+TEXTOS_COM_EXERCICIO = {
+    "Paralelas no Parque Solon de Lucena e depois uma volta na Lagoa.": ("paralela",),
+    "Orla do Cabo Branco, pôr do sol e negativa. Não tem como errar.": ("barra_negativa",),
+    "Hoje a negativa veio lenta e controlada, 5 segundos descendo.": ("barra_negativa",),
+    "Hoje foi só core. Prancha parecia que não acabava.": ("prancha", "canoa", "elevacao_de_joelhos"),
+    "Hoje foi só core, e o L-sit segurou uns segundos a mais.": ("l_sit", "elevacao_de_joelhos"),
+    "Pernas hoje. Amanhã descer a escada do CT vai ser um evento.": ("agachamento", "afundo", "agachamento_bulgaro"),
+    "Pistol assistido saindo mais firme. Perna esquerda ainda treme.": ("pistol_assistido",),
+    "Primeira barra fixa limpa sem pular! Tô sem acreditar.": ("barra_fixa",),
+    "Muscle-up feio, mas saiu. Conta!": ("muscle_up",),
+    "Australiana com o pé mais à frente hoje. Sentiu nas costas.": ("barra_australiana",),
+    "Flexão inclinada no banco da pracinha. Semana que vem vou pro chão.": ("flexao_inclinada",),
+}
 
 POSTS_DE_CONVERSA = [
     "Alguém treina na pracinha do CCEN amanhã de manhã? Tô precisando de parceiro pra barra.",
@@ -198,12 +208,24 @@ def dias_de_treino(padrao: str, hoje: date, rng: random.Random) -> list[date]:
     return dias
 
 
-def _exercicios(pessoa: Pessoa, rng: random.Random) -> list[Exercicio]:
-    escolhidos = rng.sample(PROGRESSOES[pessoa.nivel], k=rng.randint(1, 3))
-    return [
+def _texto_e_exercicios(pessoa: Pessoa, rng: random.Random) -> tuple[str, list[Exercicio]]:
+    """O texto do check-in e os exercícios, que batem quando o texto cita um."""
+    possiveis = PROGRESSOES[pessoa.nivel]
+    especificos = [
+        (texto, [p for p in progressoes if p in possiveis])
+        for texto, progressoes in TEXTOS_COM_EXERCICIO.items()
+        if any(p in possiveis for p in progressoes)
+    ]
+    if especificos and rng.random() < 0.35:
+        texto, escolhidos = rng.choice(especificos)
+    else:
+        texto = rng.choice(TEXTOS_DE_TREINO)
+        escolhidos = rng.sample(possiveis, k=rng.randint(1, 3))
+    exercicios = [
         Exercicio(progressao=p, series=rng.randint(2, 5), reps=rng.randint(3, 15))
         for p in escolhidos
     ]
+    return texto, exercicios
 
 
 def seed_fake(db: Session) -> None:
@@ -230,12 +252,13 @@ def seed_fake(db: Session) -> None:
     for pessoa in PESSOAS:
         for dia in dias_de_treino(pessoa.padrao, hoje, rng):
             autor = usuarios[pessoa.username]
+            texto, exercicios = _texto_e_exercicios(pessoa, rng)
             posts.append(
                 Post(
                     autor_id=autor.id,
-                    texto=rng.choice(TEXTOS_DE_TREINO),
+                    texto=texto,
                     created_at=_momento(dia, rng),
-                    treino=Treino(autor_id=autor.id, dia=dia, exercicios=_exercicios(pessoa, rng)),
+                    treino=Treino(autor_id=autor.id, dia=dia, exercicios=exercicios),
                 )
             )
     # Conversa: dúvidas, combinados e resenha, sem treino.
