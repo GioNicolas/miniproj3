@@ -97,3 +97,15 @@ saída e uma frase dizendo o que os números mostram.
 
 Ferramenta e para quê. Exemplo: "Claude para gerar o seed de 200 posts sobre
 corrida; o resto foi escrito pelo time."
+
+### ?rvore de progress?es
+
+As progress?es formam um DAG: cada aresta liga um pr?-requisito ? habilidade
+que ele libera. A ordena??o topol?gica de Kahn detecta ciclos e garante que
+os n?veis venham depois dos pr?-requisitos. Com V habilidades e E arestas,
+a ordena??o custa O(V + E) em tempo e espa?o; a disponibilidade tamb?m percorre
+os requisitos e equipamentos. As conquistas e equipamentos ficam no SQLite,
+mas o cat?logo permanece em c?digo para manter os c?digos de treino est?veis.
+Com 100 vezes mais habilidades, seria necess?rio medir o custo por requisi??o,
+pr?-calcular a ordem e os n?veis e considerar pagina??o ou carregar trilhas
+sob demanda; mudan?as no cat?logo tamb?m precisariam de uma gest?o versionada.

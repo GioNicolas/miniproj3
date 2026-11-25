@@ -6,3 +6,6 @@ from app.models.post import Post  # noqa: F401
 from app.models.treino import Treino  # noqa: F401
 from app.models.user import User  # noqa: F401
 from app.models.sessao import Sessao  # noqa: F401
+
+from app.models.progressao_dominada import ProgressaoDominada  # noqa: F401
+from app.models.equipamento_usuario import EquipamentoUsuario  # noqa: F401
