@@ -108,3 +108,25 @@ export type Comentario = {
   autor: Autor;
   created_at: string;
 };
+
+// ---- Granja da Semana (espelha backend/app/schemas/granja.py) ----
+
+export type UsuarioNaGranja = {
+  username: string;
+  name: string;
+  avatar_url: string;
+};
+
+export type Colocado = {
+  posicao: number;
+  usuario: UsuarioNaGranja;
+  dias_treinados: number;
+};
+
+export type Granja = {
+  semana_inicio: string;
+  items: Colocado[];
+  eu: Colocado;
+  alvo: { usuario: UsuarioNaGranja; dias_treinados: number; faltam_dias: number } | null;
+  dias_que_ainda_contam: number;
+};
