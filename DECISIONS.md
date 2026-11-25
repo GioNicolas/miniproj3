@@ -113,7 +113,7 @@ tirem linhas quando mudarem de ideia.
 | Auth (núcleo) | @SofiaLimar | Sem conta não existe frango, treino nem granja. |
 | Posts (núcleo) | @GioNicolas | É onde o frango conta o treino do dia e tira dúvida. |
 | Feed + Explorar (núcleo) | @GioNicolas | Ver quem da granja já treinou hoje; quem chegou agora não vê tela vazia. |
-| Perfil (núcleo) | @davicgois | A carteirinha do frango: nível, progressões dominadas e treinos. |
+| Perfil (núcleo) | @davicgois, @GioNicolas | A carteirinha do frango: nível, progressões dominadas e treinos. |
 | Follow (núcleo) | @EduardoSanturbano | Quem você segue forma a sua Granja da Semana. |
 | Curtidas (núcleo) | @EduardoSanturbano | O "tamo junto" que faz o iniciante voltar. |
 | Comentários (núcleo) | @GioNicolas | Onde o iniciante pergunta como o outro fez a negativa. |
@@ -121,8 +121,8 @@ tirem linhas quando mudarem de ideia.
 | Identidade visual e navegação | @SofiaLimar | O nicho precisa aparecer na interface. |
 | Registro de treino | @GioNicolas | É o dado que mede a constância e alimenta o frango e a granja. |
 | Chat (conversa direta e grupo) | @GioNicolas | O "bora na barra do CCEN às 17h?" acontece dentro da rede, sem perder a pessoa para o WhatsApp. |
-| Árvore de progressões | @davicgois | Mostra a ordem certa das progressões e o próximo passo possível. |
-| O Frango | @SofiaLimar | Dá motivo para voltar: o frango definha se você some. |
+| Árvore de progressões | @davicgois, @GioNicolas | Mostra a ordem certa das progressões e o próximo passo possível. |
+| O Frango | @SofiaLimar, @GioNicolas | Dá motivo para voltar: o frango definha se você some. |
 | Granja da Semana | @EduardoSanturbano | Competição por constância, que zera toda segunda. |
 | Deploy público | @davicgois | A banca usa a rede de verdade, numa URL. |
 
@@ -144,6 +144,27 @@ página e mais uma por post, o problema clássico do N+1.
   porque a página tem tamanho fixo. O que cresce é a tabela, e o índice mantém a
   contagem proporcional aos comentários dos `k` posts da página, não à tabela
   inteira. As curtidas (#6) entram na mesma query agrupada.
+
+### A árvore de progressões é um grafo, ordenado por Kahn
+
+Progressão de calistenia não é uma fila única: o muscle-up pede barra fixa
+**e** paralela, e a elevação de joelhos pede canoa **e** saber pendurar na
+barra. Por isso o catálogo (`core/progressoes.py`) é um DAG: cada skill aponta
+para os seus pré-requisitos.
+
+- **Escolha:** a ordenação topológica de Kahn roda uma vez, quando a API sobe.
+  Ela recusa código desconhecido e ciclo, então um catálogo quebrado derruba a
+  subida e nunca chega à demo. A mesma passada dá o nível de cada skill
+  (1 + o maior nível dos pré-requisitos), que a tela usa para desenhar a árvore
+  em camadas. O catálogo fica em código, e não no banco, para os códigos serem
+  estáveis: o registro de treino só aceita progressão que existe na árvore.
+- **Big O:** com `V` skills e `E` pré-requisitos, a ordenação e os níveis custam
+  O(V + E), uma vez só. Montar a árvore de alguém (`disponiveis`) também custa
+  O(V + E), com as skills dominadas num `set`. Hoje são 20 skills e 18 arestas.
+- **Com 100 vezes mais skills:** 2.000 skills ainda cabem em memória, e a ordem
+  e os níveis continuam calculados uma vez. O que pesaria é devolver a árvore
+  inteira a cada request; aí a tela passaria a pedir uma trilha por vez, e o
+  catálogo iria para uma tabela versionada, para mudar sem deploy.
 
 ## Uso de IA
 
