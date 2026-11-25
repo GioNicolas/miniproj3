@@ -20,10 +20,11 @@ def test_quem_nao_segue_ninguem_ve_so_os_proprios_posts(client, logar):
     ana = logar("ana")
     bia = logar("bia")
     client.post("/posts", json={"texto": "da bia"}, headers=bia)
+    client.post("/posts", json={"texto": "da ana"}, headers=ana)
 
     r = client.get("/feed", headers=ana)
-    assert r.json()["total"] == 0
-    assert r.json()["items"] == []
+    assert r.json()["total"] == 1
+    assert _textos(r) == ["da ana"]
 
 
 def test_deixar_de_seguir_tira_os_posts_do_feed(client, logar):
