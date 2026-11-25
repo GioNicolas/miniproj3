@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Carregando } from "@/components/Carregando";
 import { Comentarios } from "@/components/Comentarios";
+import { Erro } from "@/components/Erro";
 import { PostCard } from "@/components/PostCard";
 import { apiGet, type Post } from "@/lib/api";
 
@@ -17,20 +19,17 @@ export default function PostPage() {
   useEffect(() => {
     apiGet<Post>(`/posts/${id}`)
       .then(setPost)
-      .catch((err) => setErro(err instanceof Error ? err.message : "não deu pra carregar o post"));
+      .catch((err) => setErro(err instanceof Error ? err.message : "erro ao carregar o post"));
   }, [id]);
 
-  if (erro) {
-    return (
-      <p role="alert" className="rounded-lg bg-brasa-fundo px-3 py-2 text-sm text-brasa">
-        {erro}
-      </p>
-    );
-  }
+  if (erro) return <Erro>{erro}</Erro>;
   if (!post) return <Carregando />;
 
   return (
     <div className="space-y-6">
+      <Link href="/" className="inline-flex min-h-11 items-center text-sm text-suave hover:text-tinta">
+        ← voltar pro feed
+      </Link>
       <PostCard post={post} onAtualizado={setPost} onApagado={() => router.push("/")} />
       <Comentarios
         postId={post.id}

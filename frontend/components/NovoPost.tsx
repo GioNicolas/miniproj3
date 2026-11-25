@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 
+import { AreaDeTexto } from "@/components/AreaDeTexto";
+import { Botao } from "@/components/Botao";
+import { Card } from "@/components/Card";
+import { Erro } from "@/components/Erro";
 import { apiPost, type Post } from "@/lib/api";
 
 const LIMITE_TEXTO = 500;
@@ -20,36 +24,33 @@ export function NovoPost({ onCriado }: { onCriado?: (post: Post) => void }) {
       setErro(null);
       onCriado?.(post);
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "não deu pra postar");
+      setErro(err instanceof Error ? err.message : "erro ao postar");
     } finally {
       setEnviando(false);
     }
   }
 
   return (
-    <form onSubmit={postar} className="space-y-2 rounded-2xl border border-borda bg-superficie p-3">
-      <textarea
-        value={texto}
-        onChange={(e) => setTexto(e.target.value)}
-        placeholder="Como foi o treino hoje?"
-        aria-label="Texto do post"
-        maxLength={LIMITE_TEXTO}
-        rows={3}
-        className="w-full rounded-lg border border-borda-forte bg-superficie-2 px-3 py-2 text-tinta outline-none placeholder:text-suave focus:border-destaque"
-      />
-      <div className="flex items-center justify-between">
-        <span className="font-placar text-sm text-suave">
-          {texto.length}/{LIMITE_TEXTO}
-        </span>
-        <button
-          type="submit"
-          disabled={enviando || !texto.trim()}
-          className="min-h-11 rounded-lg bg-destaque px-4 font-titulo text-sm text-sobre-destaque transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50 motion-reduce:transition-none"
-        >
-          {enviando ? "Postando..." : "Postar"}
-        </button>
-      </div>
-      {erro && <p role="alert" className="rounded-lg bg-brasa-fundo px-3 py-2 text-sm text-brasa">{erro}</p>}
-    </form>
+    <Card>
+      <form onSubmit={postar} className="space-y-3">
+        <AreaDeTexto
+          value={texto}
+          onChange={(e) => setTexto(e.target.value)}
+          placeholder="Como foi o treino hoje?"
+          aria-label="Novo post"
+          maxLength={LIMITE_TEXTO}
+          rows={3}
+        />
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-suave">
+            {texto.length}/{LIMITE_TEXTO}
+          </span>
+          <Botao type="submit" disabled={enviando || !texto.trim()}>
+            {enviando ? "Postando..." : "Postar"}
+          </Botao>
+        </div>
+        {erro && <Erro>{erro}</Erro>}
+      </form>
+    </Card>
   );
 }

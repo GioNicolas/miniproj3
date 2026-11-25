@@ -63,3 +63,12 @@ class PostOut(BaseModel):
     comentarios: int = 0
     eu_curti: bool = False
     treino: TreinoOut | None = None
+
+
+class PostPage(BaseModel):
+    """Página de posts no padrão do projeto: feed, explorar e perfil devolvem isto."""
+
+    items: list[PostOut]
+    total: int
+    offset: int
+    limit: int

@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
+from app.core.grafo_follows import grafo_follows
 from app.models.comentario import Comentario
 from app.models.post import Post
 from app.models.user import User
@@ -44,6 +45,38 @@ def apagar(db: Session, post_id: int, eu: User) -> None:
     db.execute(delete(Comentario).where(Comentario.post_id == post.id))
     db.delete(post)
     db.commit()
+
+
+def explorar(db: Session, offset: int, limit: int) -> tuple[list[Post], int]:
+    """Posts de toda a rede, mais novo primeiro.
+
+    Quando as curtidas (#6) entrarem, os mais curtidos dos últimos 7 dias sobem.
+    """
+    total = db.scalar(select(func.count()).select_from(Post)) or 0
+    pagina = db.scalars(
+        select(Post).order_by(Post.created_at.desc(), Post.id.desc()).offset(offset).limit(limit)
+    )
+    return list(pagina), total
+
+
+def feed(db: Session, eu: User, offset: int, limit: int) -> tuple[list[Post], int]:
+    """Posts de quem eu sigo e os meus, mais novo primeiro (cronológico, sem ranking).
+
+    "Quem eu sigo" sai do grafo em memória (core/grafo_follows.py) em O(1), sem
+    join com a tabela de follows. Os meus posts entram para quem acabou de postar
+    se ver no topo, como em qualquer rede.
+    """
+    autores = grafo_follows.seguindo(eu.id) | {eu.id}
+    filtro = Post.autor_id.in_(autores)
+    total = db.scalar(select(func.count()).select_from(Post).where(filtro)) or 0
+    pagina = db.scalars(
+        select(Post)
+        .where(filtro)
+        .order_by(Post.created_at.desc(), Post.id.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+    return list(pagina), total
 
 
 def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:

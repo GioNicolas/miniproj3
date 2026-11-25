@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
+import { Botao } from "@/components/Botao";
+import { Card } from "@/components/Card";
+import { Erro } from "@/components/Erro";
 import { apiGet, apiPost, type Comentario, type Page } from "@/lib/api";
 import { tempoRelativo } from "@/lib/tempo";
 
@@ -16,7 +20,8 @@ type Props = {
 
 export function Comentarios({ postId, onComentou }: Props) {
   const [comentarios, setComentarios] = useState<Comentario[]>([]);
-  const [total, setTotal] = useState(0);
+  // null até a primeira página chegar, para não piscar o "ninguém comentou".
+  const [total, setTotal] = useState<number | null>(null);
   const [texto, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -31,7 +36,7 @@ export function Comentarios({ postId, onComentou }: Props) {
         setTotal(pagina.total);
         setErro(null);
       } catch (err) {
-        setErro(err instanceof Error ? err.message : "não deu pra carregar os comentários");
+        setErro(err instanceof Error ? err.message : "erro ao carregar os comentários");
       }
     },
     [postId]
@@ -47,12 +52,12 @@ export function Comentarios({ postId, onComentou }: Props) {
     try {
       const novo = await apiPost<Comentario>(`/posts/${postId}/comentarios`, { texto });
       setComentarios((atuais) => [...atuais, novo]);
-      setTotal((t) => t + 1);
+      setTotal((t) => (t ?? 0) + 1);
       setTexto("");
       setErro(null);
       onComentou?.();
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "não deu pra comentar");
+      setErro(err instanceof Error ? err.message : "erro ao comentar");
     } finally {
       setEnviando(false);
     }
@@ -60,57 +65,58 @@ export function Comentarios({ postId, onComentou }: Props) {
 
   return (
     <section className="space-y-3">
-      <h2 className="font-titulo text-base">
-        Comentários <span className="font-placar text-lg not-italic text-suave">{total}</span>
-      </h2>
+      <h2 className="font-titulo text-2xl tracking-wide">Comentários ({total ?? 0})</h2>
+
+      {total === 0 && (
+        <p className="text-sm text-suave">Ninguém comentou ainda. Manda a primeira dica ou dúvida.</p>
+      )}
 
       <ul className="space-y-2">
         {comentarios.map((c) => (
-          <li key={c.id} className="flex gap-3 rounded-2xl border border-borda bg-superficie p-3">
-            <Avatar name={c.autor.name} avatarUrl={c.autor.avatar_url} />
-            <div className="min-w-0">
-              <p className="text-sm text-suave">
-                <span className="font-semibold text-tinta">{c.autor.name}</span> @{c.autor.username} ·{" "}
-                <time dateTime={c.created_at}>{tempoRelativo(c.created_at)}</time>
-              </p>
-              <p className="whitespace-pre-wrap break-words leading-relaxed">{c.texto}</p>
-            </div>
+          <li key={c.id}>
+            <Card className="flex gap-3">
+              <Avatar name={c.autor.name} avatarUrl={c.autor.avatar_url} />
+              <div className="min-w-0">
+                <p className="text-sm text-suave">
+                  <span className="font-semibold text-tinta">{c.autor.name}</span> @{c.autor.username} ·{" "}
+                  <time dateTime={c.created_at}>{tempoRelativo(c.created_at)}</time>
+                </p>
+                <p className="whitespace-pre-wrap break-words">{c.texto}</p>
+              </div>
+            </Card>
           </li>
         ))}
       </ul>
 
-      {comentarios.length < total && (
+      {comentarios.length < (total ?? 0) && (
         <button
           type="button"
           onClick={() => carregar(comentarios.length)}
-          className="min-h-11 text-sm font-semibold text-ceu hover:underline"
+          className="min-h-11 text-sm text-suave underline hover:text-tinta"
         >
-          Ver comentários mais antigos
+          carregar mais
         </button>
       )}
 
-      <form onSubmit={comentar} className="space-y-2 rounded-2xl border border-ceu-borda bg-ceu-fundo p-3">
-        <textarea
-          value={texto}
-          onChange={(e) => setTexto(e.target.value)}
-          placeholder="Manda a dica ou a dúvida"
-          aria-label="Seu comentário"
-          maxLength={LIMITE_TEXTO}
-          rows={2}
-          className="w-full rounded-lg border border-borda-forte bg-superficie-2 px-3 py-2 text-tinta outline-none placeholder:text-suave focus:border-ceu"
-        />
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={enviando || !texto.trim()}
-            className="min-h-11 rounded-lg bg-ceu px-4 font-titulo text-sm text-sobre-destaque transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50 motion-reduce:transition-none"
-          >
-            {enviando ? "Comentando..." : "Comentar"}
-          </button>
-        </div>
-      </form>
+      <Card>
+        <form onSubmit={comentar} className="space-y-3">
+          <AreaDeTexto
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            placeholder="Manda a dica ou a dúvida"
+            aria-label="Novo comentário"
+            maxLength={LIMITE_TEXTO}
+            rows={2}
+          />
+          <div className="flex justify-end">
+            <Botao type="submit" disabled={enviando || !texto.trim()}>
+              {enviando ? "Comentando..." : "Comentar"}
+            </Botao>
+          </div>
+        </form>
+      </Card>
 
-      {erro && <p role="alert" className="rounded-lg bg-brasa-fundo px-3 py-2 text-sm text-brasa">{erro}</p>}
+      {erro && <Erro>{erro}</Erro>}
     </section>
   );
 }

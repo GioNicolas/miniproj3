@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
+import { Botao } from "@/components/Botao";
+import { Card } from "@/components/Card";
+import { Erro } from "@/components/Erro";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
+import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
 import { tempoRelativo } from "@/lib/tempo";
 
@@ -16,18 +21,19 @@ function resumoExercicio({ progressao, series, reps }: Exercicio): string {
   return [progressao.split("_").join(" "), volume].filter(Boolean).join(" · ");
 }
 
-function rotuloComentarios(n: number): string {
-  return n === 1 ? "1 comentário" : `${n} comentários`;
+function contagem(n: number, singular: string, plural: string): string {
+  return `${n} ${n === 1 ? singular : plural}`;
 }
 
 type Props = {
   post: Post;
-  souAutor?: boolean;
   onAtualizado?: (post: Post) => void;
   onApagado?: (id: number) => void;
 };
 
-export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Props) {
+export function PostCard({ post, onAtualizado, onApagado }: Props) {
+  const eu = useEu();
+  const souAutor = eu?.username === post.autor.username;
   const [editando, setEditando] = useState(false);
   const [rascunho, setRascunho] = useState(post.texto);
   const [salvando, setSalvando] = useState(false);
@@ -41,7 +47,7 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
       setErro(null);
       onAtualizado?.(atualizado);
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "não deu pra salvar a edição");
+      setErro(err instanceof Error ? err.message : "erro ao editar o post");
     } finally {
       setSalvando(false);
     }
@@ -54,7 +60,7 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
       await apiDelete(`/posts/${post.id}`);
       onApagado?.(post.id);
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "não deu pra apagar o post");
+      setErro(err instanceof Error ? err.message : "erro ao apagar o post");
     } finally {
       setSalvando(false);
     }
@@ -67,104 +73,77 @@ export function PostCard({ post, souAutor = false, onAtualizado, onApagado }: Pr
   }
 
   return (
-    <article className="space-y-3 rounded-2xl border border-borda bg-superficie p-4">
-      <header className="flex items-center gap-3">
-        <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold">{post.autor.name}</p>
-          <p className="truncate text-sm text-suave">
-            @{post.autor.username} ·{" "}
-            <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
-              {tempoRelativo(post.created_at)}
-            </time>
-          </p>
-        </div>
-        {souAutor && !editando && (
-          <div className="flex gap-1 text-sm text-suave">
-            <button
-              type="button"
-              onClick={() => setEditando(true)}
-              disabled={salvando}
-              className="min-h-11 px-2 hover:text-tinta"
-            >
-              Editar
-            </button>
-            <button type="button" onClick={apagar} disabled={salvando} className="min-h-11 px-2 hover:text-brasa">
-              Apagar
-            </button>
+    // Post de treino ganha a faixa laranja na esquerda: é o check-in que conta pro frango.
+    <Card className={post.treino ? "border-l-4 border-l-destaque" : ""}>
+      <article className="space-y-3">
+        <header className="flex items-center gap-3">
+          <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-semibold">{post.autor.name}</p>
+            <p className="truncate text-sm text-suave">
+              @{post.autor.username} ·{" "}
+              <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
+                {tempoRelativo(post.created_at)}
+              </time>
+            </p>
           </div>
-        )}
-      </header>
+          {souAutor && !editando && (
+            <div className="flex gap-3 text-sm text-suave">
+              <button type="button" onClick={() => setEditando(true)} disabled={salvando} className="min-h-11 hover:text-tinta">
+                editar
+              </button>
+              <button type="button" onClick={apagar} disabled={salvando} className="min-h-11 hover:text-perigo">
+                apagar
+              </button>
+            </div>
+          )}
+        </header>
 
-      {editando ? (
-        <div className="space-y-2">
-          <textarea
-            value={rascunho}
-            onChange={(e) => setRascunho(e.target.value)}
-            maxLength={LIMITE_TEXTO}
-            rows={3}
-            aria-label="Texto do post"
-            className="w-full rounded-lg border border-borda-forte bg-superficie-2 px-3 py-2 text-tinta outline-none focus:border-destaque"
-          />
-          <div className="flex justify-end gap-2 text-sm">
-            <button
-              type="button"
-              onClick={cancelar}
-              disabled={salvando}
-              className="min-h-11 rounded-lg px-3 text-suave hover:text-tinta"
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              onClick={salvar}
-              disabled={salvando || !rascunho.trim()}
-              className="min-h-11 rounded-lg bg-destaque px-4 font-titulo text-sm text-sobre-destaque transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50 motion-reduce:transition-none"
-            >
-              {salvando ? "Salvando..." : "Salvar"}
-            </button>
+        {editando ? (
+          <div className="space-y-2">
+            <AreaDeTexto
+              value={rascunho}
+              onChange={(e) => setRascunho(e.target.value)}
+              maxLength={LIMITE_TEXTO}
+              rows={3}
+              aria-label="Texto do post"
+            />
+            <div className="flex justify-end gap-2">
+              <Botao variante="contorno" onClick={cancelar} disabled={salvando}>
+                Cancelar
+              </Botao>
+              <Botao onClick={salvar} disabled={salvando || !rascunho.trim()}>
+                {salvando ? "Salvando..." : "Salvar"}
+              </Botao>
+            </div>
           </div>
-        </div>
-      ) : (
-        <>
-          {/* Card do treino: fundo de milho, porque treino registrado é constância */}
-          {post.treino && (
-            <div className="flex items-center gap-4 rounded-xl border border-destaque-borda bg-destaque-fundo px-4 py-3">
-              <div className="flex w-12 shrink-0 flex-col items-center">
-                <span className="font-placar text-4xl leading-none text-destaque">
-                  {post.treino.exercicios.length}
-                </span>
-                <span className="text-[11px] text-suave">
-                  {post.treino.exercicios.length === 1 ? "exercício" : "exercícios"}
-                </span>
-              </div>
-              <ul aria-label="Treino do dia" className="min-w-0 flex-1 space-y-0.5">
+        ) : (
+          <>
+            {post.treino && (
+              <ul aria-label="Treino do dia" className="flex flex-wrap gap-1.5">
+                <li className="rounded-full bg-destaque px-2.5 py-0.5 font-titulo text-base tracking-wide text-sobre-destaque">
+                  Treino
+                </li>
                 {post.treino.exercicios.map((exercicio, i) => (
-                  <li key={i} className="truncate font-titulo text-xs leading-snug">
+                  <li key={i} className="rounded-full border border-borda bg-fundo px-2.5 py-0.5 text-sm">
                     {resumoExercicio(exercicio)}
                   </li>
                 ))}
               </ul>
-            </div>
-          )}
-          <p className="whitespace-pre-wrap break-words leading-relaxed">{post.texto}</p>
-        </>
-      )}
+            )}
+            <p className="whitespace-pre-wrap break-words">{post.texto}</p>
+          </>
+        )}
 
-      <footer className="flex items-center gap-4 text-sm">
-        <span className="text-suave">
-          <span className="font-placar text-base text-tinta">{post.curtidas}</span> {GLOSSARIO.curtida.toLowerCase()}
-        </span>
-        <Link href={`/posts/${post.id}`} className="min-h-11 content-center font-semibold text-ceu hover:underline">
-          {rotuloComentarios(post.comentarios)}
-        </Link>
-      </footer>
+        <footer className="flex gap-4 text-sm text-suave">
+          <span>{GLOSSARIO.curtida} · {post.curtidas}</span>
+          <Link href={`/posts/${post.id}`} className="hover:text-tinta hover:underline">
+            {contagem(post.comentarios, "comentário", "comentários")}
+          </Link>
+        </footer>
 
-      {erro && (
-        <p role="alert" className="rounded-lg bg-brasa-fundo px-3 py-2 text-sm text-brasa">
-          {erro}
-        </p>
-      )}
-    </article>
+        {erro && <Erro>{erro}</Erro>}
+      </article>
+    </Card>
   );
 }
