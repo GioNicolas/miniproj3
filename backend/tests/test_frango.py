@@ -11,8 +11,8 @@ def dias_seguidos(n: int, ate: date = HOJE) -> set[date]:
 
 def test_quem_nunca_treinou_e_frango_sem_definhar():
     estado = calcular_frango(set(), HOJE)
-    assert (estado.forca, estado.nivel, estado.dias_sem_treinar, estado.definhando) == (0, "Frango", None, False)
-    assert (estado.proximo_nivel, estado.falta_para_proximo) == ("Frango de granja", 25)
+    assert (estado.forca, estado.nivel, estado.dias_sem_treinar, estado.definhando) == (0, "Pintinho", None, False)
+    assert (estado.proximo_nivel, estado.falta_para_proximo) == ("Frango", 25)
 
 
 def test_cada_dia_de_treino_soma_dez_e_o_teto_e_cem():
@@ -35,7 +35,7 @@ def test_a_partir_do_segundo_dia_sem_treino_perde_cinco_por_dia():
     estado = calcular_frango(dias_seguidos(6, ate=ultimo), HOJE)
     # 60 de força; 4 dias sem treinar: o 1º não pune, os outros 3 tiram 15
     assert (estado.forca, estado.dias_sem_treinar, estado.definhando) == (45, 4, True)
-    assert estado.nivel == "Frango de granja"
+    assert estado.nivel == "Frango"
 
 
 def test_a_forca_nao_fica_negativa_e_volta_a_crescer():
@@ -52,7 +52,7 @@ def test_dias_no_futuro_sao_ignorados():
 
 def test_limites_dos_niveis():
     assert [nivel_da_forca(f) for f in (0, 24, 25, 49, 50, 74, 75, 100)] == [
-        "Frango", "Frango", "Frango de granja", "Frango de granja", "Galo", "Galo", "Monstro", "Monstro",
+        "Pintinho", "Pintinho", "Frango", "Frango", "Galo", "Galo", "Monstro", "Monstro",
     ]
 
 
@@ -64,8 +64,8 @@ def test_frango_no_perfil_e_nivel_no_autor_do_post(client, logar):
 
     frango = client.get("/usuarios/ana", headers=bia).json()["frango"]
     assert frango == {
-        "nivel": "Frango", "forca": 10, "dias_sem_treinar": 0, "definhando": False,
-        "proximo_nivel": "Frango de granja", "falta_para_proximo": 15,
+        "nivel": "Pintinho", "forca": 10, "dias_sem_treinar": 0, "definhando": False,
+        "proximo_nivel": "Frango", "falta_para_proximo": 15,
     }
     autores = {p["autor"]["username"]: p["autor"]["nivel"] for p in client.get("/explorar", headers=ana).json()["items"]}
-    assert autores == {"ana": "Frango", "bia": "Frango"}
+    assert autores == {"ana": "Pintinho", "bia": "Pintinho"}

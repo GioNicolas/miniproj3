@@ -23,12 +23,13 @@ PERDA_POR_DIA = 5
 FORCA_MAXIMA = 100
 FOLGA_SEM_PUNICAO = 1  # dias seguidos sem treinar que ainda não tiram força
 
-# (força mínima, nome), do mais forte para o mais fraco
+# (força mínima, patente), da mais forte para a mais fraca. Os nomes são os do
+# frontend/lib/glossario.ts (#8): "Granja" é o ranking, nunca nome de patente.
 NIVEIS = (
     (75, "Monstro"),
     (50, "Galo"),
-    (25, "Frango de granja"),
-    (0, "Frango"),
+    (25, "Frango"),
+    (0, "Pintinho"),
 )
 
 
