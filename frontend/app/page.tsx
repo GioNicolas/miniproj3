@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Card } from "@/components/Card";
 import { ListaDePosts } from "@/components/ListaDePosts";
 import { NovoPost } from "@/components/NovoPost";
 
@@ -13,13 +14,17 @@ export default function Home() {
     <div className="space-y-6">
       <NovoPost onCriado={() => setVersao((v) => v + 1)} />
       <section className="space-y-3">
-        <p className="rounded border bg-white p-3 text-sm text-zinc-600">
-          Você ainda não segue nenhum frango: olha o que a galera tá treinando.
-        </p>
+        <Card escuro>
+          <p className="font-titulo text-2xl tracking-wide text-destaque">Explorar</p>
+          <p className="text-sm">Você ainda não segue nenhum frango: olha o que a galera tá treinando.</p>
+        </Card>
         <ListaDePosts
           key={versao}
           caminho="/explorar"
-          vazio="Ninguém postou ainda. Que tal ser o primeiro a contar o treino de hoje?"
+          vazio={{
+            titulo: "Ninguém postou ainda",
+            texto: "Que tal ser o primeiro a contar o treino de hoje?",
+          }}
         />
       </section>
     </div>
