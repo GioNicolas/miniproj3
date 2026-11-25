@@ -9,11 +9,12 @@ from sqlalchemy.orm import Session
 
 from app.core.contadores import contador_iniciais
 from app.db import get_db
-from app.schemas.user import UserCreate, UserOut, UserPage, UserUpdate
-from app.services import users as service
 from app.deps import get_current_user
 from app.models.user import User
-
+from app.schemas.post import PostPage
+from app.schemas.user import PerfilOut, UserCreate, UserOut, UserPage, UserUpdate
+from app.services import posts as posts_service
+from app.services import users as service
 
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
@@ -49,6 +50,25 @@ def editar_meu_perfil(
     return service.atualizar(db, eu, dados)
 
 
-@router.get("/{username}", response_model=UserOut, dependencies=[Depends(get_current_user)])
-def ver_perfil(username: str, db: Session = Depends(get_db)):
-    return service.buscar_por_username(db, username)
+@router.get("/{username}", response_model=PerfilOut)
+def ver_perfil(
+    username: str,
+    eu: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return service.perfil(db, username, eu)
+
+
+@router.get("/{username}/posts", response_model=PostPage)
+def posts_do_perfil(
+    username: str,
+    offset: int = Query(default=0, ge=0),
+    limit: int = Query(default=20, ge=1, le=100),
+    eu: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    autor = service.buscar_por_username(db, username)
+    posts, total = posts_service.do_autor(db, autor.id, offset, limit)
+    return PostPage(
+        items=posts_service.montar_posts(db, posts, eu), total=total, offset=offset, limit=limit
+    )

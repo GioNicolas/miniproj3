@@ -31,5 +31,21 @@ class UserPage(BaseModel):
 
 
 class UserUpdate(BaseModel):
+    """Só o que veio no corpo muda (PATCH): mandar só a bio não apaga o nome."""
+
+    name: str | None = Field(default=None, min_length=1, max_length=80)
     bio: str | None = Field(default=None, max_length=280)
     avatar_url: str | None = Field(default=None, max_length=300)
+
+
+class PerfilOut(UserOut):
+    """Contrato combinado na issue #3 para GET /usuarios/{username}.
+
+    seguidores, seguindo e eu_sigo vêm do follow (#4). frango (#11) fica null
+    até a Sofia ligar o core/frango.py aqui.
+    """
+
+    seguidores: int
+    seguindo: int
+    eu_sigo: bool
+    frango: dict | None = None

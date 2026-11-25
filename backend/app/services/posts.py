@@ -79,6 +79,20 @@ def feed(db: Session, eu: User, offset: int, limit: int) -> tuple[list[Post], in
     return list(pagina), total
 
 
+def do_autor(db: Session, autor_id: int, offset: int, limit: int) -> tuple[list[Post], int]:
+    """Posts de uma pessoa, mais novo primeiro: a lista do perfil (#3)."""
+    filtro = Post.autor_id == autor_id
+    total = db.scalar(select(func.count()).select_from(Post).where(filtro)) or 0
+    pagina = db.scalars(
+        select(Post)
+        .where(filtro)
+        .order_by(Post.created_at.desc(), Post.id.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+    return list(pagina), total
+
+
 def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
     """Único ponto que transforma Post em PostOut, para uma página inteira.
 
