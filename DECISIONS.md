@@ -84,8 +84,8 @@ A **Frangaria** é uma rede social de calistenia para quem está começando.
 
 ## O que ficou de fora e por quê
 
-- **Chat em grupo, integração com relógio e pontuação configurável:** os apps
-  de desafio têm isso, mas são métricas e canais para quem já treina. O
+- **Integração com relógio e pontuação configurável:** os apps de desafio têm
+  isso, mas são métricas para quem já treina. O
   iniciante precisa voltar amanhã, não de mais números.
 - **Nutrição e dieta:** é outro problema, com outro público e outra
   responsabilidade.
@@ -95,7 +95,8 @@ A **Frangaria** é uma rede social de calistenia para quem está começando.
   frente com quem é mais forte, o que a decisão 1 evita.
 - **Conta privada:** só faz sentido junto com o pedido de amizade, que ficou de
   fora na decisão 4.
-- **Chat direto e grupos de treino:** o grupo de WhatsApp já faz isso. A dúvida
+- **Grupos de treino abertos, como comunidade:** a turma que treina junto já
+  tem o grupo do chat. Uma comunidade aberta pediria moderação, e a dúvida
   sobre um exercício fica nos comentários do post, onde outros iniciantes
   também aprendem.
 - **IA que monta o treino:** vira uma planilha de treino, que é outro app, e
@@ -119,6 +120,7 @@ tirem linhas quando mudarem de ideia.
 | Seed fake (núcleo) | @EduardoSanturbano | A banca precisa ver uma comunidade viva de calistenia, não Lorem ipsum. |
 | Identidade visual e navegação | @SofiaLimar | O nicho precisa aparecer na interface. |
 | Registro de treino | @GioNicolas | É o dado que mede a constância e alimenta o frango e a granja. |
+| Chat (conversa direta e grupo) | @GioNicolas | O "bora na barra do CCEN às 17h?" acontece dentro da rede, sem perder a pessoa para o WhatsApp. |
 | Árvore de progressões | @davicgois | Mostra a ordem certa das progressões e o próximo passo possível. |
 | O Frango | @SofiaLimar | Dá motivo para voltar: o frango definha se você some. |
 | Granja da Semana | @EduardoSanturbano | Competição por constância, que zera toda segunda. |
