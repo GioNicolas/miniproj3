@@ -137,3 +137,21 @@ def test_com_seed_na_subida_a_granja_do_demo_ja_vem_cheia(monkeypatch):
 
     assert len(corpo["items"]) >= 5
     assert any(c["dias_treinados"] > 0 for c in corpo["items"])
+
+
+def test_check_in_conta_na_hora_e_apagar_o_post_tira(client, logar):
+    eu = logar("ana")
+    treino = {"texto": "treino", "exercicios": [{"progressao": "flexao", "series": 3, "reps": 10}]}
+
+    primeiro = client.post("/treinos", json=treino, headers=eu).json()
+    segundo = client.post("/treinos", json=treino, headers=eu).json()
+    assert client.get("/granja", headers=eu).json()["eu"]["dias_treinados"] == 1  # mesmo dia conta um
+
+    client.delete(f"/posts/{primeiro['id']}", headers=eu)
+    assert client.get("/granja", headers=eu).json()["eu"]["dias_treinados"] == 1  # ainda sobra um treino hoje
+
+    client.delete(f"/posts/{segundo['id']}", headers=eu)
+    assert client.get("/granja", headers=eu).json()["eu"]["dias_treinados"] == 0
+
+    post_comum = client.post("/posts", json={"texto": "só um post"}, headers=eu).json()
+    assert client.delete(f"/posts/{post_comum['id']}", headers=eu).status_code == 204
