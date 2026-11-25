@@ -36,7 +36,7 @@ Depois validem o ambiente:
 ```bash
 make check      # tudo precisa ficar verde
 make seed       # cria a rede de exemplo (22 frangos, posts, treinos, follows)
-make test       # deve mostrar "4 passed, 10 skipped"
+make test       # todos os testes passam
 ```
 
 Para ver a rede como a banca vai ver, entrem como `frango_demo`, senha
