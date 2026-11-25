@@ -8,7 +8,7 @@ from app.seed import SENHA_SEED, USUARIOS
 def _subir(monkeypatch):
     from app.main import app
 
-    monkeypatch.setenv("SEED_NO_STARTUP", "1")
+    monkeypatch.setenv("SEED_ON_BOOT", "true")
     return TestClient(app)
 
 

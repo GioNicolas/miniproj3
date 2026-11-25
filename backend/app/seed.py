@@ -1,7 +1,7 @@
 """Seed mínimo: usuários de exemplo para a rede não abrir vazia.
 
-Roda sozinho na subida da API quando o banco não tem nenhum usuário (ver o
-lifespan em main.py) e também por `make seed`. Num banco que já tem gente, não
+Roda na subida da API com SEED_ON_BOOT=true quando o banco não tem nenhum
+usuário (ver o lifespan em main.py) e também por `make seed`. Num banco que já tem gente, não
 faz nada.
 """
 

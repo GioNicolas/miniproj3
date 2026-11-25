@@ -1,6 +1,6 @@
 """Roda o seed na mão: make seed.
 
-A API já roda o mesmo seed sozinha quando sobe com o banco vazio (app/seed.py).
+Com SEED_ON_BOOT=true, a API roda o mesmo seed ao subir com o banco vazio (app/seed.py).
 """
 
 import sys

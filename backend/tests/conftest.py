@@ -14,8 +14,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 # banco descartável POR SESSÃO de teste, antes de qualquer import de app.*
 _tmp_db = Path(tempfile.mkdtemp(prefix="trilha-test-")) / "test.db"
 os.environ["DATABASE_URL"] = f"sqlite:///{_tmp_db}"
-# cada teste começa com o banco vazio; o seed da subida fica para test_seed.py
-os.environ["SEED_NO_STARTUP"] = "0"
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
