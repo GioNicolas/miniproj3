@@ -24,9 +24,11 @@ from sqlalchemy.orm import Session
 from app.core.datas import FUSO_RECIFE, dia_em_recife
 from app.models.comentario import Comentario
 from app.models.curtida import Curtida
+from app.models.equipamento_usuario import EquipamentoUsuario
 from app.models.exercicio import Exercicio
 from app.models.follow import Follow
 from app.models.post import Post
+from app.models.progressao_dominada import ProgressaoDominada
 from app.models.treino import Treino
 from app.models.user import User
 
@@ -94,6 +96,24 @@ PROGRESSOES = {
     1: ["barra_australiana", "barra_negativa", "flexao", "paralela", "afundo", "agachamento_bulgaro", "canoa", "elevacao_de_joelhos", "flexao_pike"],
     2: ["barra_fixa", "muscle_up", "paralela", "flexao_pike", "parada_de_maos_parede", "pistol_assistido", "pistol", "l_sit"],
 }
+
+# Árvore (#10): o que cada nível já dominou e o equipamento que tem à mão.
+# Cada lista inclui os pré-requisitos (tests/test_seed.py confere), então a
+# árvore de cada um mostra o próximo passo certo.
+DOMINADAS = {
+    0: ["flexao_inclinada", "agachamento", "prancha", "pendurar_na_barra"],
+    1: [
+        "flexao_inclinada", "agachamento", "prancha", "pendurar_na_barra",
+        "flexao_joelhos", "flexao", "afundo", "canoa", "barra_australiana",
+    ],
+    2: [
+        "flexao_inclinada", "agachamento", "prancha", "pendurar_na_barra",
+        "flexao_joelhos", "flexao", "afundo", "canoa", "barra_australiana",
+        "barra_negativa", "barra_fixa", "paralela", "flexao_pike",
+        "agachamento_bulgaro", "pistol_assistido", "elevacao_de_joelhos",
+    ],
+}
+EQUIPAMENTOS = {0: ["barra_fixa"], 1: ["barra_fixa", "paralelas"], 2: ["barra_fixa", "elastico", "paralelas"]}
 
 TEXTOS_DE_TREINO = [
     "Treino feito na pracinha do CCEN. Sol de rachar, mas foi.",
@@ -246,6 +266,12 @@ def seed_fake(db: Session) -> None:
     }
     db.add_all(usuarios.values())
     db.flush()
+
+    # Árvore (#10): skills dominadas e equipamento de cada um, pelo nível.
+    for pessoa in PESSOAS:
+        dono = usuarios[pessoa.username].id
+        db.add_all(ProgressaoDominada(user_id=dono, codigo=c) for c in DOMINADAS[pessoa.nivel])
+        db.add_all(EquipamentoUsuario(user_id=dono, equipamento=e) for e in EQUIPAMENTOS[pessoa.nivel])
 
     # Check-ins: um post de treino por dia treinado.
     posts: list[Post] = []
