@@ -52,7 +52,9 @@ def test_ranking_entre_eu_e_quem_eu_sigo(client, logar):
     corpo = r.json()
     assert corpo["semana_inicio"] == SEGUNDA.isoformat()
     assert _resumo(corpo) == [(1, "caio", 3), (2, "ana", 2), (3, "bia", 2), (4, "edu", 1)]
-    assert set(corpo["items"][0]["usuario"]) == {"username", "name", "avatar_url"}
+    assert set(corpo["items"][0]["usuario"]) == {"username", "name", "avatar_url", "nivel"}
+    # a patente do frango (#11) vai para o pódio, a mesma do perfil
+    assert corpo["items"][0]["usuario"]["nivel"] == client.get("/usuarios/caio", headers=eu).json()["frango"]["nivel"]
     assert corpo["eu"]["posicao"] == 4
     # logo acima de mim está a bia, com 2 dias: empatar não basta ("bia" < "edu")
     assert corpo["alvo"]["usuario"]["username"] == "bia"

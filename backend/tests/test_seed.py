@@ -133,3 +133,19 @@ def test_seed_preenche_a_arvore_sem_pular_pre_requisito():
         assert disponiveis(dominadas, EQUIPAMENTOS[nivel]), nivel
         for codigo in dominadas:
             assert set(PROGRESSOES[codigo]["equipamento"]) <= set(EQUIPAMENTOS[nivel]), (nivel, codigo)
+
+
+def test_demo_abre_o_chat_com_conversas_e_aviso_de_nao_lidas(monkeypatch):
+    from app.seed import CONVERSAS
+
+    _banco_vazio()
+    with _subir(monkeypatch) as client:
+        token = client.post("/auth/login", json={"username": USUARIO_DEMO, "password": SENHA_SEED}).json()["token"]
+        eu = {"Authorization": f"Bearer {token}"}
+        conversas = client.get("/conversas", headers=eu).json()["items"]
+        assert len(conversas) == len(CONVERSAS)
+        assert conversas[0]["nome"] == "Treino de sábado em Tambaú"  # a mais recente vem primeiro
+        assert client.get("/conversas/nao-lidas", headers=eu).json()["total"] == sum(c[3] for c in CONVERSAS)
+        direta = next(c for c in conversas if c["direta"] and c["nao_lidas"] == 1)
+        mensagens = client.get(f"/conversas/{direta['id']}/mensagens", headers=eu).json()["items"]
+        assert mensagens[-1]["autor"]["username"] == "caio_barra"

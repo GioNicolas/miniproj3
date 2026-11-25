@@ -23,10 +23,12 @@ from sqlalchemy.orm import Session
 
 from app.core.datas import FUSO_RECIFE, dia_em_recife
 from app.models.comentario import Comentario
+from app.models.conversa import Conversa, Participante
 from app.models.curtida import Curtida
 from app.models.equipamento_usuario import EquipamentoUsuario
 from app.models.exercicio import Exercicio
 from app.models.follow import Follow
+from app.models.mensagem import Mensagem
 from app.models.post import Post
 from app.models.progressao_dominada import ProgressaoDominada
 from app.models.treino import Treino
@@ -330,7 +332,83 @@ def seed_fake(db: Session) -> None:
                     ),
                 )
             )
+
+    _semear_conversas(db, usuarios)
     db.commit()
+
+
+# Chat (#21): conversas do frango_demo, para a banca abrir o Chat e ver a rede
+# combinando treino. Cada conversa: (nome do grupo ou None, participantes além
+# do demo, [(autor, minutos atrás, texto)], quantas das últimas o demo não leu).
+CONVERSAS = [
+    (
+        "Treino de sábado em Tambaú",
+        ["bia_paralela", "caio_barra", "carol_tambau", "matheus_def"],
+        [
+            ("bia_paralela", 300, "Galera, sábado 7h na barra da Praia de Tambaú. Quem vem?"),
+            ("caio_barra", 290, "Tô dentro. Levo o elástico pra quem tá na negativa."),
+            ("carol_tambau", 240, "Vou! Depois tem tapioca na orla, né?"),
+            (USUARIO_DEMO, 200, "Posso ir mesmo sem fazer nenhuma barra fixa ainda?"),
+            ("matheus_def", 190, "Pode e deve. A gente monta a progressão contigo lá."),
+            ("bia_paralela", 45, "Confirmados até agora: 5. Ponto de encontro na barra perto do Busto de Tamandaré."),
+            ("caio_barra", 12, "Previsão de sol. Levem água!"),
+        ],
+        2,
+    ),
+    (
+        None,
+        ["caio_barra"],
+        [
+            (USUARIO_DEMO, 600, "Caio, vi teu post da barra. Como tu começou na negativa?"),
+            ("caio_barra", 580, "Sobe com um banquinho e desce contando 5 segundos. 3 séries de 3."),
+            (USUARIO_DEMO, 570, "Só isso? Achei que era mais coisa."),
+            ("caio_barra", 30, "Só isso, mas toda semana. Marca na árvore quando a australiana ficar fácil."),
+        ],
+        1,
+    ),
+    (
+        None,
+        ["duda_ccen"],
+        [
+            ("duda_ccen", 1500, "Bora na barra do CCEN às 17h amanhã?"),
+            (USUARIO_DEMO, 1490, "Bora! Depois do RU?"),
+            ("duda_ccen", 1485, "Isso. Te espero na pracinha."),
+        ],
+        0,
+    ),
+]
+
+
+def _semear_conversas(db: Session, usuarios: dict[str, User]) -> None:
+    agora = _agora()
+    demo = usuarios[USUARIO_DEMO]
+    for nome, outros, mensagens, nao_lidas in CONVERSAS:
+        membros = [demo] + [usuarios[u] for u in outros]
+        ids = sorted(u.id for u in membros)
+        conversa = Conversa(
+            nome=nome,
+            chave_direta=f"{ids[0]}:{ids[1]}" if nome is None else None,
+            created_at=agora - timedelta(minutes=mensagens[0][1] + 5),
+            atualizada_em=agora - timedelta(minutes=mensagens[-1][1]),
+        )
+        db.add(conversa)
+        db.flush()
+        criadas = []
+        for autor, minutos, texto in mensagens:
+            mensagem = Mensagem(
+                conversa_id=conversa.id,
+                autor_id=usuarios[autor].id,
+                texto=texto,
+                created_at=agora - timedelta(minutes=minutos),
+            )
+            db.add(mensagem)
+            criadas.append(mensagem)
+        db.flush()
+        lidas_pelo_demo = criadas[len(criadas) - nao_lidas - 1].id if nao_lidas < len(criadas) else 0
+        for membro in membros:
+            # quem não é o demo já leu tudo; o demo deixou as últimas `nao_lidas` para a banca ver o aviso
+            lida = lidas_pelo_demo if membro is demo else criadas[-1].id
+            db.add(Participante(conversa_id=conversa.id, user_id=membro.id, lida_ate_id=lida))
 
 
 def semear_se_vazio(db: Session) -> int:

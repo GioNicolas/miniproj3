@@ -9,6 +9,7 @@ class UsuarioNaGranja(BaseModel):
     username: str
     name: str
     avatar_url: str
+    nivel: str | None = None  # patente do frango (#11), para o pódio
 
 
 class ColocadoOut(BaseModel):
