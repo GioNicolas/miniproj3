@@ -6,6 +6,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+import { Botao } from "@/components/Botao";
+import { Erro } from "@/components/Erro";
 import { UserCard } from "@/components/UserCard";
 import { apiGet, type Page, type User } from "@/lib/api";
 
@@ -56,36 +58,28 @@ export function ListaDeConexoes({ username, tipo }: Props) {
   return (
     <div className="space-y-4">
       <div>
-        <Link href={`/u/${username}`} className="text-sm text-zinc-500 hover:underline">
+        <Link href={`/u/${username}`} className="inline-flex min-h-11 items-center text-sm text-suave hover:text-tinta">
           ← @{username}
         </Link>
-        <h1 className="text-2xl font-bold">{TITULO[tipo]}</h1>
+        <h1 className="font-titulo text-4xl tracking-wide">{TITULO[tipo]}</h1>
       </div>
 
-      {erro && (
-        <p className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{erro}</p>
-      )}
+      {erro && <Erro>{erro}</Erro>}
 
-      {total === 0 && <p className="text-zinc-500">{VAZIO[tipo]}</p>}
+      {total === 0 && <p className="text-suave">{VAZIO[tipo]}</p>}
 
       <ul className="space-y-2">
         {usuarios.map((u) => (
           <li key={u.id}>
-            <Link href={`/u/${u.username}`}>
-              <UserCard user={u} />
-            </Link>
+            <UserCard user={u} />
           </li>
         ))}
       </ul>
 
       {total !== null && usuarios.length < total && (
-        <button
-          type="button"
-          onClick={() => carregar(usuarios.length)}
-          className="rounded border bg-white px-3 py-1.5 text-sm hover:bg-zinc-100"
-        >
-          carregar mais
-        </button>
+        <Botao variante="contorno" onClick={() => carregar(usuarios.length)} className="w-full">
+          Carregar mais
+        </Botao>
       )}
     </div>
   );
