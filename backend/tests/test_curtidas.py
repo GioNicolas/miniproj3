@@ -39,3 +39,27 @@ def test_autoral_post_novo_nao_herda_curtidas_de_post_apagado(client, logar):
     novo = client.post("/posts", json={"texto": "novo"}, headers=ana).json()
 
     assert novo["curtidas"] == 0
+
+
+def test_clique_duplo_nao_vira_500(client, logar):
+    """Duas requisições quase juntas: as duas passam pelo get antes de qualquer
+    commit. A segunda bate na chave primária e precisa continuar idempotente."""
+    from app.db import SessionLocal
+    from app.models.curtida import Curtida
+    from app.models.user import User
+    from app.services import curtidas as service
+
+    ana = logar("ana")
+    post_id = client.post("/posts", json={"texto": "treino feito"}, headers=ana).json()["id"]
+
+    with SessionLocal() as primeira, SessionLocal() as segunda:
+        eu = segunda.query(User).filter_by(username="ana").one()
+        primeira.add(Curtida(usuario_id=eu.id, post_id=post_id))
+        primeira.flush()  # a primeira requisição já gravou, mas ainda não commitou
+        original = segunda.get
+        segunda.get = lambda modelo, chave, **kw: None if modelo is Curtida else original(modelo, chave, **kw)
+        primeira.commit()
+
+        service.curtir(segunda, post_id, eu)  # não levanta IntegrityError
+
+    assert client.get(f"/posts/{post_id}", headers=ana).json()["curtidas"] == 1

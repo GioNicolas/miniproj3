@@ -1,7 +1,9 @@
 "use client";
 
 // Curtida de um post ("Tamo junto" no glossário). Atualização otimista: a tela
-// muda na hora do clique e volta atrás se o backend recusar.
+// muda na hora do clique e volta atrás se o backend recusar, com um aviso.
+// Quem usa passa key={`${post.id}-${post.curtidas}`}, para o número inicial
+// ser lido de novo quando o post chega atualizado.
 
 import { useState } from "react";
 
@@ -18,12 +20,14 @@ export function BotaoTamoJunto({ postId, curtidasIniciais, euCurtiInicial }: Pro
   const [curtidas, setCurtidas] = useState(curtidasIniciais);
   const [euCurti, setEuCurti] = useState(euCurtiInicial);
   const [enviando, setEnviando] = useState(false);
+  const [falhou, setFalhou] = useState(false);
 
   async function alternar() {
     const antes = { curtidas, euCurti };
     setEuCurti(!euCurti);
     setCurtidas(curtidas + (euCurti ? -1 : 1));
     setEnviando(true);
+    setFalhou(false);
     try {
       if (antes.euCurti) {
         await apiDelete(`/posts/${postId}/curtir`);
@@ -33,20 +37,28 @@ export function BotaoTamoJunto({ postId, curtidasIniciais, euCurtiInicial }: Pro
     } catch {
       setEuCurti(antes.euCurti);
       setCurtidas(antes.curtidas);
+      setFalhou(true);
     } finally {
       setEnviando(false);
     }
   }
 
   return (
-    <button
-      type="button"
-      onClick={alternar}
-      disabled={enviando}
-      aria-pressed={euCurti}
-      className={euCurti ? "font-semibold text-destaque-texto" : "hover:text-tinta"}
-    >
-      {GLOSSARIO.curtida} · {curtidas}
-    </button>
+    <span className="inline-flex items-center gap-2">
+      <button
+        type="button"
+        onClick={alternar}
+        disabled={enviando}
+        aria-pressed={euCurti}
+        className={`min-h-11 ${euCurti ? "font-semibold text-destaque-texto" : "hover:text-tinta"}`}
+      >
+        {GLOSSARIO.curtida} · {curtidas}
+      </button>
+      {falhou && (
+        <span role="alert" className="text-perigo">
+          não deu, tenta de novo
+        </span>
+      )}
+    </span>
   );
 }

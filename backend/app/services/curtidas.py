@@ -1,4 +1,5 @@
 from sqlalchemy import delete, func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.curtida import Curtida
@@ -11,7 +12,12 @@ def curtir(db: Session, post_id: int, eu: User) -> None:
     if db.get(Curtida, (eu.id, post_id)):
         return  # idempotente: curtir de novo não duplica
     db.add(Curtida(usuario_id=eu.id, post_id=post_id))
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # clique duplo: as duas requisições passaram pelo get antes de qualquer
+        # commit, e a segunda bate na chave primária. A curtida já existe.
+        db.rollback()
 
 
 def descurtir(db: Session, post_id: int, eu: User) -> None:

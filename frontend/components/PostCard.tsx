@@ -136,8 +136,13 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
           </>
         )}
 
-        <footer className="flex gap-4 text-sm text-suave">
-          <BotaoTamoJunto postId={post.id} curtidasIniciais={post.curtidas} euCurtiInicial={post.eu_curti} />
+        <footer className="flex items-center gap-4 text-sm text-suave">
+          <BotaoTamoJunto
+            key={`${post.id}-${post.curtidas}`}
+            postId={post.id}
+            curtidasIniciais={post.curtidas}
+            euCurtiInicial={post.eu_curti}
+          />
           <Link href={`/posts/${post.id}`} className="hover:text-tinta hover:underline">
             {contagem(post.comentarios, "comentário", "comentários")}
           </Link>
