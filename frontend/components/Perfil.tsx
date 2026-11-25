@@ -29,6 +29,8 @@ export function Perfil({ username }: { username: string }) {
 
   useEffect(() => {
     setPerfil(null);
+    setNaoAchou(false);
+    setErro(null);
     apiGet<PerfilDados>(`/usuarios/${username}`)
       .then(setPerfil)
       .catch((err) => {
@@ -103,6 +105,7 @@ export function Perfil({ username }: { username: string }) {
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 <BotaoSeguir
+                  key={perfil.username}
                   username={perfil.username}
                   euSigoInicial={perfil.eu_sigo}
                   aoMudar={(delta) => setPerfil((p) => (p ? { ...p, seguidores: p.seguidores + delta, eu_sigo: delta > 0 } : p))}
