@@ -10,7 +10,7 @@ from app.core.grafo_follows import grafo_follows
 from app.db import Base, SessionLocal, engine
 from app.models.follow import Follow
 from app.models.user import User
-from app.routers import auth, comentarios, explorar, follows, posts, treinos, users
+from app.routers import auth, comentarios, curtidas, explorar, follows, posts, treinos, users
 from app.seed import semear_se_vazio
 
 
@@ -55,3 +55,4 @@ app.include_router(treinos.router)
 app.include_router(comentarios.router)
 app.include_router(explorar.router)
 app.include_router(follows.router)
+app.include_router(curtidas.router)
