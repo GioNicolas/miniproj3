@@ -6,6 +6,7 @@ import { useState } from "react";
 import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
+import { BotaoTamoJunto } from "@/components/BotaoTamoJunto";
 import { Card } from "@/components/Card";
 import { Erro } from "@/components/Erro";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
@@ -157,8 +158,13 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
           </>
         )}
 
-        <footer className="flex gap-4 text-sm text-suave">
-          <span>{GLOSSARIO.curtida} · {post.curtidas}</span>
+        <footer className="flex items-center gap-4 text-sm text-suave">
+          <BotaoTamoJunto
+            key={`${post.id}-${post.curtidas}`}
+            postId={post.id}
+            curtidasIniciais={post.curtidas}
+            euCurtiInicial={post.eu_curti}
+          />
           <Link href={`/posts/${post.id}`} className="hover:text-tinta hover:underline">
             {contagem(post.comentarios, "comentário", "comentários")}
           </Link>
