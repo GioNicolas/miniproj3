@@ -8,6 +8,7 @@ própria contagem, então ninguém carrega vantagem da semana passada.
 """
 
 import heapq
+from collections import Counter
 from dataclasses import dataclass
 from datetime import date, timedelta
 
@@ -65,16 +66,18 @@ def top_k(candidatos: list[Colocado], k: int) -> list[Colocado]:
 class GranjaDaSemana:
     """Dias distintos com treino, por semana e por usuário.
 
-    - _dias[segunda][usuario_id] = set de dias com treino naquela semana
+    - _dias[segunda][usuario_id] = Counter {dia: check-ins naquele dia}
+      (os dias treinados são as chaves; a contagem existe para que apagar um
+      de dois treinos do mesmo dia não tire o dia)
 
-    - registrar um treino: O(1) (dois lookups em dict + add em set)
+    - registrar ou remover um treino: O(1) (dois lookups em dict + Counter)
     - dias treinados de alguém na semana: O(1)
     - ranking de n participantes: O(n log k), via top_k
     - reconstruir do zero: O(t check-ins), só no startup
     """
 
     def __init__(self) -> None:
-        self._dias: dict[date, dict[int, set[date]]] = {}
+        self._dias: dict[date, dict[int, Counter[date]]] = {}
 
     def reconstruir(self, treinos: list[tuple[int, date]]) -> None:
         """Chamado no startup com todos os pares (usuario_id, dia do treino)."""
@@ -85,10 +88,26 @@ class GranjaDaSemana:
     def registrar_treino(self, usuario_id: int, dia: date) -> None:
         """O(1). Dois treinos no mesmo dia contam como um dia só."""
         semana = self._dias.setdefault(segunda_da_semana(dia), {})
-        semana.setdefault(usuario_id, set()).add(dia)
+        semana.setdefault(usuario_id, Counter())[dia] += 1
+
+    def remover_treino(self, usuario_id: int, dia: date) -> None:
+        """O(1). Desfaz um registrar_treino (o post do treino foi apagado).
+
+        O dia só sai da conta quando não sobra nenhum treino nele.
+        """
+        dias = self._dias.get(segunda_da_semana(dia), {}).get(usuario_id)
+        if not dias or dias[dia] == 0:
+            return
+        dias[dia] -= 1
+        if dias[dia] == 0:
+            del dias[dia]
 
     def dias_treinados(self, usuario_id: int, segunda: date) -> int:
-        return len(self._dias.get(segunda, {}).get(usuario_id, set()))
+        return len(self._dias.get(segunda, {}).get(usuario_id, ()))
+
+    def dias_da_semana(self, usuario_id: int, segunda: date) -> set[date]:
+        """Os dias com treino de alguém na semana (cópia)."""
+        return set(self._dias.get(segunda, {}).get(usuario_id, ()))
 
     def ranking(
         self, participantes: dict[int, str], segunda: date, k: int

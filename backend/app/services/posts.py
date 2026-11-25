@@ -7,6 +7,7 @@ from app.models.comentario import Comentario
 from app.models.post import Post
 from app.models.user import User
 from app.schemas.post import PostCreate, PostOut, PostUpdate
+from app.services import curtidas as curtidas_service
 
 
 def buscar(db: Session, post_id: int) -> Post:
@@ -41,6 +42,7 @@ def editar(db: Session, post_id: int, eu: User, dados: PostUpdate) -> Post:
 
 def apagar(db: Session, post_id: int, eu: User) -> None:
     post = _do_autor(db, post_id, eu)
+    curtidas_service.apagar_do_post(db, post.id)
     # sem isso o SQLite deixa comentários órfãos apontando para um post que não existe
     db.execute(delete(Comentario).where(Comentario.post_id == post.id))
     db.delete(post)
@@ -86,6 +88,7 @@ def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
     com uma query agrupada por página, e não uma por post.
     """
     ids = [post.id for post in posts]
+    curtidas, eu_curti = curtidas_service.resumo_em_lote(db, ids, eu.id)
     comentarios = dict(
         db.execute(
             select(Comentario.post_id, func.count())
@@ -97,6 +100,8 @@ def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
     for post in posts:
         out = PostOut.model_validate(post)
         out.comentarios = comentarios.get(post.id, 0)
+        out.curtidas = curtidas.get(post.id, 0)
+        out.eu_curti = post.id in eu_curti
         saida.append(out)
     return saida
 

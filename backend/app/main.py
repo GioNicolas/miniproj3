@@ -10,7 +10,9 @@ from app.core.grafo_follows import grafo_follows
 from app.db import Base, SessionLocal, engine
 from app.models.follow import Follow
 from app.models.user import User
-from app.routers import auth, comentarios, conversas, explorar, follows, posts, treinos, users
+from app.routers import auth, comentarios, conversas, curtidas, explorar, follows, granja, posts, treinos, users
+from app.seed import semear_se_vazio
+from app.services import granja as granja_service
 
 
 @asynccontextmanager
@@ -19,8 +21,13 @@ async def lifespan(app: FastAPI):
     # Reconstrói as estruturas do core/ a partir do banco (memória zera a cada
     # restart — inclusive no --reload; ver core/README.md).
     with SessionLocal() as db:
+        # SEED_ON_BOOT=true (deploy, issue #14): banco vazio sobe já com o seed.
+        # Sem a variável nada muda, e os testes começam do zero.
+        if os.getenv("SEED_ON_BOOT", "").lower() == "true":
+            semear_se_vazio(db)
         usernames = list(db.scalars(select(User.username)))
         arestas = list(db.execute(select(Follow.seguidor_id, Follow.seguido_id)).tuples())
+        granja_service.reconstruir(db)
     contador_iniciais.reconstruir(usernames)
     grafo_follows.reconstruir(arestas)
     yield
@@ -50,4 +57,6 @@ app.include_router(treinos.router)
 app.include_router(comentarios.router)
 app.include_router(explorar.router)
 app.include_router(follows.router)
+app.include_router(curtidas.router)
+app.include_router(granja.router)
 app.include_router(conversas.router)

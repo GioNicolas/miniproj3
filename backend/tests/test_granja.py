@@ -82,3 +82,19 @@ def test_reconstruir_apaga_o_estado_anterior():
 
     assert granja.dias_treinados(1, SEGUNDA) == 0
     assert granja.dias_treinados(2, SEGUNDA) == 1
+
+
+def test_remover_treino_so_tira_o_dia_quando_nao_sobra_nenhum():
+    granja = GranjaDaSemana()
+    granja.registrar_treino(1, TERCA)
+    granja.registrar_treino(1, TERCA)
+
+    granja.remover_treino(1, TERCA)
+    assert granja.dias_treinados(1, SEGUNDA) == 1
+
+    granja.remover_treino(1, TERCA)
+    assert granja.dias_treinados(1, SEGUNDA) == 0
+
+    granja.remover_treino(1, TERCA)  # remover o que não existe não quebra
+    granja.remover_treino(2, QUARTA)
+    assert granja.dias_treinados(1, SEGUNDA) == 0
