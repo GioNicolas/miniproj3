@@ -67,6 +67,9 @@ export default function RegistroPage() {
             value={username}
             onChange={(e) => setUsername(e.target.value.toLowerCase())}
             autoComplete="username"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             pattern="[a-z0-9_]{3,30}"
             title="Só letras minúsculas, números e _ (de 3 a 30)"
             required
