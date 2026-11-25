@@ -41,8 +41,8 @@ SEMANAS = 3
 # decide o nível:
 #   folga 0 ou 1    → nunca perde força            → Monstro
 #   folga 1, 2 ou 2 → ganha uns 7 a cada 2,7 dias  → Galo
-#   folga 2         → ganha 5 a cada 3 dias        → Frango de granja
-#   comecando       → começou há 5 dias            → Frango / Frango de granja
+#   folga 2         → ganha 5 a cada 3 dias        → Frango
+#   comecando       → começou há 5 dias            → Pintinho / Frango
 #   sumiu           → treinava e parou há 6 dias   → definhando
 PADROES = {
     "monstro": {"folgas": (0, 1), "parou_ha": 0},
