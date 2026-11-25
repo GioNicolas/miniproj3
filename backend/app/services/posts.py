@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
+from app.core.granja import granja
 from app.core.grafo_follows import grafo_follows
 from app.models.comentario import Comentario
 from app.models.post import Post
@@ -43,11 +44,15 @@ def editar(db: Session, post_id: int, eu: User, dados: PostUpdate) -> Post:
 
 def apagar(db: Session, post_id: int, eu: User) -> None:
     post = _do_autor(db, post_id, eu)
+    dia_do_treino = post.treino.dia if post.treino else None
     curtidas_service.apagar_do_post(db, post.id)
     # sem isso o SQLite deixa comentários órfãos apontando para um post que não existe
     db.execute(delete(Comentario).where(Comentario.post_id == post.id))
     db.delete(post)
     db.commit()
+    if dia_do_treino is not None:
+        # apagar o post do check-in tira o treino da Granja da Semana (#12). O(1).
+        granja.remover_treino(eu.id, dia_do_treino)
 
 
 def explorar(db: Session, offset: int, limit: int) -> tuple[list[Post], int]:

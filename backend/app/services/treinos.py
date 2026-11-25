@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.datas import dia_em_recife
+from app.core.granja import granja
 from app.models.exercicio import Exercicio
 from app.models.post import Post
 from app.models.treino import Treino
@@ -23,6 +24,8 @@ def registrar(db: Session, eu: User, dados: TreinoCreate) -> Post:
     )
     db.add(post)
     db.commit()
+    # Granja da Semana (#12): o check-in conta na hora, sem esperar o restart. O(1).
+    granja.registrar_treino(eu.id, post.treino.dia)
     db.refresh(post)
     return post
 
