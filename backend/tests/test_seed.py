@@ -120,3 +120,16 @@ def test_seed_tem_monstro_galo_e_frango_definhando():
     assert any(forca >= 75 for forca in forcas), "falta um Monstro"
     assert any(50 <= forca < 75 for forca in forcas), "falta um Galo"
     assert any(sem >= 2 for _, sem in estados.values()), "falta um frango definhando"
+
+
+def test_seed_preenche_a_arvore_sem_pular_pre_requisito():
+    from app.core.progressoes import PROGRESSOES, disponiveis, respeita_prerequisitos
+    from app.seed import DOMINADAS, EQUIPAMENTOS
+
+    for nivel, dominadas in DOMINADAS.items():
+        assert set(dominadas) <= set(PROGRESSOES)
+        assert respeita_prerequisitos(dominadas), nivel
+        # todo mundo tem pelo menos um próximo passo na árvore
+        assert disponiveis(dominadas, EQUIPAMENTOS[nivel]), nivel
+        for codigo in dominadas:
+            assert set(PROGRESSOES[codigo]["equipamento"]) <= set(EQUIPAMENTOS[nivel]), (nivel, codigo)

@@ -30,7 +30,7 @@ def hoje() -> str:
 def test_treino_do_dia_vira_um_post_com_todos_os_exercicios(client, usuarios):
     usuarios("ana")
     exercicios = [
-        {"progressao": "australiana", "series": 3, "reps": 8},
+        {"progressao": "barra_australiana", "series": 3, "reps": 8},
         {"progressao": "flexao_inclinada", "series": 3, "reps": 10},
         {"progressao": "prancha", "series": None, "reps": None},
     ]
@@ -93,8 +93,8 @@ def test_treino_sem_exercicios_tambem_conta_o_dia(client, usuarios):
     [
         {"exercicios": [{"progressao": "Barra Fixa!"}]},
         {"exercicios": [{"series": 3, "reps": 8}]},
-        {"exercicios": [{"progressao": "australiana", "series": 0}]},
-        {"exercicios": [{"progressao": "australiana", "reps": 0}]},
+        {"exercicios": [{"progressao": "barra_australiana", "series": 0}]},
+        {"exercicios": [{"progressao": "barra_australiana", "reps": 0}]},
         {"exercicios": [{"progressao": "prancha"}] * 21},
         {"texto": "   "},
     ],

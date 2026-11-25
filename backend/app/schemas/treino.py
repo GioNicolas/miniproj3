@@ -1,16 +1,23 @@
 from datetime import date
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
+from app.core.progressoes import PROGRESSOES
 from app.schemas.post import Texto
 
 
 class ExercicioIn(BaseModel):
-    # Código de progressão da árvore (#10). Enquanto o catálogo não entra,
-    # só o formato do código é validado.
+    # Código de progressão do catálogo da árvore (#10): core/progressoes.py.
     progressao: str = Field(max_length=50, pattern=r"^[a-z0-9_]+$")
     series: int | None = Field(default=None, ge=1, le=100)
     reps: int | None = Field(default=None, ge=1, le=1000)
+
+    @field_validator("progressao")
+    @classmethod
+    def do_catalogo(cls, codigo: str) -> str:
+        if codigo not in PROGRESSOES:
+            raise ValueError("progressão fora do catálogo da árvore")
+        return codigo
 
 
 class TreinoCreate(BaseModel):
