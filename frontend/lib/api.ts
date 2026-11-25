@@ -157,6 +157,7 @@ export type UsuarioNaGranja = {
   username: string;
   name: string;
   avatar_url: string;
+  nivel?: Patente | null; // patente do frango (#11), para o pódio
 };
 
 export type Colocado = {

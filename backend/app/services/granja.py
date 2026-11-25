@@ -16,7 +16,8 @@ from app.core.granja import Colocado, granja, segunda_da_semana
 from app.core.grafo_follows import grafo_follows
 from app.models.treino import Treino
 from app.models.user import User
-from app.schemas.granja import AlvoOut, ColocadoOut, GranjaOut
+from app.schemas.granja import AlvoOut, ColocadoOut, GranjaOut, UsuarioNaGranja
+from app.services import frango
 
 
 def reconstruir(db: Session) -> None:
@@ -38,10 +39,15 @@ def ranking(db: Session, eu: User, k: int) -> GranjaOut:
     ids = grafo_follows.seguindo(eu.id) | {eu.id}
     usuarios = {u.id: u for u in db.scalars(select(User).where(User.id.in_(ids)))}
     participantes = {uid: u.username for uid, u in usuarios.items()}
+    # patente de cada um com uma query só (mesma conta dos posts)
+    niveis = frango.niveis(db, set(usuarios))
+
+    def usuario_out(uid: int) -> UsuarioNaGranja:
+        return UsuarioNaGranja.model_validate(usuarios[uid]).model_copy(update={"nivel": niveis.get(uid)})
 
     def colocado_out(posicao: int, c: Colocado) -> ColocadoOut:
         return ColocadoOut(
-            posicao=posicao, usuario=usuarios[c.usuario_id], dias_treinados=c.dias_treinados
+            posicao=posicao, usuario=usuario_out(c.usuario_id), dias_treinados=c.dias_treinados
         )
 
     # Top-K pelo heap do core: O(n log k).
@@ -67,7 +73,7 @@ def ranking(db: Session, eu: User, k: int) -> GranjaOut:
         if logo_acima.username < meu.username:
             faltam += 1
         alvo = AlvoOut(
-            usuario=usuarios[logo_acima.usuario_id],
+            usuario=usuario_out(logo_acima.usuario_id),
             dias_treinados=logo_acima.dias_treinados,
             faltam_dias=faltam,
         )
