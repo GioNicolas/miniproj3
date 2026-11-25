@@ -1,0 +1,22 @@
+# Blueprint do Render (issue #14): a API sobe com o mesmo comando do guia 08.
+# No Render: New > Blueprint > escolher este repositório. Depois, na Vercel,
+# NEXT_PUBLIC_API_URL tem que apontar para a URL que o Render der para a API.
+services:
+  - type: web
+    name: frangaria-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install uv && uv sync --frozen
+    startCommand: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true # cada merge na main sobe sozinho
+    healthCheckPath: /docs
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.10"
+      # O disco do plano free zera a cada deploy: o seed recria a rede ao subir.
+      - key: SEED_ON_BOOT
+        value: "true"
+      - key: FRONTEND_URL
+        value: https://miniproj3-six.vercel.app
+      # Sem DEBUG: o bypass de X-User-Id (#1) só existe com DEBUG=true.
