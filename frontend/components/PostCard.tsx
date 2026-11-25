@@ -11,6 +11,7 @@ import { Erro } from "@/components/Erro";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
+import { nomeDaProgressao } from "@/lib/progressoes";
 import { seguir, useSeguindo } from "@/lib/seguindo";
 import { tempoRelativo } from "@/lib/tempo";
 
@@ -19,7 +20,7 @@ const LIMITE_TEXTO = 500;
 function resumoExercicio({ progressao, series, reps }: Exercicio): string {
   const volume =
     series && reps ? `${series}×${reps}` : series ? `${series} séries` : reps ? `${reps} reps` : null;
-  return [progressao.split("_").join(" "), volume].filter(Boolean).join(" · ");
+  return [nomeDaProgressao(progressao), volume].filter(Boolean).join(" · ");
 }
 
 function contagem(n: number, singular: string, plural: string): string {
