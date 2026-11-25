@@ -38,14 +38,24 @@ class UserUpdate(BaseModel):
     avatar_url: str | None = Field(default=None, max_length=300)
 
 
+class FrangoOut(BaseModel):
+    """O estado do frango (#11), calculado por app/core/frango.py."""
+
+    nivel: str
+    forca: int
+    dias_sem_treinar: int | None
+    definhando: bool
+    proximo_nivel: str | None
+    falta_para_proximo: int
+
+
 class PerfilOut(UserOut):
     """Contrato combinado na issue #3 para GET /usuarios/{username}.
 
-    seguidores, seguindo e eu_sigo vêm do follow (#4). frango (#11) fica null
-    até a Sofia ligar o core/frango.py aqui.
+    seguidores, seguindo e eu_sigo vêm do follow (#4); frango, do core/frango.py (#11).
     """
 
     seguidores: int
     seguindo: int
     eu_sigo: bool
-    frango: dict | None = None
+    frango: FrangoOut

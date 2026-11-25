@@ -7,6 +7,7 @@ from app.models.comentario import Comentario
 from app.models.post import Post
 from app.models.user import User
 from app.schemas.post import PostCreate, PostOut, PostUpdate
+from app.services import frango
 
 
 def buscar(db: Session, post_id: int) -> Post:
@@ -107,10 +108,12 @@ def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
             .group_by(Comentario.post_id)
         ).tuples().all()
     )
+    niveis = frango.niveis(db, {post.autor_id for post in posts})
     saida = []
     for post in posts:
         out = PostOut.model_validate(post)
         out.comentarios = comentarios.get(post.id, 0)
+        out.autor.nivel = niveis.get(post.autor_id)
         saida.append(out)
     return saida
 

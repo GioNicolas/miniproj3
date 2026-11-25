@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.contadores import contador_iniciais
 from app.models.user import User
 from app.schemas.user import PerfilOut, UserCreate, UserOut, UserUpdate
-from app.services import follows
+from app.services import follows, frango
 
 
 def listar(db: Session, offset: int, limit: int) -> tuple[list[User], int]:
@@ -50,4 +50,8 @@ def buscar_por_username(db: Session, username: str) -> User:
 
 def perfil(db: Session, username: str, eu: User) -> PerfilOut:
     user = buscar_por_username(db, username)
-    return PerfilOut(**UserOut.model_validate(user).model_dump(), **follows.contadores(user.id, eu.id))
+    return PerfilOut(
+        **UserOut.model_validate(user).model_dump(),
+        **follows.contadores(user.id, eu.id),
+        frango=frango.do_usuario(db, user.id),
+    )
