@@ -108,3 +108,23 @@ export type Comentario = {
   autor: Autor;
   created_at: string;
 };
+
+// ---- chat (espelham backend/app/schemas/conversa.py) ----
+
+export type Mensagem = {
+  id: number;
+  conversa_id: number;
+  texto: string;
+  autor: Autor;
+  created_at: string;
+};
+
+export type Conversa = {
+  id: number;
+  nome: string | null;
+  direta: boolean;
+  participantes: Autor[]; // inclui você
+  ultima_mensagem: Mensagem | null;
+  nao_lidas: number;
+  atualizada_em: string;
+};
