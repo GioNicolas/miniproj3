@@ -12,6 +12,7 @@ import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
 import { nomeDaProgressao } from "@/lib/progressoes";
+import { seguir, useSeguindo } from "@/lib/seguindo";
 import { tempoRelativo } from "@/lib/tempo";
 
 const LIMITE_TEXTO = 500;
@@ -35,6 +36,9 @@ type Props = {
 export function PostCard({ post, onAtualizado, onApagado }: Props) {
   const eu = useEu();
   const souAutor = eu?.username === post.autor.username;
+  const sigo = useSeguindo();
+  // Seguir pelo post é a porta de entrada de quem chegou pelo Explorar.
+  const podeSeguir = eu !== null && !souAutor && sigo !== null && !sigo.has(post.autor.username);
   const [editando, setEditando] = useState(false);
   const [rascunho, setRascunho] = useState(post.texto);
   const [salvando, setSalvando] = useState(false);
@@ -67,6 +71,18 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
     }
   }
 
+  async function seguirAutor() {
+    setSalvando(true);
+    try {
+      await seguir(post.autor.username);
+      setErro(null);
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "não deu para seguir agora");
+    } finally {
+      setSalvando(false);
+    }
+  }
+
   function cancelar() {
     setRascunho(post.texto);
     setEditando(false);
@@ -88,6 +104,11 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
               </time>
             </p>
           </div>
+          {podeSeguir && (
+            <Botao variante="contorno" onClick={seguirAutor} disabled={salvando} className="shrink-0 px-3 text-lg">
+              Seguir
+            </Botao>
+          )}
           {souAutor && !editando && (
             <div className="flex gap-3 text-sm text-suave">
               <button type="button" onClick={() => setEditando(true)} disabled={salvando} className="min-h-11 hover:text-tinta">
