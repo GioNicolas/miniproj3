@@ -11,6 +11,7 @@ import { Carregando } from "@/components/Carregando";
 import { EditarPerfil } from "@/components/EditarPerfil";
 import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
+import { CartaoDoFrango } from "@/components/Frango";
 import { ListaDePosts } from "@/components/ListaDePosts";
 import { SemanaDeTreinos } from "@/components/SemanaDeTreinos";
 import { apiGet, type Perfil as PerfilDados } from "@/lib/api";
@@ -85,7 +86,7 @@ export function Perfil({ username }: { username: string }) {
               souEu && <p className="text-sm text-suave">Conta em uma frase em que pé está o seu treino.</p>
             )}
 
-            {/* O frango (#11) entra aqui quando o GET trouxer `frango`. */}
+            <CartaoDoFrango frango={perfil.frango} souEu={souEu} />
 
             <div className="flex gap-6">
               <Link href={`/u/${perfil.username}/seguidores`} className="min-h-11 hover:underline">

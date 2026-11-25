@@ -4,7 +4,7 @@ def test_perfil_de_outra_pessoa_traz_contadores_e_eu_sigo(client, logar):
 
     visto_pela_ana = client.get("/usuarios/bia", headers=ana).json()
     assert (visto_pela_ana["seguidores"], visto_pela_ana["seguindo"], visto_pela_ana["eu_sigo"]) == (1, 0, True)
-    assert visto_pela_ana["frango"] is None  # o frango (#11) entra depois
+    assert visto_pela_ana["frango"]["nivel"] == "Pintinho"  # quem nunca treinou começa no zero
     assert client.get("/usuarios/ana", headers=bia).json()["eu_sigo"] is False
     assert client.get("/usuarios/fantasma", headers=ana).status_code == 404
     assert client.get("/usuarios/bia").status_code == 401
