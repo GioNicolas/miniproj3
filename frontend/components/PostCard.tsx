@@ -6,7 +6,6 @@ import { useState } from "react";
 import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
-import { Card } from "@/components/Card";
 import { Erro } from "@/components/Erro";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
@@ -18,7 +17,8 @@ const LIMITE_TEXTO = 500;
 function resumoExercicio({ progressao, series, reps }: Exercicio): string {
   const volume =
     series && reps ? `${series}×${reps}` : series ? `${series} séries` : reps ? `${reps} reps` : null;
-  return [progressao.split("_").join(" "), volume].filter(Boolean).join(" · ");
+  const nome = progressao.split("_").join(" ");
+  return [nome.charAt(0).toUpperCase() + nome.slice(1), volume].filter(Boolean).join(" · ");
 }
 
 function contagem(n: number, singular: string, plural: string): string {
@@ -72,78 +72,98 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
     setErro(null);
   }
 
+  const exercicios = post.treino?.exercicios ?? [];
+
   return (
-    // Post de treino ganha a faixa laranja na esquerda: é o check-in que conta pro frango.
-    <Card className={post.treino ? "border-l-4 border-l-destaque" : ""}>
-      <article className="space-y-3">
-        <header className="flex items-center gap-3">
-          <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold">{post.autor.name}</p>
-            <p className="truncate text-sm text-suave">
-              @{post.autor.username} ·{" "}
-              <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
-                {tempoRelativo(post.created_at)}
-              </time>
-            </p>
+    // Post é linha, não card: a linha de cima separa um do outro (igual ao canvas).
+    <article className="flex flex-col border-t border-borda pt-1">
+      <header className="flex items-center gap-3 pb-3 pt-4">
+        <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[15px] font-semibold">{post.autor.name}</p>
+          <p className="mt-0.5 truncate text-xs text-suave">
+            @{post.autor.username} ·{" "}
+            <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
+              {tempoRelativo(post.created_at)}
+            </time>
+          </p>
+        </div>
+        {souAutor && !editando && (
+          <div className="flex shrink-0 text-[13px] font-medium text-suave">
+            <button type="button" onClick={() => setEditando(true)} disabled={salvando} className="min-h-11 px-2 hover:text-tinta">
+              Editar
+            </button>
+            <button type="button" onClick={apagar} disabled={salvando} className="min-h-11 px-2 hover:text-brasa">
+              Apagar
+            </button>
           </div>
-          {souAutor && !editando && (
-            <div className="flex gap-3 text-sm text-suave">
-              <button type="button" onClick={() => setEditando(true)} disabled={salvando} className="min-h-11 hover:text-tinta">
-                editar
-              </button>
-              <button type="button" onClick={apagar} disabled={salvando} className="min-h-11 hover:text-perigo">
-                apagar
-              </button>
+        )}
+      </header>
+
+      {editando ? (
+        <div className="space-y-2 pb-4">
+          <AreaDeTexto
+            value={rascunho}
+            onChange={(e) => setRascunho(e.target.value)}
+            maxLength={LIMITE_TEXTO}
+            rows={3}
+            aria-label="Texto do post"
+          />
+          <div className="flex justify-end gap-2">
+            <Botao variante="contorno" onClick={cancelar} disabled={salvando}>
+              Cancelar
+            </Botao>
+            <Botao variante="escuro" onClick={salvar} disabled={salvando || !rascunho.trim()}>
+              {salvando ? "Salvando..." : "Salvar"}
+            </Botao>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Bloco do treino: o check-in que conta pro frango */}
+          {post.treino && (
+            <div className="flex items-center gap-4 rounded-xl bg-superficie px-4 py-3">
+              <div className="flex w-14 shrink-0 flex-col items-center">
+                <span className="font-placar text-[32px] leading-[0.9]">{exercicios.length}</span>
+                <span className="text-xs text-suave">{exercicios.length === 1 ? "exercício" : "exercícios"}</span>
+              </div>
+              {exercicios.length > 0 ? (
+                <ul aria-label="Treino do dia" className="min-w-0 flex-1 space-y-0.5">
+                  {exercicios.map((exercicio, i) => (
+                    <li key={i} className="truncate text-[15px] font-semibold leading-tight">
+                      {resumoExercicio(exercicio)}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="min-w-0 flex-1 text-[15px] font-semibold leading-tight">
+                  Treino registrado
+                  <span className="mt-0.5 block text-xs font-normal text-suave">Vale 1 dia na granja</span>
+                </p>
+              )}
             </div>
           )}
-        </header>
+          <p className="whitespace-pre-wrap break-words pt-3 text-[15px] leading-[1.55] text-pretty">{post.texto}</p>
+        </>
+      )}
 
-        {editando ? (
-          <div className="space-y-2">
-            <AreaDeTexto
-              value={rascunho}
-              onChange={(e) => setRascunho(e.target.value)}
-              maxLength={LIMITE_TEXTO}
-              rows={3}
-              aria-label="Texto do post"
-            />
-            <div className="flex justify-end gap-2">
-              <Botao variante="contorno" onClick={cancelar} disabled={salvando}>
-                Cancelar
-              </Botao>
-              <Botao onClick={salvar} disabled={salvando || !rascunho.trim()}>
-                {salvando ? "Salvando..." : "Salvar"}
-              </Botao>
-            </div>
-          </div>
-        ) : (
-          <>
-            {post.treino && (
-              <ul aria-label="Treino do dia" className="flex flex-wrap gap-1.5">
-                <li className="rounded-full bg-destaque px-2.5 py-0.5 font-titulo text-base tracking-wide text-sobre-destaque">
-                  Treino
-                </li>
-                {post.treino.exercicios.map((exercicio, i) => (
-                  <li key={i} className="rounded-full border border-borda bg-fundo px-2.5 py-0.5 text-sm">
-                    {resumoExercicio(exercicio)}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p className="whitespace-pre-wrap break-words">{post.texto}</p>
-          </>
-        )}
+      <footer className="flex items-center gap-4 pb-2 pt-1 text-[13px]">
+        <span className="flex min-h-11 items-center gap-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-destaque">
+            <path d="M12 3c.6 3 4.5 4.8 4.5 9.2a4.5 4.5 0 0 1-9 0c0-1.7.7-2.9 1.8-3.9.2 1.4.9 2.2 1.9 2.4-.6-2.4-.2-5.1.8-7.7z" />
+          </svg>
+          <span className="font-semibold">{GLOSSARIO.curtida}</span>
+          <span className="font-medium tabular-nums text-suave">{post.curtidas}</span>
+        </span>
+        <Link href={`/posts/${post.id}`} className="flex min-h-11 items-center gap-2 font-medium text-ceu hover:underline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 5h16v11H9l-5 4z" />
+          </svg>
+          {contagem(post.comentarios, "comentário", "comentários")}
+        </Link>
+      </footer>
 
-        <footer className="flex gap-4 text-sm text-suave">
-          <span>{GLOSSARIO.curtida} · {post.curtidas}</span>
-          <Link href={`/posts/${post.id}`} className="hover:text-tinta hover:underline">
-            {contagem(post.comentarios, "comentário", "comentários")}
-          </Link>
-        </footer>
-
-        {erro && <Erro>{erro}</Erro>}
-      </article>
-    </Card>
+      {erro && <div className="pb-3"><Erro>{erro}</Erro></div>}
+    </article>
   );
 }

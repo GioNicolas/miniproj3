@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Card } from "@/components/Card";
@@ -8,6 +9,7 @@ import { ListaDePosts } from "@/components/ListaDePosts";
 import { NovoPost } from "@/components/NovoPost";
 import { apiGet, type Page, type User } from "@/lib/api";
 import { useEu } from "@/lib/eu";
+import { GLOSSARIO } from "@/lib/glossario";
 
 type Aba = "seguindo" | "explorar";
 
@@ -36,11 +38,26 @@ export default function Home() {
   }, [eu]);
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-4">
+      {/* Chamada do dia: o único botão de milho do feed */}
+      <Card className="flex flex-col gap-4">
+        <div>
+          <h1 className="text-[17px] font-bold leading-tight tracking-[-0.02em]">Treinou hoje? Conta pra granja.</h1>
+          <p className="mt-1 text-[13px] text-suave">Vale 1 dia na granja e +10 de força.</p>
+        </div>
+        <Link
+          href="/treinos"
+          className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque transition-[transform,filter] duration-150 ease-out hover:brightness-105 active:scale-[0.97] motion-reduce:transition-none"
+        >
+          {GLOSSARIO.registrarTreino}
+        </Link>
+      </Card>
+
       <NovoPost onCriado={() => setVersao((v) => v + 1)} />
 
-      <section className="space-y-3">
-        <div role="tablist" aria-label="O que mostrar" className="flex gap-6 border-b border-borda">
+      <section className="flex flex-col gap-4">
+        {/* Controle segmentado: a aba escolhida fica preenchida (elevado) */}
+        <div role="tablist" aria-label="O que mostrar" className="grid grid-cols-2 gap-1 rounded-[10px] bg-superficie p-1">
           {ABAS.map(({ id, rotulo }) => (
             <button
               key={id}
@@ -48,8 +65,8 @@ export default function Home() {
               role="tab"
               aria-selected={aba === id}
               onClick={() => setAba(id)}
-              className={`-mb-px min-h-11 border-b-2 font-titulo text-2xl tracking-wide ${
-                aba === id ? "border-destaque text-tinta" : "border-transparent text-suave hover:text-tinta"
+              className={`min-h-11 rounded-lg text-sm transition-colors ${
+                aba === id ? "bg-elevado font-semibold text-tinta" : "font-medium text-suave hover:text-tinta"
               }`}
             >
               {rotulo}
@@ -66,16 +83,19 @@ export default function Home() {
             vazio={
               sigoAlguem
                 ? { titulo: "Nada por aqui ainda", texto: "Quem você segue ainda não contou o treino. Que tal contar o seu?" }
-                : { titulo: "Você ainda não segue ninguém", texto: "Dá uma olhada no Explorar e segue quem treina parecido com você." }
+                : {
+                    titulo: "Você ainda não segue ninguém",
+                    texto: "Segue quem treina perto e os treinos aparecem aqui. Enquanto isso, o Explorar mostra o que a galera tá treinando.",
+                  }
             }
           />
         ) : (
           <>
-            {!sigoAlguem && (
-              <Card escuro>
-                <p className="text-sm">Você ainda não segue nenhum frango: olha o que a galera tá treinando.</p>
-              </Card>
-            )}
+            <p className="text-[13px] text-pretty text-suave">
+              {sigoAlguem
+                ? "Os posts mais novos da rede toda."
+                : "Você ainda não segue ninguém: olha o que a galera tá treinando e segue quem treina parecido com você."}
+            </p>
             <ListaDePosts
               key={`explorar-${versao}`}
               caminho="/explorar"

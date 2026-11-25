@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from "react";
 import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
-import { Card } from "@/components/Card";
 import { Erro } from "@/components/Erro";
 import { apiGet, apiPost, type Comentario, type Page } from "@/lib/api";
 import { tempoRelativo } from "@/lib/tempo";
@@ -64,59 +63,55 @@ export function Comentarios({ postId, onComentou }: Props) {
   }
 
   return (
-    <section className="space-y-3">
-      <h2 className="font-titulo text-2xl tracking-wide">Comentários ({total ?? 0})</h2>
+    <section className="flex flex-col gap-3">
+      <h2 className="text-[17px] font-bold tracking-[-0.02em]">
+        Comentários <span className="font-medium tabular-nums text-suave">{total ?? 0}</span>
+      </h2>
 
       {total === 0 && (
         <p className="text-sm text-suave">Ninguém comentou ainda. Manda a primeira dica ou dúvida.</p>
       )}
 
-      <ul className="space-y-2">
-        {comentarios.map((c) => (
-          <li key={c.id}>
-            <Card className="flex gap-3">
-              <Avatar name={c.autor.name} avatarUrl={c.autor.avatar_url} />
+      {comentarios.length > 0 && (
+        <ul className="border-t border-borda">
+          {comentarios.map((c) => (
+            <li key={c.id} className="flex gap-3 border-b border-borda py-3">
+              <Avatar name={c.autor.name} avatarUrl={c.autor.avatar_url} tamanho="p" />
               <div className="min-w-0">
-                <p className="text-sm text-suave">
-                  <span className="font-semibold text-tinta">{c.autor.name}</span> @{c.autor.username} ·{" "}
+                <p className="text-xs text-suave">
+                  <span className="text-sm font-semibold text-tinta">{c.autor.name}</span> @{c.autor.username} ·{" "}
                   <time dateTime={c.created_at}>{tempoRelativo(c.created_at)}</time>
                 </p>
-                <p className="whitespace-pre-wrap break-words">{c.texto}</p>
+                <p className="mt-0.5 whitespace-pre-wrap break-words text-sm leading-snug">{c.texto}</p>
               </div>
-            </Card>
-          </li>
-        ))}
-      </ul>
-
-      {comentarios.length < (total ?? 0) && (
-        <button
-          type="button"
-          onClick={() => carregar(comentarios.length)}
-          className="min-h-11 text-sm text-suave underline hover:text-tinta"
-        >
-          carregar mais
-        </button>
+            </li>
+          ))}
+        </ul>
       )}
 
-      <Card>
-        <form onSubmit={comentar} className="space-y-3">
+      {comentarios.length < (total ?? 0) && (
+        <Botao variante="contorno" onClick={() => carregar(comentarios.length)} className="w-full">
+          Ver comentários mais antigos
+        </Botao>
+      )}
+
+      <form onSubmit={comentar} className="flex flex-col gap-3 pt-2">
+        <label className="flex flex-col gap-2 text-[13px] font-semibold">
+          Seu comentário
           <AreaDeTexto
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             placeholder="Manda a dica ou a dúvida"
-            aria-label="Novo comentário"
             maxLength={LIMITE_TEXTO}
             rows={2}
+            className="font-normal"
           />
-          <div className="flex justify-end">
-            <Botao type="submit" disabled={enviando || !texto.trim()}>
-              {enviando ? "Comentando..." : "Comentar"}
-            </Botao>
-          </div>
-        </form>
-      </Card>
-
-      {erro && <Erro>{erro}</Erro>}
+        </label>
+        {erro && <Erro>{erro}</Erro>}
+        <Botao type="submit" disabled={enviando || !texto.trim()} className="w-full">
+          {enviando ? "Comentando..." : "Comentar"}
+        </Botao>
+      </form>
     </section>
   );
 }

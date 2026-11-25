@@ -1,6 +1,6 @@
 "use client";
 
-// Botão Seguir / Deixar de seguir. Quem usa (a página de perfil) passa o estado
+// Botão Seguir / Seguindo. Quem usa (a página de perfil) passa o estado
 // inicial (`eu_sigo` do GET /usuarios/{username}) e recebe +1/-1 em `aoMudar`
 // para atualizar o contador de seguidores sem recarregar a página.
 
@@ -40,17 +40,17 @@ export function BotaoSeguir({ username, euSigoInicial, aoMudar }: Props) {
 
   return (
     <div className="flex flex-col items-start gap-1">
+      {/* Seguindo fica preenchido (elevado); Seguir fica só com contorno */}
       <button
         type="button"
         onClick={alternar}
         disabled={enviando}
-        className={
-          euSigo
-            ? "min-h-11 rounded-lg border border-borda-forte bg-transparent px-3 text-sm font-semibold text-tinta hover:bg-superficie-2 disabled:opacity-50"
-            : "min-h-11 rounded-lg bg-superficie-2 px-3 text-sm font-semibold text-tinta hover:brightness-125 disabled:opacity-50"
-        }
+        aria-pressed={euSigo}
+        className={`min-h-11 min-w-24 shrink-0 rounded-full border px-4 text-sm font-semibold text-tinta transition-colors disabled:opacity-50 ${
+          euSigo ? "border-elevado bg-elevado" : "border-borda-forte bg-transparent hover:bg-superficie-2"
+        }`}
       >
-        {euSigo ? "Deixar de seguir" : "Seguir"}
+        {euSigo ? "Seguindo" : "Seguir"}
       </button>
       {erro && <p className="text-xs text-brasa">{erro}</p>}
     </div>

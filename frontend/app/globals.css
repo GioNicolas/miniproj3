@@ -1,66 +1,67 @@
 @import "tailwindcss";
 
 /*
- * Tokens da Frangaria (paleta Madrugada + Milho, tema escuro). Use SEMPRE estes
- * nomes, nunca cor solta: bg-fundo, bg-superficie, text-tinta, text-suave,
+ * Tokens da Frangaria (paleta Madrugada azul + Milho, tema escuro). Use SEMPRE
+ * estes nomes, nunca cor solta: bg-fundo, bg-superficie, text-tinta, text-suave,
  * border-borda, bg-destaque, text-sobre-destaque, font-titulo, font-placar...
- * Mudar uma cor aqui muda a rede inteira.
+ * Mudar uma cor aqui muda a rede inteira. Fonte da verdade: o canvas de design.
  *
  * Cada cor de apoio tem uma função, e só essa:
- *   milho (destaque) = ação e constância: botão principal, dia treinado, sequência
- *   céu   = conversa e informação: comentários, dúvidas, "como faz"
+ *   milho (destaque) = SÓ o botão principal de cada tela
+ *   céu   = conversa e informação: comentários, links, "Mostrar"
  *   folha = conquista: Comprovado, skill dominada, subiu no ranking
  *   brasa = alerta e prazo: erro, definhando, caiu no ranking
  */
 @theme {
-  --color-fundo: #0e0f11;
-  --color-superficie: #18191c;
-  --color-superficie-2: #232429;
-  --color-superficie-escura: #232429;
+  --color-fundo: #0d1220;
+  --color-superficie: #1b2438; /* card */
+  --color-superficie-2: #253049; /* card dentro de card */
+  --color-elevado: #2f3b56; /* item escolhido: aba ativa, "Seguindo", avatar sem foto */
+  --color-superficie-escura: #1b2438;
   --color-tinta: #f1f0ea;
   --color-tinta-clara: #f1f0ea;
-  --color-suave: #a3a29b;
-  --color-borda: #2c2d32;
-  --color-borda-forte: #3a3b41;
+  --color-suave: #a0a5b2;
+  --color-borda: #34405c; /* linha entre posts e seções */
+  --color-borda-forte: #66749a; /* contorno de campo e botão secundário (3:1 no fundo) */
 
-  /* milho: preenche botões e marcas; texto em cima dele usa sobre-destaque */
+  /* milho: preenche o botão principal; texto em cima dele usa sobre-destaque */
   --color-destaque: #ffb81c;
   --color-destaque-texto: #ffb81c;
   --color-sobre-destaque: #141414;
-  --color-destaque-fundo: #2a2210;
-  --color-destaque-borda: #4a3a14;
+  --color-destaque-fundo: #33290f; /* "feito": dia treinado, série marcada */
+  --color-destaque-borda: #5a4614;
 
   --color-ceu: #7fb2ff;
-  --color-ceu-fundo: #141c2a;
-  --color-ceu-borda: #24324a;
+  --color-ceu-fundo: #17233d;
+  --color-ceu-borda: #2a3d63;
 
   --color-folha: #7dd69a;
-  --color-folha-fundo: #13221a;
+  --color-folha-fundo: #15281f;
   --color-folha-borda: #24402e;
 
   --color-brasa: #ff8a5c;
-  --color-brasa-fundo: #2c1712;
+  --color-brasa-fundo: #2e1a1a;
 
   /* nomes antigos, mantidos para quem já usa: perigo = brasa, sucesso = folha */
   --color-perigo: #ff8a5c;
-  --color-perigo-fundo: #2c1712;
+  --color-perigo-fundo: #2e1a1a;
   --color-sucesso: #7dd69a;
 
-  /* cores das patentes do frango (#11): claridades bem diferentes entre si */
-  --color-patente-pintinho: #85817a;
-  --color-patente-frango: #d08850;
-  --color-patente-galo: #aeb8c6;
-  --color-patente-monstro: #ffd95a;
+  /* cores das patentes do frango (#11), tiradas das artes: selo e anel do avatar */
+  --color-patente-pintinho: #f2d06b;
+  --color-patente-frango: #e9cfa4;
+  --color-patente-galo: #e38a3e;
+  --color-patente-monstro: #e0704a;
 
-  --font-corpo: var(--font-archivo), system-ui, sans-serif;
+  --font-corpo: var(--font-work-sans), system-ui, sans-serif;
 }
 
 /*
  * Tipografia em três papéis:
- *   font-titulo = impacto (Archivo larga, 900, itálica, maiúscula): títulos, marca, patentes, botões
- *   font-placar = números (Big Shoulders Stencil): força, dias, séries, ranking
- *   font-corpo  = leitura (Archivo normal): todo o resto
- * A fonte de impacto é larga: use tamanhos ~30% menores que os de uma fonte condensada.
+ *   font-titulo = impacto (Archivo larga, 900, itálica, maiúscula): SÓ a marca,
+ *                 o título da tela e o botão principal
+ *   font-placar = números grandes (Big Shoulders Stencil): só algarismos, de 28px pra cima
+ *   font-corpo  = leitura (Work Sans): todo o resto, inclusive rótulos e abas
  */
 @utility font-titulo {
   font-family: var(--font-archivo), "Arial Black", sans-serif;
@@ -68,7 +69,8 @@
   font-style: italic;
   font-stretch: 125%;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.2px;
+  line-height: 1;
 }
 
 @utility font-placar {
@@ -79,4 +81,8 @@
 
 html {
   color-scheme: dark;
+}
+
+body {
+  letter-spacing: -0.01em;
 }

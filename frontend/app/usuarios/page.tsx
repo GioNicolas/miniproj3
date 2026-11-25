@@ -51,7 +51,7 @@ export default function UsuariosPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-titulo text-2xl">Usuários</h1>
+      <h1 className="font-titulo text-[22px]">Usuários</h1>
 
       <form onSubmit={criar} className="flex flex-wrap items-end gap-2 rounded-2xl border border-borda bg-superficie p-3">
         <label className="flex flex-col text-sm">

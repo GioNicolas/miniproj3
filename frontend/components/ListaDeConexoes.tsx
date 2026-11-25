@@ -6,6 +6,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+import { Botao } from "@/components/Botao";
+import { Erro } from "@/components/Erro";
 import { UserCard } from "@/components/UserCard";
 import { apiGet, type Page, type User } from "@/lib/api";
 
@@ -55,23 +57,30 @@ export function ListaDeConexoes({ username, tipo }: Props) {
 
   return (
     <div className="space-y-4">
-      <div>
-        <Link href={`/u/${username}`} className="text-sm text-suave hover:underline">
-          ← @{username}
+      <header className="flex items-center gap-1 pt-2">
+        <Link
+          href={`/u/${username}`}
+          aria-label={`Voltar para @${username}`}
+          className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-superficie"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
         </Link>
-        <h1 className="text-2xl font-bold">{TITULO[tipo]}</h1>
-      </div>
+        <div className="min-w-0">
+          <h1 className="font-titulo text-[22px]">{TITULO[tipo]}</h1>
+          <p className="mt-1 text-[13px] text-suave">@{username}</p>
+        </div>
+      </header>
 
-      {erro && (
-        <p className="rounded-lg bg-brasa-fundo px-3 py-2 text-sm text-brasa">{erro}</p>
-      )}
+      {erro && <Erro>{erro}</Erro>}
 
-      {total === 0 && <p className="text-suave">{VAZIO[tipo]}</p>}
+      {total === 0 && <p className="py-6 text-[15px] text-suave">{VAZIO[tipo]}</p>}
 
-      <ul className="space-y-2">
+      <ul className="border-t border-borda">
         {usuarios.map((u) => (
           <li key={u.id}>
-            <Link href={`/u/${u.username}`}>
+            <Link href={`/u/${u.username}`} className="block hover:bg-superficie/60">
               <UserCard user={u} />
             </Link>
           </li>
@@ -79,13 +88,9 @@ export function ListaDeConexoes({ username, tipo }: Props) {
       </ul>
 
       {total !== null && usuarios.length < total && (
-        <button
-          type="button"
-          onClick={() => carregar(usuarios.length)}
-          className="min-h-11 rounded-lg border border-borda-forte px-3 text-sm hover:bg-superficie-2"
-        >
-          carregar mais
-        </button>
+        <Botao variante="contorno" onClick={() => carregar(usuarios.length)} className="w-full">
+          Carregar mais
+        </Botao>
       )}
     </div>
   );

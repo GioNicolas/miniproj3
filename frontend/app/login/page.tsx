@@ -1,13 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Botao } from "@/components/Botao";
 import { Campo } from "@/components/Campo";
-import { Card } from "@/components/Card";
+import { BotaoVerSenha } from "@/components/BotaoVerSenha";
+import { Erro } from "@/components/Erro";
 import { apiPost } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
 
@@ -45,17 +45,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-6 pt-2">
-      <div className="flex flex-col items-center text-center">
-        {/* O pintinho é a patente Frango: todo mundo começa aqui. */}
-        <Image src="/frangos/frango.png" alt="" width={372} height={520} priority className="h-36 w-auto" />
-        <h1 className="mt-2 font-titulo text-4xl">{GLOSSARIO.rede}</h1>
-        <p className="mt-2 text-suave">Cada treino registrado faz seu frango crescer.</p>
-        <p className="mt-1 font-semibold text-destaque">{GLOSSARIO.slogan}</p>
-      </div>
+    <div className="mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col">
+      <header className="flex min-h-11 items-center pb-4 pt-5">
+        <span className="font-titulo text-[22px]">{GLOSSARIO.rede}</span>
+      </header>
 
-      <Card>
-        <form onSubmit={entrar} className="space-y-4">
+      <form onSubmit={entrar} className="flex flex-1 flex-col gap-6 pt-8">
+        <div>
+          <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">
+            Entra pra registrar o treino de hoje
+          </h1>
+          <p className="mt-2 text-[15px] leading-normal text-suave">{GLOSSARIO.slogan}</p>
+        </div>
+
+        <div className="flex flex-col gap-4">
           <Campo
             rotulo="Usuário"
             value={username}
@@ -83,32 +86,23 @@ export default function LoginPage() {
             aria-invalid={erro ? true : undefined}
             aria-describedby={erro ? "erro-login" : undefined}
             required
-            fim={
-              <button
-                type="button"
-                onClick={() => setVerSenha((v) => !v)}
-                aria-pressed={verSenha}
-                aria-label={verSenha ? "Esconder a senha" : "Mostrar a senha"}
-                className="min-h-11 rounded-r-lg px-3 text-sm font-semibold text-ceu focus-visible:outline-2 focus-visible:outline-ceu"
-              >
-                {verSenha ? "Ocultar" : "Mostrar"}
-              </button>
-            }
+            fim={<BotaoVerSenha ver={verSenha} alternar={() => setVerSenha((v) => !v)} />}
           />
           {erro && (
-            <p id="erro-login" role="alert" className="rounded-lg bg-brasa-fundo px-3 py-2 text-sm text-brasa">
-              {erro}
-            </p>
+            <div id="erro-login">
+              <Erro>{erro}</Erro>
+            </div>
           )}
-          <Botao type="submit" disabled={enviando} className="w-full">
-            {enviando ? "Entrando..." : "Entrar"}
-          </Botao>
-        </form>
-      </Card>
+        </div>
 
-      <p className="text-center text-sm text-suave">
-        Ainda não tem conta?{" "}
-        <Link href="/registro" className="inline-flex min-h-11 items-center font-semibold text-destaque underline">
+        <Botao type="submit" disabled={enviando} className="w-full">
+          {enviando ? "Entrando..." : "Entrar"}
+        </Botao>
+      </form>
+
+      <p className="flex items-center justify-center gap-1 pb-8 pt-4 text-center text-sm text-suave">
+        Ainda não tem conta?
+        <Link href="/registro" className="inline-flex min-h-11 items-center px-1 font-semibold text-tinta underline">
           Criar conta
         </Link>
       </p>

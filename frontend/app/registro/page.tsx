@@ -6,7 +6,8 @@ import { useState } from "react";
 
 import { Botao } from "@/components/Botao";
 import { Campo } from "@/components/Campo";
-import { Card } from "@/components/Card";
+import { BotaoVerSenha } from "@/components/BotaoVerSenha";
+import { Erro } from "@/components/Erro";
 import { apiPost } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
 
@@ -15,6 +16,7 @@ export default function RegistroPage() {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [verSenha, setVerSenha] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [contaCriada, setContaCriada] = useState(false);
@@ -22,7 +24,7 @@ export default function RegistroPage() {
   async function criarConta(e: React.FormEvent) {
     e.preventDefault();
     if (new TextEncoder().encode(password).length > 72) {
-      setErro("A senha deve ter no máximo 72 bytes em UTF-8. Caracteres acentuados podem ocupar mais de um byte.");
+      setErro("Senha comprida demais. Usa até 72 caracteres (acentos e emoji contam como mais de um).");
       return;
     }
     setEnviando(true);
@@ -45,14 +47,31 @@ export default function RegistroPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-6 pt-6">
-      <div className="text-center">
-        <h1 className="font-titulo text-2xl leading-tight">Bota seu frango pra treinar</h1>
-        <p className="mt-2 font-semibold text-destaque">{GLOSSARIO.slogan}</p>
-      </div>
+    <div className="mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col">
+      <header className="-ml-3 flex min-h-11 items-center gap-1 pb-4 pt-5">
+        <Link
+          href="/login"
+          aria-label="Voltar pro login"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-superficie"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
+        </Link>
+        <span className="font-titulo text-[22px]">{GLOSSARIO.rede}</span>
+      </header>
 
-      <Card>
-        <form onSubmit={criarConta} className="space-y-4">
+      <form onSubmit={criarConta} className="flex flex-1 flex-col gap-6 pt-4">
+        <div>
+          <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">
+            Bota seu frango pra treinar
+          </h1>
+          <p className="mt-2 text-[15px] leading-normal text-suave">
+            Você começa como Pintinho. Cada treino dá +10 de força.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-4">
           <Campo
             rotulo="Nome"
             value={name}
@@ -63,7 +82,8 @@ export default function RegistroPage() {
           />
           <Campo
             rotulo="Usuário"
-            dica="Só letras minúsculas, números e _ (de 3 a 30)"
+            dica="Letras minúsculas, números e _ (de 3 a 30)"
+            placeholder="ex.: analu"
             value={username}
             onChange={(e) => setUsername(e.target.value.toLowerCase())}
             autoComplete="username"
@@ -71,33 +91,31 @@ export default function RegistroPage() {
             autoCorrect="off"
             spellCheck={false}
             pattern="[a-z0-9_]{3,30}"
-            title="Só letras minúsculas, números e _ (de 3 a 30)"
+            title="Letras minúsculas, números e _ (de 3 a 30)"
             required
           />
           <Campo
             rotulo="Senha"
-            type="password"
-            dica="Pelo menos 8 caracteres e no máximo 72 bytes em UTF-8"
+            type={verSenha ? "text" : "password"}
+            dica="Pelo menos 8 caracteres"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
             minLength={8}
             required
+            fim={<BotaoVerSenha ver={verSenha} alternar={() => setVerSenha((v) => !v)} />}
           />
-          {erro && (
-            <p role="alert" className="rounded-lg bg-perigo-fundo px-3 py-2 text-sm text-perigo">
-              {erro}
-            </p>
-          )}
-          <Botao type="submit" disabled={enviando || contaCriada} className="w-full">
-            {enviando ? "Criando..." : "Criar conta"}
-          </Botao>
-        </form>
-      </Card>
+          {erro && <Erro>{erro}</Erro>}
+        </div>
 
-      <p className="text-center text-sm text-suave">
-        Já tem conta?{" "}
-        <Link href="/login" className="font-semibold text-destaque underline">
+        <Botao type="submit" disabled={enviando || contaCriada} className="w-full">
+          {enviando ? "Criando..." : "Criar conta"}
+        </Botao>
+      </form>
+
+      <p className="flex items-center justify-center gap-1 pb-8 pt-4 text-center text-sm text-suave">
+        Já tem conta?
+        <Link href="/login" className="inline-flex min-h-11 items-center px-1 font-semibold text-tinta underline">
           Entrar
         </Link>
       </p>

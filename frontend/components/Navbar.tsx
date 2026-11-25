@@ -36,8 +36,8 @@ export function Navbar() {
     <>
       {/* computador: barra no topo */}
       <header className="sticky top-0 z-20 hidden border-b border-borda bg-superficie md:block">
-        <nav aria-label="Navegação principal" className="mx-auto flex max-w-3xl items-center gap-6 px-4 py-3">
-          <Link href="/" className="mr-auto font-titulo text-xl">
+        <nav aria-label="Navegação principal" className="mx-auto flex max-w-3xl items-center gap-6 px-5 py-3">
+          <Link href="/" className="mr-auto font-titulo text-[22px]">
             {GLOSSARIO.rede}
           </Link>
           {ITENS.map((item) => (
@@ -45,20 +45,20 @@ export function Navbar() {
               key={item.href}
               href={item.href}
               aria-current={ativo(item.href) ? "page" : undefined}
-              className={`border-b-2 py-1 text-sm ${ativo(item.href) ? "border-destaque font-semibold text-tinta" : "border-transparent text-suave hover:text-tinta"}`}
+              className={`flex min-h-11 items-center border-b-[3px] text-sm ${ativo(item.href) ? "border-tinta font-semibold text-tinta" : "border-transparent text-suave hover:text-tinta"}`}
             >
               {item.rotulo}
             </Link>
           ))}
-          <button type="button" onClick={sair} className="py-1 text-sm text-suave hover:text-tinta">
+          <button type="button" onClick={sair} className="min-h-11 text-sm text-suave hover:text-tinta">
             Sair
           </button>
         </nav>
       </header>
 
       {/* celular: só a marca e o Sair no topo; a navegação fica na barra de baixo */}
-      <header className="flex items-center justify-between border-b border-borda bg-superficie px-4 py-2 md:hidden">
-        <Link href="/" className="font-titulo text-lg">
+      <header className="flex items-center justify-between px-5 pb-2 pt-5 md:hidden">
+        <Link href="/" className="flex min-h-11 items-center font-titulo text-[22px]">
           {GLOSSARIO.rede}
         </Link>
         <button type="button" onClick={sair} className="min-h-11 px-2 text-sm text-suave">
@@ -66,14 +66,14 @@ export function Navbar() {
         </button>
       </header>
 
-      {/* celular: barra fixa embaixo, perto do polegar */}
-      <nav aria-label="Navegação principal" className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-borda bg-superficie pb-[max(1rem,env(safe-area-inset-bottom))] pt-1 md:hidden">
+      {/* celular: barra fixa embaixo, perto do polegar; o ativo ganha traço de tinta em cima */}
+      <nav aria-label="Navegação principal" className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-borda bg-superficie px-1 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 md:hidden">
         {ITENS.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             aria-current={ativo(item.href) ? "page" : undefined}
-            className={`flex min-h-11 flex-col items-center gap-0.5 border-t-[3px] pt-1.5 text-[11px] ${ativo(item.href) ? "border-destaque font-semibold text-tinta" : "border-transparent text-suave"}`}
+            className={`flex min-h-11 flex-col items-center gap-0.5 whitespace-nowrap border-t-[3px] py-2 text-xs ${ativo(item.href) ? "border-tinta font-semibold text-tinta" : "border-transparent text-suave"}`}
           >
             <Icone d={item.icone} />
             {item.rotulo}

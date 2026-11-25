@@ -4,7 +4,7 @@ import type { TextareaHTMLAttributes } from "react";
 export function AreaDeTexto({ className = "", ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
-      className={`w-full resize-y rounded-lg border border-borda-forte bg-superficie-2 px-3 py-2 text-tinta outline-none placeholder:text-suave focus:border-destaque ${className}`}
+      className={`w-full resize-none rounded-[10px] border border-borda-forte bg-superficie px-4 py-3 text-base leading-relaxed text-tinta outline-none placeholder:text-suave focus-visible:ring-2 focus-visible:ring-destaque focus-visible:ring-offset-2 focus-visible:ring-offset-fundo ${className}`}
       {...props}
     />
   );
