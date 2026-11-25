@@ -60,7 +60,6 @@ def test_auth_eu(client, logar):
 # ---------- POSTS ----------
 
 
-@pytest.mark.skip(reason="Remova ao implementar POST/GET/PATCH/DELETE /posts (núcleo; imite o slice)")
 def test_posts_crud(client, logar):
     ana = logar("ana")
     bia = logar("bia")
@@ -86,7 +85,6 @@ def test_posts_crud(client, logar):
 # ---------- FEED ----------
 
 
-@pytest.mark.skip(reason="Remova ao implementar GET /feed cronológico paginado (núcleo)")
 def test_feed_cronologico_dos_seguidos(client, logar):
     ana = logar("ana")
     bia = logar("bia")
@@ -178,7 +176,6 @@ def test_curtidas_idempotentes(client, logar):
 # ---------- COMENTÁRIOS ----------
 
 
-@pytest.mark.skip(reason="Remova ao implementar comentários planos em ordem cronológica (núcleo)")
 def test_comentarios_planos_cronologicos(client, logar):
     ana = logar("ana")
     bia = logar("bia")

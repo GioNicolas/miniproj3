@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { GLOSSARIO } from "@/lib/glossario";
+import { ROTAS_PUBLICAS, sair } from "@/lib/sessao";
 
 // Os 5 destinos da rede. Explorar é uma aba dentro do Feed; a árvore de
 // progressões fica dentro de Treinos; Chat reúne os posts sem treino
@@ -28,6 +29,9 @@ export function Navbar() {
   const caminho = usePathname();
   const ativo = (href: string) => (href === "/" ? caminho === "/" : caminho.startsWith(href));
 
+  // Login e cadastro são telas cheias, sem navegação.
+  if (ROTAS_PUBLICAS.includes(caminho)) return null;
+
   return (
     <>
       {/* computador: barra no topo */}
@@ -46,7 +50,20 @@ export function Navbar() {
               {item.rotulo}
             </Link>
           ))}
+          <button type="button" onClick={sair} className="py-1 text-sm text-suave hover:text-tinta">
+            Sair
+          </button>
         </nav>
+      </header>
+
+      {/* celular: só a marca e o Sair no topo; a navegação fica na barra de baixo */}
+      <header className="flex items-center justify-between border-b border-borda bg-superficie px-4 py-2 md:hidden">
+        <Link href="/" className="font-titulo text-2xl tracking-wide">
+          {GLOSSARIO.rede}
+        </Link>
+        <button type="button" onClick={sair} className="min-h-11 px-2 text-sm text-suave">
+          Sair
+        </button>
       </header>
 
       {/* celular: barra fixa embaixo, perto do polegar */}

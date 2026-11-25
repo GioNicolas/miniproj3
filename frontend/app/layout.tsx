@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Inter } from "next/font/google";
 
+import { GuardaDeRota } from "@/components/GuardaDeRota";
 import { Navbar } from "@/components/Navbar";
 import { GLOSSARIO } from "@/lib/glossario";
 import "./globals.css";
@@ -24,7 +25,9 @@ export default function RootLayout({
       <body className="min-h-screen bg-fundo font-corpo text-tinta">
         <Navbar />
         {/* pb-24: espaço para a barra inferior do celular não cobrir o conteúdo */}
-        <main className="mx-auto max-w-3xl px-4 pb-24 pt-6 md:pb-6">{children}</main>
+        <main className="mx-auto max-w-3xl px-4 pb-24 pt-6 md:pb-6">
+          <GuardaDeRota>{children}</GuardaDeRota>
+        </main>
       </body>
     </html>
   );
