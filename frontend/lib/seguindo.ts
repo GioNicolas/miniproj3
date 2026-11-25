@@ -5,7 +5,7 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 
-import { apiGet, apiPost, type Page, type User } from "@/lib/api";
+import { apiDelete, apiGet, apiPost, type Page, type User } from "@/lib/api";
 import { useEu } from "@/lib/eu";
 
 const POR_PAGINA = 100; // o máximo que GET /usuarios/{username}/seguindo aceita
@@ -51,4 +51,11 @@ export function useSeguindo(): ReadonlySet<string> | null {
 export async function seguir(username: string) {
   await apiPost(`/usuarios/${username}/follow`);
   trocar(new Set(sigo).add(username));
+}
+
+export async function deixarDeSeguir(username: string) {
+  await apiDelete(`/usuarios/${username}/follow`);
+  const novo = new Set(sigo);
+  novo.delete(username);
+  trocar(novo);
 }

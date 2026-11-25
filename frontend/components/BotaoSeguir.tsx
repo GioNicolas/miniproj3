@@ -1,20 +1,23 @@
 "use client";
 
-// Botão Seguir / Deixar de seguir. Quem usa (a página de perfil) passa o estado
-// inicial (`eu_sigo` do GET /usuarios/{username}) e recebe +1/-1 em `aoMudar`
-// para atualizar o contador de seguidores sem recarregar a página.
+// Botão Seguir / Deixar de seguir do perfil. Passa pelo lib/seguindo.ts para que
+// o "Seguir" dos posts da mesma pessoa apareça ou suma junto, sem recarregar.
+// Quem usa passa o estado inicial (`eu_sigo` do GET /usuarios/{username}) e
+// recebe +1/-1 em `aoMudar` para atualizar o contador de seguidores.
 
 import { useState } from "react";
 
-import { apiDelete, apiPost } from "@/lib/api";
+import { Botao } from "@/components/Botao";
+import { deixarDeSeguir, seguir } from "@/lib/seguindo";
 
 type Props = {
   username: string;
   euSigoInicial: boolean;
   aoMudar?: (delta: 1 | -1) => void;
+  className?: string;
 };
 
-export function BotaoSeguir({ username, euSigoInicial, aoMudar }: Props) {
+export function BotaoSeguir({ username, euSigoInicial, aoMudar, className = "" }: Props) {
   const [euSigo, setEuSigo] = useState(euSigoInicial);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -24,10 +27,10 @@ export function BotaoSeguir({ username, euSigoInicial, aoMudar }: Props) {
     setErro(null);
     try {
       if (euSigo) {
-        await apiDelete(`/usuarios/${username}/follow`);
+        await deixarDeSeguir(username);
         aoMudar?.(-1);
       } else {
-        await apiPost(`/usuarios/${username}/follow`);
+        await seguir(username);
         aoMudar?.(1);
       }
       setEuSigo(!euSigo);
@@ -39,20 +42,11 @@ export function BotaoSeguir({ username, euSigoInicial, aoMudar }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-start gap-1">
-      <button
-        type="button"
-        onClick={alternar}
-        disabled={enviando}
-        className={
-          euSigo
-            ? "rounded border border-zinc-300 bg-white px-3 py-1.5 text-sm hover:bg-zinc-100 disabled:opacity-50"
-            : "rounded bg-zinc-900 px-3 py-1.5 text-sm text-white hover:bg-zinc-700 disabled:opacity-50"
-        }
-      >
+    <div className={`flex flex-col gap-1 ${className}`}>
+      <Botao variante={euSigo ? "contorno" : "principal"} onClick={alternar} disabled={enviando} className="w-full">
         {euSigo ? "Deixar de seguir" : "Seguir"}
-      </button>
-      {erro && <p className="text-xs text-red-600">{erro}</p>}
+      </Botao>
+      {erro && <p className="text-xs text-perigo">{erro}</p>}
     </div>
   );
 }

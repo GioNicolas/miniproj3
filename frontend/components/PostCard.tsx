@@ -96,7 +96,9 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
         <header className="flex items-center gap-3">
           <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold">{post.autor.name}</p>
+            <Link href={`/u/${post.autor.username}`} className="block truncate font-semibold hover:underline">
+              {post.autor.name}
+            </Link>
             <p className="truncate text-sm text-suave">
               @{post.autor.username} ·{" "}
               <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>

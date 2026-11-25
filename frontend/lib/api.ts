@@ -108,3 +108,12 @@ export type Comentario = {
   autor: Autor;
   created_at: string;
 };
+
+// ---- perfil (espelha PerfilOut de backend/app/schemas/user.py) ----
+
+export type Perfil = User & {
+  seguidores: number;
+  seguindo: number;
+  eu_sigo: boolean;
+  frango: { nivel: string; forca: number; dias_sem_treinar: number } | null; // #11
+};

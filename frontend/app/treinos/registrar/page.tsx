@@ -1,21 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Botao } from "@/components/Botao";
 import { Card } from "@/components/Card";
 import { Erro } from "@/components/Erro";
-import { apiGet, apiPost, type Post } from "@/lib/api";
+import { SemanaDeTreinos } from "@/components/SemanaDeTreinos";
+import { apiPost, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
 import { TRILHAS } from "@/lib/progressoes";
 
 const LIMITE_TEXTO = 500;
 const LIMITE_EXERCICIOS = 20; // o mesmo do backend
-const LETRAS = ["S", "T", "Q", "Q", "S", "S", "D"];
-const NOMES_DOS_DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"];
 
 // Os números ficam como texto enquanto a pessoa digita; viram int só no envio.
 type Linha = { progressao: string; series: string; reps: string };
@@ -24,79 +23,13 @@ const LINHA_VAZIA: Linha = { progressao: "", series: "", reps: "" };
 const ESTILO_CAMPO =
   "min-h-11 w-full rounded-lg border border-borda bg-superficie px-3 text-tinta outline-none focus:border-destaque";
 
-function diaIso(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-/** Os 7 dias desta semana, de segunda a domingo: a mesma semana da Granja. */
-function semanaAtual(): string[] {
-  const hoje = new Date();
-  const segunda = new Date(hoje);
-  segunda.setDate(hoje.getDate() - ((hoje.getDay() + 6) % 7));
-  return Array.from({ length: 7 }, (_, i) => {
-    const dia = new Date(segunda);
-    dia.setDate(segunda.getDate() + i);
-    return diaIso(dia);
-  });
-}
-
 function numero(valor: string): number | null {
   const n = Number.parseInt(valor, 10);
   return Number.isNaN(n) ? null : n;
 }
 
-function MinhaSemana() {
-  const eu = useEu();
-  // null enquanto carrega; "erro" se a lista não veio, para não mostrar 0 dias como verdade.
-  const [treinados, setTreinados] = useState<Set<string> | "erro" | null>(null);
-  const semana = semanaAtual();
-  const hoje = diaIso(new Date());
-
-  useEffect(() => {
-    if (!eu) return;
-    apiGet<{ dias: string[] }>(`/usuarios/${eu.username}/treinos?dias=7`)
-      .then(({ dias }) => setTreinados(new Set(dias)))
-      .catch(() => setTreinados("erro"));
-  }, [eu]);
-
-  const carregou = treinados instanceof Set;
-  const total = carregou ? semana.filter((d) => treinados.has(d)).length : null;
-
-  return (
-    <Card escuro>
-      <div className="space-y-3">
-        <p className="font-titulo text-2xl tracking-wide">
-          Esta semana:{" "}
-          {treinados === "erro"
-            ? "não deu para carregar"
-            : total === null
-              ? "…"
-              : `${total} ${total === 1 ? "dia" : "dias"}`}
-        </p>
-        <ol className="flex justify-between gap-1" aria-label="Dias com treino nesta semana">
-          {semana.map((dia, i) => {
-            const treinou = carregou && treinados.has(dia);
-            return (
-              <li key={dia} className="flex flex-col items-center gap-1 text-xs">
-                <span
-                  aria-label={`${NOMES_DOS_DIAS[i]}, ${Number(dia.slice(8))}: ${treinou ? "treinou" : "sem treino"}`}
-                  className={`flex size-9 items-center justify-center rounded-full font-semibold ${
-                    treinou ? "bg-destaque text-tinta" : "border border-suave text-suave"
-                  } ${dia === hoje ? "ring-2 ring-destaque ring-offset-2 ring-offset-superficie-escura" : ""}`}
-                >
-                  {LETRAS[i]}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-        <p className="text-sm text-suave">Vários treinos no mesmo dia contam um dia só. A semana zera na segunda.</p>
-      </div>
-    </Card>
-  );
-}
-
 export default function RegistrarTreinoPage() {
+  const eu = useEu();
   const router = useRouter();
   const [texto, setTexto] = useState("");
   const [linhas, setLinhas] = useState<Linha[]>([{ ...LINHA_VAZIA }]);
@@ -128,7 +61,7 @@ export default function RegistrarTreinoPage() {
     <div className="space-y-6">
       <h1 className="font-titulo text-4xl tracking-wide">{GLOSSARIO.registrarTreino}</h1>
 
-      <MinhaSemana />
+      {eu && <SemanaDeTreinos username={eu.username} />}
 
       <Card>
         <form onSubmit={registrar} className="space-y-5">
