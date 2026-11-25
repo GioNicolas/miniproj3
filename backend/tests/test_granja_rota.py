@@ -121,3 +121,19 @@ def test_startup_reconstroi_a_granja_dos_check_ins(client, logar):
 
 def test_granja_pede_login(client):
     assert client.get("/granja").status_code == 401
+
+
+def test_com_seed_na_subida_a_granja_do_demo_ja_vem_cheia(monkeypatch):
+    """O seed tem que rodar antes do reconstruir da granja no lifespan."""
+    from app.db import Base, engine
+    from app.main import app
+    from app.seed import SENHA_SEED, USUARIO_DEMO
+
+    Base.metadata.drop_all(engine)
+    monkeypatch.setenv("SEED_ON_BOOT", "true")
+    with TestClient(app) as c:
+        token = c.post("/auth/login", json={"username": USUARIO_DEMO, "password": SENHA_SEED}).json()["token"]
+        corpo = c.get("/granja", headers={"Authorization": f"Bearer {token}"}).json()
+
+    assert len(corpo["items"]) >= 5
+    assert any(c["dias_treinados"] > 0 for c in corpo["items"])
