@@ -213,5 +213,10 @@ pode custar uma varredura nos posts.
 
 ## Uso de IA
 
-Ferramenta e para quê. Exemplo: "Claude para gerar o seed de 200 posts sobre
-corrida; o resto foi escrito pelo time."
+- **@GioNicolas:** Claude Code para implementar comigo as features de que eu era
+  dono (posts, feed, comentários, registro de treino, chat, árvore e foto no
+  post) e para revisar a escrita deste arquivo. Eu revisava cada diff, rodava os
+  testes e conferia as telas no navegador antes de abrir o PR. Codex para revisar
+  PRs antes do merge.
+- **Do time, sem IA:** o nicho e o público, as decisões de produto e o que ficou
+  de fora.
