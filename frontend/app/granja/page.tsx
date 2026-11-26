@@ -36,6 +36,11 @@ function primeiroNome(nome: string): string {
   return nome.split(" ")[0];
 }
 
+/** Dias da semana da granja de hoje até domingo, contando hoje (domingo = 1). */
+function diasAteDomingo(): number {
+  return 7 - ((new Date().getDay() + 6) % 7);
+}
+
 function Recado({ granja }: { granja: Granja }) {
   const { eu, alvo, dias_que_ainda_contam: restam } = granja;
   if (!alvo) return <p>Você lidera a sua granja. Treina mais um dia pra ninguém te alcançar.</p>;
@@ -45,8 +50,7 @@ function Recado({ granja }: { granja: Granja }) {
   }
   if (alvo.faltam_dias === 1) {
     // dias_que_ainda_contam não inclui hoje quando você já treinou hoje (o 2º treino do dia não conta)
-    const ateDomingo = 7 - ((new Date().getDay() + 6) % 7);
-    return <p>Treina {restam === ateDomingo ? "hoje" : "amanhã"} e você passa {quem}.</p>;
+    return <p>Treina {restam === diasAteDomingo() ? "hoje" : "amanhã"} e você passa {quem}.</p>;
   }
   return (
     <p>
@@ -210,7 +214,9 @@ export default function GranjaPage() {
   const euNoTopo = granja.items.some((c) => c.usuario.username === euUsername);
   const podio = granja.items.slice(0, 3);
   const resto = granja.items.slice(3);
-  const restam = granja.dias_que_ainda_contam;
+  // Quanto falta para a semana zerar não depende de eu já ter treinado hoje
+  // (dias_que_ainda_contam desconta hoje de quem treinou: no sábado dava "acaba hoje").
+  const restam = diasAteDomingo();
 
   return (
     <div className="flex flex-col gap-4">
