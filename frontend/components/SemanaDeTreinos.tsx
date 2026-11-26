@@ -4,7 +4,7 @@ import { diaIso, LETRAS_DA_SEMANA, NOMES_DOS_DIAS, semanaAtual } from "@/lib/dia
 
 /**
  * Os 7 dias desta semana (segunda a domingo, a mesma da Granja), igual ao canvas:
- * quadrado "feito" com check nos dias treinados e borda tracejada de milho em hoje.
+ * quadrado "feito" com check nos dias treinados e borda tracejada preta em hoje.
  */
 export function SemanaDeTreinos({ treinados }: { treinados: Set<string> | "erro" | null }) {
   const semana = semanaAtual();

@@ -13,6 +13,14 @@ export const COR_DA_PATENTE: Record<Patente, string> = {
   Monstro: "#e0704a",
 };
 
+// A mesma cor, escurecida para virar texto legível no fundo claro.
+export const TEXTO_DA_PATENTE: Record<Patente, string> = {
+  Pintinho: "#9a7300",
+  Frango: "#8f6532",
+  Galo: "#b0561a",
+  Monstro: "#b2401d",
+};
+
 // Faixas de força de cada patente (backend/app/core/frango.py).
 export const FAIXA_DA_PATENTE: Record<Patente, [number, number]> = {
   Pintinho: [0, 24],
@@ -42,7 +50,7 @@ export function ArteDoFrango({
   apagada?: boolean;
   alt?: string;
 }) {
-  const filtro = apagada ? "opacity-20 brightness-0 invert" : definhando ? "grayscale-[0.55] brightness-75" : "";
+  const filtro = apagada ? "opacity-15 brightness-0" : definhando ? "grayscale-[0.55] brightness-75" : "";
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={ARTE[patente]} alt={alt} style={{ height: altura }} className={`w-auto select-none ${filtro}`} draggable={false} />
@@ -85,7 +93,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
       <ArteDoFrango patente={nivel} altura={232} definhando={definhando} alt={`${souEu ? "Seu frango" : "Frango"}, patente ${nivel}`} />
 
       <div className="-mt-2 flex flex-col items-center">
-        <p className="text-[34px] font-extrabold leading-none tracking-[-0.02em]" style={{ color: COR_DA_PATENTE[nivel] }}>
+        <p className="text-[34px] font-extrabold leading-none tracking-[-0.02em]" style={{ color: TEXTO_DA_PATENTE[nivel] }}>
           {nivel}
         </p>
         <p className="mt-1 flex items-baseline gap-2">
@@ -102,7 +110,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
         <div className="flex w-full flex-col gap-2 border-t border-borda pt-4">
           <p className="flex items-baseline justify-between">
             <span className="text-[13px] text-suave">Faltam {falta_para_proximo} de força pro</span>
-            <span className="text-sm font-bold" style={{ color: COR_DA_PATENTE[proximo_nivel] }}>
+            <span className="text-sm font-bold" style={{ color: TEXTO_DA_PATENTE[proximo_nivel] }}>
               {proximo_nivel}
             </span>
           </p>
@@ -114,7 +122,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
             aria-valuenow={forca}
             className="h-3 overflow-hidden rounded-md bg-elevado"
           >
-            <div className="h-3 origin-left animate-encher rounded-md bg-[#d6dae4]" style={{ width: `${progresso}%` }} />
+            <div className="h-3 origin-left animate-encher rounded-md bg-tinta" style={{ width: `${progresso}%` }} />
           </div>
           <p className="flex justify-between text-xs text-suave">
             <span>{de}</span>
@@ -138,7 +146,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
               <ArteDoFrango patente={p} altura={44} apagada={estado === "futuro"} />
               <span
                 className={`text-[13px] font-bold ${estado === "futuro" ? "text-suave" : estado === "passou" ? "text-tinta" : ""}`}
-                style={estado === "atual" ? { color: COR_DA_PATENTE[p] } : undefined}
+                style={estado === "atual" ? { color: TEXTO_DA_PATENTE[p] } : undefined}
               >
                 {p}
               </span>
@@ -157,7 +165,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
 export function SeloDaPatente({ patente }: { patente: Patente }) {
   return (
     <span
-      className="shrink-0 whitespace-nowrap rounded px-1.5 py-px text-xs font-bold text-sobre-destaque"
+      className="shrink-0 whitespace-nowrap rounded px-1.5 py-px text-xs font-bold text-tinta"
       style={{ background: COR_DA_PATENTE[patente] }}
     >
       {patente}

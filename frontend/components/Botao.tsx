@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes } from "react";
 
-// principal: milho, fonte de impacto. Um por tela, só na ação que a tela existe para fazer.
+// principal: preto, fonte de impacto. Um por tela, só na ação que a tela existe para fazer.
 // contorno: ação secundária (Cancelar, Carregar mais). escuro: ação pequena dentro de um card.
 type Variante = "principal" | "contorno" | "escuro";
 
@@ -19,7 +19,7 @@ export function Botao({ variante = "principal", type = "button", className = "",
   return (
     <button
       type={type}
-      className={`inline-flex items-center justify-center gap-2 px-4 transition-[transform,filter,background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destaque active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:active:scale-100 ${ESTILOS[variante]} ${variante === "principal" ? "disabled:bg-elevado disabled:text-suave disabled:brightness-100" : "disabled:opacity-50"} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 px-4 transition-[transform,filter,background-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destaque active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:active:scale-100 ${ESTILOS[variante]} ${variante === "principal" ? "disabled:bg-superficie-2 disabled:text-suave disabled:brightness-100" : "disabled:opacity-50"} ${className}`}
       {...props}
     />
   );

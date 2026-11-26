@@ -60,7 +60,7 @@ function Calendario({ username, diasSemTreinar }: { username: string; diasSemTre
         {dias.map((d) => (
           <div
             key={d}
-            className={`aspect-square rounded-[3px] ${carregou && treinados.has(d) ? "bg-[#b8891f]" : "bg-superficie-2"} ${
+            className={`aspect-square rounded-[3px] ${carregou && treinados.has(d) ? "bg-tinta" : "bg-superficie-2"} ${
               d === hoje ? "border-2 border-dashed border-destaque" : ""
             }`}
           />

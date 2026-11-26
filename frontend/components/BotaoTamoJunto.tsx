@@ -47,7 +47,7 @@ export function BotaoTamoJunto({ postId, curtidasIniciais, euCurtiInicial }: Pro
 
   return (
     <span className="inline-flex items-center gap-2">
-      {/* Discreto até alguém mandar: aí a chama acende em milho e dá um pulo. */}
+      {/* Discreto até alguém mandar: aí a chama acende em preto e dá um pulo. */}
       <button
         type="button"
         onClick={alternar}

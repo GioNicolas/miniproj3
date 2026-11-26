@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
 // viewportFit "cover" libera o env(safe-area-inset-bottom) usado na barra do celular.
 // themeColor pinta a barra do navegador no celular com o fundo da rede.
-export const viewport: Viewport = { viewportFit: "cover", themeColor: "#0d1220" };
+export const viewport: Viewport = { viewportFit: "cover", themeColor: "#f5f2eb" };
 
 export default function RootLayout({
   children,
