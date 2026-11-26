@@ -11,6 +11,7 @@ import { Card } from "@/components/Card";
 import { Carregando } from "@/components/Carregando";
 import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
+import { DesenhoDoFrango, SeloDaPatente } from "@/components/Frango";
 import { apiGet, type Colocado, type Granja } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
 
@@ -61,10 +62,19 @@ function Podio({ podio, euUsername }: { podio: Colocado[]; euUsername: string })
         const souEu = c.usuario.username === euUsername;
         return (
           <li key={c.usuario.username} className={`flex flex-col items-center gap-1 text-center ${c.posicao === 1 ? "order-2" : c.posicao === 2 ? "order-1" : "order-3"}`}>
-            <Avatar name={c.usuario.name} avatarUrl={c.usuario.avatar_url} />
-            <p className={`w-full truncate text-sm ${souEu ? "font-semibold text-destaque-texto" : ""}`}>
+            {/* o pódio mostra os frangos (#11); sem patente (API antiga), fica o avatar */}
+            {c.usuario.nivel ? (
+              <DesenhoDoFrango patente={c.usuario.nivel} definhando={false} tamanho={c.posicao === 1 ? 72 : 56} />
+            ) : (
+              <Avatar name={c.usuario.name} avatarUrl={c.usuario.avatar_url} />
+            )}
+            <Link
+              href={souEu ? "/perfil" : `/u/${c.usuario.username}`}
+              className={`w-full truncate text-sm hover:underline ${souEu ? "font-semibold text-destaque-texto" : ""}`}
+            >
               {souEu ? "Você" : c.usuario.name}
-            </p>
+            </Link>
+            {c.usuario.nivel && <SeloDaPatente patente={c.usuario.nivel} />}
             <p className="text-xs text-suave">{dias(c.dias_treinados)}</p>
             <div className={`flex w-full items-start justify-center rounded-t-lg pt-1 font-titulo text-3xl ${DEGRAU[c.posicao].altura} ${DEGRAU[c.posicao].cor}`}>
               {c.posicao}º
@@ -85,7 +95,15 @@ function Linha({ colocado, souEu }: { colocado: Colocado; souEu: boolean }) {
       <span className="w-8 font-titulo text-2xl text-suave">{colocado.posicao}º</span>
       <Avatar name={colocado.usuario.name} avatarUrl={colocado.usuario.avatar_url} />
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-semibold">{souEu ? "Você" : colocado.usuario.name}</span>
+        <span className="flex items-center gap-2">
+          <Link
+            href={souEu ? "/perfil" : `/u/${colocado.usuario.username}`}
+            className="truncate font-semibold hover:underline"
+          >
+            {souEu ? "Você" : colocado.usuario.name}
+          </Link>
+          {colocado.usuario.nivel && <SeloDaPatente patente={colocado.usuario.nivel} />}
+        </span>
         <span className="block truncate text-sm text-suave">@{colocado.usuario.username}</span>
       </span>
       <span className="shrink-0 text-sm">{dias(colocado.dias_treinados)}</span>
