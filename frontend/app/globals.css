@@ -52,6 +52,8 @@
   --color-patente-frango: #e9cfa4;
   --color-patente-galo: #e38a3e;
   --color-patente-monstro: #e0704a;
+  /* nome antigo (de antes da #11): telas que ainda usam caem na cor do Frango */
+  --color-patente-granja: #e9cfa4;
 
   --font-corpo: var(--font-work-sans), system-ui, sans-serif;
 }

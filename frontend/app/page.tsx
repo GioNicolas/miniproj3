@@ -1,15 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Card } from "@/components/Card";
 import { Carregando } from "@/components/Carregando";
 import { ListaDePosts } from "@/components/ListaDePosts";
 import { NovoPost } from "@/components/NovoPost";
-import { apiGet, type Page, type User } from "@/lib/api";
-import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
+import { useSeguindo } from "@/lib/seguindo";
 
 type Aba = "seguindo" | "explorar";
 
@@ -19,23 +18,14 @@ const ABAS: { id: Aba; rotulo: string }[] = [
 ];
 
 export default function Home() {
-  const eu = useEu();
-  // null até saber se a pessoa segue alguém: quem não segue ninguém abre no Explorar.
-  const [sigoAlguem, setSigoAlguem] = useState<boolean | null>(null);
-  const [aba, setAba] = useState<Aba>("seguindo");
+  const sigo = useSeguindo();
+  const sigoAlguem = sigo === null ? null : sigo.size > 0;
+  // A aba inicial sai da primeira resposta e depois fica: quem segue alguém pelo
+  // Explorar continua no Explorar para seguir mais gente.
+  const [aba, setAba] = useState<Aba | null>(null);
+  if (aba === null && sigoAlguem !== null) setAba(sigoAlguem ? "seguindo" : "explorar");
   // muda a cada post novo para a lista recarregar e mostrar o post no topo
   const [versao, setVersao] = useState(0);
-
-  useEffect(() => {
-    if (!eu) return;
-    apiGet<Page<User>>(`/usuarios/${eu.username}/seguindo?limit=1`)
-      .then((pagina) => {
-        setSigoAlguem(pagina.total > 0);
-        setAba(pagina.total > 0 ? "seguindo" : "explorar");
-      })
-      // se a contagem falhar, o feed ainda funciona: abre em Seguindo
-      .catch(() => setSigoAlguem(true));
-  }, [eu]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -46,7 +36,7 @@ export default function Home() {
           <p className="mt-1 text-[13px] text-suave">Vale 1 dia na granja e +10 de força.</p>
         </div>
         <Link
-          href="/treinos"
+          href="/treinos/registrar"
           className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque transition-[transform,filter] duration-150 ease-out hover:brightness-105 active:scale-[0.97] motion-reduce:transition-none"
         >
           {GLOSSARIO.registrarTreino}
@@ -74,7 +64,7 @@ export default function Home() {
           ))}
         </div>
 
-        {sigoAlguem === null ? (
+        {aba === null ? (
           <Carregando />
         ) : aba === "seguindo" ? (
           <ListaDePosts
@@ -94,7 +84,7 @@ export default function Home() {
             <p className="text-[13px] text-pretty text-suave">
               {sigoAlguem
                 ? "Os posts mais novos da rede toda."
-                : "Você ainda não segue ninguém: olha o que a galera tá treinando e segue quem treina parecido com você."}
+                : "Você ainda não segue ninguém: olha o que a galera tá treinando e toca em Seguir em quem treina parecido com você."}
             </p>
             <ListaDePosts
               key={`explorar-${versao}`}
