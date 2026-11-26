@@ -12,6 +12,21 @@ diferente da outra.
 
 Este é o treino final antes do hackathon de novembro.
 
+## Frangaria no ar
+
+A rede deste time é a **Frangaria**, uma rede social de calistenia para quem está
+começando. O que ela resolve e por quê está no [DECISIONS.md](DECISIONS.md).
+
+| | |
+|---|---|
+| App | https://miniproj3-six.vercel.app |
+| API (docs) | https://rede-trilha-api.onrender.com/docs |
+| Usuário de demo | `frango_demo`, senha `senha-forte-123` |
+
+A API fica no plano free do Render, que dorme sem uso: o primeiro acesso pode
+levar cerca de 1 minuto. A cada deploy o banco recomeça com o seed. Depois de um
+deploy, `make smoke` faz o caminho da banca na URL pública e diz se algo quebrou.
+
 ## O que ler
 
 | Documento | Para quê |

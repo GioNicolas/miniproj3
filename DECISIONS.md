@@ -5,6 +5,10 @@
 ([@EduardoSanturbano](https://github.com/EduardoSanturbano)) e Davi
 ([@davicgois](https://github.com/davicgois)).
 
+**No ar:** https://miniproj3-six.vercel.app (API em
+https://rede-trilha-api.onrender.com). Para ver a rede cheia, entrem como
+`frango_demo`, senha `senha-forte-123`.
+
 ## Produto
 
 A **Frangaria** é uma rede social de calistenia para quem está começando.
