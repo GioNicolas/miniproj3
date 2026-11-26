@@ -73,9 +73,14 @@ const TIPOS: { id: Tipo; rotulo: string }[] = [
 ];
 
 /** Foto opcional: nunca obrigatória (DECISIONS, decisão 2). Reduzida no celular antes de subir. */
-function EscolherFoto({ foto, aoEscolher }: { foto: Blob | null; aoEscolher: (f: Blob | null) => void }) {
+function EscolherFoto({ foto, aoEscolher, preparando, aoPreparar, desativado }: {
+  foto: Blob | null;
+  aoEscolher: (f: Blob | null) => void;
+  preparando: boolean;
+  aoPreparar: (preparando: boolean) => void;
+  desativado: boolean;
+}) {
   const entrada = useRef<HTMLInputElement>(null);
-  const [preparando, setPreparando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const previa = useMemo(() => (foto ? URL.createObjectURL(foto) : null), [foto]);
   useEffect(
@@ -88,21 +93,21 @@ function EscolherFoto({ foto, aoEscolher }: { foto: Blob | null; aoEscolher: (f:
   async function escolher(e: React.ChangeEvent<HTMLInputElement>) {
     const arquivo = e.target.files?.[0];
     e.target.value = "";
-    if (!arquivo) return;
+    if (!arquivo || desativado || preparando) return;
     setErro(null);
-    setPreparando(true);
+    aoPreparar(true);
     try {
       aoEscolher(await reduzirFoto(arquivo));
     } catch {
       setErro("não deu para abrir essa foto, tenta outra");
     } finally {
-      setPreparando(false);
+      aoPreparar(false);
     }
   }
 
   return (
     <div className="px-4 pb-4">
-      <input ref={entrada} type="file" accept="image/*" onChange={escolher} className="hidden" aria-hidden="true" tabIndex={-1} />
+      <input ref={entrada} type="file" accept="image/*" onChange={escolher} disabled={desativado || preparando} className="hidden" aria-hidden="true" tabIndex={-1} />
       {previa ? (
         <div className="relative animate-surgir overflow-hidden rounded-xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -110,6 +115,7 @@ function EscolherFoto({ foto, aoEscolher }: { foto: Blob | null; aoEscolher: (f:
           <button
             type="button"
             onClick={() => aoEscolher(null)}
+            disabled={desativado || preparando}
             aria-label="Tirar a foto"
             className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur transition-transform active:scale-90"
           >
@@ -122,7 +128,7 @@ function EscolherFoto({ foto, aoEscolher }: { foto: Blob | null; aoEscolher: (f:
         <button
           type="button"
           onClick={() => entrada.current?.click()}
-          disabled={preparando}
+          disabled={desativado || preparando}
           className="flex min-h-11 items-center gap-2 rounded-full border border-borda-forte px-4 text-[13px] font-semibold text-tinta transition-[background-color,transform] duration-150 hover:bg-superficie-2 active:scale-95 disabled:opacity-60"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -199,6 +205,7 @@ export default function RegistrarTreinoPage() {
   const diasNaSemana = useDiasNaSemana();
   const [tipo, setTipo] = useState<Tipo>("treino");
   const [foto, setFoto] = useState<Blob | null>(null);
+  const [preparandoFoto, setPreparandoFoto] = useState(false);
   const [publicado, setPublicado] = useState(false);
   const [texto, setTexto] = useState("");
   const [exercicios, setExercicios] = useState<Linha[]>([]);
@@ -225,6 +232,7 @@ export default function RegistrarTreinoPage() {
 
   async function registrar(e: React.FormEvent) {
     e.preventDefault();
+    if (enviando || publicado || preparandoFoto || !texto.trim()) return;
     setErro(null);
     setEnviando(true);
     let post: Post;
@@ -242,12 +250,12 @@ export default function RegistrarTreinoPage() {
       setEnviando(false);
       return;
     }
+    setPublicado(true);
     if (foto) {
       try {
         await subirFotoDoPost(post.id, foto);
       } catch (err) {
         // o post já saiu: avisa em vez de fingir que nada aconteceu
-        setPublicado(true);
         setErro(`O post saiu, mas a foto não subiu: ${err instanceof Error ? err.message : "erro"}.`);
         setEnviando(false);
         return;
@@ -367,7 +375,13 @@ export default function RegistrarTreinoPage() {
           />
         </label>
 
-        <EscolherFoto foto={foto} aoEscolher={setFoto} />
+        <EscolherFoto
+          foto={foto}
+          aoEscolher={setFoto}
+          preparando={preparandoFoto}
+          aoPreparar={setPreparandoFoto}
+          desativado={enviando || publicado}
+        />
       </article>
 
       {erro && <Erro>{erro}</Erro>}
@@ -380,12 +394,12 @@ export default function RegistrarTreinoPage() {
               ? "Post sem treino: aparece no feed, mas não conta dia na granja."
               : `Vale 1 dia na granja e +10 de força${diasNaSemana !== null ? `. Essa semana você treinou ${diasNaSemana} ${diasNaSemana === 1 ? "dia" : "dias"} até agora.` : "."}`}
         </p>
-        {publicado ? (
+        {publicado && !enviando ? (
           <Botao onClick={() => router.push("/")} className="w-full">
             Ver no feed
           </Botao>
         ) : (
-          <Botao type="submit" disabled={enviando || !texto.trim()} className="w-full">
+          <Botao type="submit" disabled={enviando || publicado || preparandoFoto || !texto.trim()} className="w-full">
             {enviando ? "Publicando..." : tipo === "treino" ? GLOSSARIO.registrarTreino : "Postar"}
           </Botao>
         )}
