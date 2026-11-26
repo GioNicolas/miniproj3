@@ -14,6 +14,7 @@ import { EstadoVazio } from "@/components/EstadoVazio";
 import { CartaoDoFrango } from "@/components/Frango";
 import { ListaDePosts } from "@/components/ListaDePosts";
 import { SemanaDeTreinos } from "@/components/SemanaDeTreinos";
+import { SkillsDominadas } from "@/components/SkillsDominadas";
 import { apiGet, type Perfil as PerfilDados } from "@/lib/api";
 import { useEu } from "@/lib/eu";
 
@@ -121,6 +122,8 @@ export function Perfil({ username }: { username: string }) {
       </Card>
 
       <SemanaDeTreinos username={perfil.username} titulo={souEu ? "Sua semana" : "Semana"} />
+
+      <SkillsDominadas username={perfil.username} souEu={souEu} />
 
       <section className="space-y-3">
         <h2 className="font-titulo text-3xl tracking-wide">Posts</h2>
