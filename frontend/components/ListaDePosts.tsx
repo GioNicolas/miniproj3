@@ -3,13 +3,33 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { Botao } from "@/components/Botao";
-import { Carregando } from "@/components/Carregando";
 import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
 import { PostCard } from "@/components/PostCard";
 import { apiGet, type Page, type Post } from "@/lib/api";
 
 const POR_PAGINA = 20;
+
+/** Esqueleto no formato do post enquanto a página carrega: a tela não pula quando chega. */
+function EsqueletoDePosts() {
+  return (
+    <div role="status" aria-label="Carregando posts" className="animate-brilho">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="flex flex-col gap-3 border-t border-borda py-4">
+          <div className="flex items-center gap-3">
+            <div className="h-11 w-11 rounded-full bg-superficie" />
+            <div className="flex flex-col gap-1.5">
+              <div className="h-3 w-32 rounded bg-superficie" />
+              <div className="h-2.5 w-20 rounded bg-superficie" />
+            </div>
+          </div>
+          <div className="h-3 w-4/5 rounded bg-superficie" />
+          <div className="h-16 rounded-xl bg-superficie" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 type Props = {
   // rota que devolve página de PostOut: "/explorar", "/feed", "/usuarios/ana/posts"
@@ -58,14 +78,15 @@ export function ListaDePosts({ caminho, vazio }: Props) {
   }
 
   if (erro) return <Erro>{erro}</Erro>;
-  if (total === null) return <Carregando />;
+  if (total === null) return <EsqueletoDePosts />;
   if (total === 0) return <EstadoVazio titulo={vazio.titulo} texto={vazio.texto} />;
 
   return (
     <div className="space-y-4">
       <ul>
-        {posts.map((post) => (
-          <li key={post.id}>
+        {posts.map((post, i) => (
+          // entrada em cascata só nos primeiros da página: o resto já nasce fora da tela
+          <li key={post.id} className="animate-entrar" style={{ animationDelay: `${Math.min(i % POR_PAGINA, 6) * 45}ms` }}>
             <PostCard post={post} onAtualizado={atualizar} onApagado={remover} />
           </li>
         ))}

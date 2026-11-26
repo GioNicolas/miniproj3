@@ -219,16 +219,19 @@ function Passo({
   aoDominar: () => void;
   aoDesfazer: () => void;
 }) {
+  // o check só pula quando a pessoa acabou de dominar, não ao abrir a árvore
+  const [estadoAoAbrir] = useState(p.estado);
+  const acabouDeDominar = p.estado === "dominada" && estadoAoAbrir !== "dominada";
   return (
     <li className="flex gap-3">
       <div className="flex flex-col items-center">
         <span
-          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
             p.estado === "dominada" ? "bg-folha text-sobre-destaque" : p.estado === "disponivel" ? "bg-elevado text-destaque" : "bg-elevado text-suave"
           }`}
         >
           {p.estado === "dominada" && (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={acabouDeDominar ? "animate-pulo" : ""}>
               <path d="M5 12.5l4.5 4.5L19 7.5" />
             </svg>
           )}

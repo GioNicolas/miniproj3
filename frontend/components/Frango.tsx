@@ -114,7 +114,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
             aria-valuenow={forca}
             className="h-3 overflow-hidden rounded-md bg-elevado"
           >
-            <div className="h-3 rounded-md bg-[#d6dae4]" style={{ width: `${progresso}%` }} />
+            <div className="h-3 origin-left animate-encher rounded-md bg-[#d6dae4]" style={{ width: `${progresso}%` }} />
           </div>
           <p className="flex justify-between text-xs text-suave">
             <span>{de}</span>

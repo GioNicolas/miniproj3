@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
 import { Erro } from "@/components/Erro";
-import { apiGet, apiPost, type Post } from "@/lib/api";
+import { apiGet, apiPost, subirFotoDoPost, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
+import { reduzirFoto } from "@/lib/foto";
 import { GLOSSARIO } from "@/lib/glossario";
 import { nomeDaProgressao, TRILHAS } from "@/lib/progressoes";
 
@@ -62,6 +63,83 @@ function useDiasNaSemana(): number | null {
       .catch(() => setDias(null));
   }, [eu]);
   return dias;
+}
+
+type Tipo = "treino" | "post";
+
+const TIPOS: { id: Tipo; rotulo: string }[] = [
+  { id: "treino", rotulo: "Treinei hoje" },
+  { id: "post", rotulo: "Só um post" },
+];
+
+/** Foto opcional: nunca obrigatória (DECISIONS, decisão 2). Reduzida no celular antes de subir. */
+function EscolherFoto({ foto, aoEscolher }: { foto: Blob | null; aoEscolher: (f: Blob | null) => void }) {
+  const entrada = useRef<HTMLInputElement>(null);
+  const [preparando, setPreparando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const previa = useMemo(() => (foto ? URL.createObjectURL(foto) : null), [foto]);
+  useEffect(
+    () => () => {
+      if (previa) URL.revokeObjectURL(previa);
+    },
+    [previa]
+  );
+
+  async function escolher(e: React.ChangeEvent<HTMLInputElement>) {
+    const arquivo = e.target.files?.[0];
+    e.target.value = "";
+    if (!arquivo) return;
+    setErro(null);
+    setPreparando(true);
+    try {
+      aoEscolher(await reduzirFoto(arquivo));
+    } catch {
+      setErro("não deu para abrir essa foto, tenta outra");
+    } finally {
+      setPreparando(false);
+    }
+  }
+
+  return (
+    <div className="px-4 pb-4">
+      <input ref={entrada} type="file" accept="image/*" onChange={escolher} className="hidden" aria-hidden="true" tabIndex={-1} />
+      {previa ? (
+        <div className="relative animate-surgir overflow-hidden rounded-xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={previa} alt="Prévia da foto do post" className="max-h-80 w-full object-cover" />
+          <button
+            type="button"
+            onClick={() => aoEscolher(null)}
+            aria-label="Tirar a foto"
+            className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur transition-transform active:scale-90"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => entrada.current?.click()}
+          disabled={preparando}
+          className="flex min-h-11 items-center gap-2 rounded-full border border-borda-forte px-4 text-[13px] font-semibold text-tinta transition-[background-color,transform] duration-150 hover:bg-superficie-2 active:scale-95 disabled:opacity-60"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+            <circle cx="12" cy="13" r="3.5" />
+          </svg>
+          {preparando ? "Preparando a foto…" : "Adicionar foto"}
+          <span className="font-normal text-suave">(opcional)</span>
+        </button>
+      )}
+      {erro && (
+        <p role="alert" className="mt-2 text-xs text-brasa">
+          {erro}
+        </p>
+      )}
+    </div>
+  );
 }
 
 /** Linha de inclusão de um exercício: progressão, séries e reps. */
@@ -119,6 +197,9 @@ export default function RegistrarTreinoPage() {
   const router = useRouter();
   const eu = useEu();
   const diasNaSemana = useDiasNaSemana();
+  const [tipo, setTipo] = useState<Tipo>("treino");
+  const [foto, setFoto] = useState<Blob | null>(null);
+  const [publicado, setPublicado] = useState(false);
   const [texto, setTexto] = useState("");
   const [exercicios, setExercicios] = useState<Linha[]>([]);
   const [incluindo, setIncluindo] = useState(false);
@@ -128,7 +209,9 @@ export default function RegistrarTreinoPage() {
   // Vindo do Treino de hoje (/treinos?...): ?ex=barra_australiana:3,flexao:2 já preenche
   // os exercícios com as séries que a pessoa marcou.
   useEffect(() => {
-    const ex = new URLSearchParams(window.location.search).get("ex");
+    const busca = new URLSearchParams(window.location.search);
+    if (busca.get("tipo") === "post") setTipo("post");
+    const ex = busca.get("ex");
     if (!ex) return;
     const codigos = new Set(TRILHAS.flatMap((t) => t.progressoes.map((p) => p.codigo)));
     const vindos = ex
@@ -144,17 +227,33 @@ export default function RegistrarTreinoPage() {
     e.preventDefault();
     setErro(null);
     setEnviando(true);
+    let post: Post;
     try {
-      // Treino sem exercício também conta o dia.
-      await apiPost<Post>("/treinos", {
-        texto,
-        exercicios: exercicios.map((l) => ({ progressao: l.progressao, series: numero(l.series), reps: numero(l.reps) })),
-      });
-      router.push("/");
+      // Treino sem exercício também conta o dia; "Só um post" não conta.
+      post =
+        tipo === "treino"
+          ? await apiPost<Post>("/treinos", {
+              texto,
+              exercicios: exercicios.map((l) => ({ progressao: l.progressao, series: numero(l.series), reps: numero(l.reps) })),
+            })
+          : await apiPost<Post>("/posts", { texto });
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "não deu para registrar o treino");
+      setErro(err instanceof Error ? err.message : "não deu para publicar");
       setEnviando(false);
+      return;
     }
+    if (foto) {
+      try {
+        await subirFotoDoPost(post.id, foto);
+      } catch (err) {
+        // o post já saiu: avisa em vez de fingir que nada aconteceu
+        setPublicado(true);
+        setErro(`O post saiu, mas a foto não subiu: ${err instanceof Error ? err.message : "erro"}.`);
+        setEnviando(false);
+        return;
+      }
+    }
+    router.push("/");
   }
 
   return (
@@ -171,6 +270,29 @@ export default function RegistrarTreinoPage() {
         </div>
       </header>
 
+      <div role="tablist" aria-label="O que publicar" className="relative grid grid-cols-2 gap-1 rounded-[10px] bg-superficie p-1">
+        <span
+          aria-hidden="true"
+          className={`absolute inset-y-1 left-1 w-[calc(50%-6px)] rounded-lg bg-elevado transition-transform duration-300 ease-saida ${
+            tipo === "post" ? "translate-x-[calc(100%+4px)]" : ""
+          }`}
+        />
+        {TIPOS.map(({ id, rotulo }) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={tipo === id}
+            onClick={() => setTipo(id)}
+            className={`relative min-h-11 rounded-lg text-sm transition-colors duration-200 ${
+              tipo === id ? "font-semibold text-tinta" : "font-medium text-suave hover:text-tinta"
+            }`}
+          >
+            {rotulo}
+          </button>
+        ))}
+      </div>
+
       {/* Prévia: o post já no formato em que vai aparecer no feed */}
       <article aria-label="Prévia do post" className="flex flex-col overflow-hidden rounded-2xl bg-superficie">
         <div className="flex items-center gap-3 px-3.5 pb-3 pt-3.5">
@@ -181,7 +303,8 @@ export default function RegistrarTreinoPage() {
           </div>
         </div>
 
-        <div className="mx-3.5 flex flex-col gap-2 rounded-xl bg-superficie-2 px-4 py-3">
+        {tipo === "treino" && (
+        <div className="mx-3.5 flex animate-surgir flex-col gap-2 rounded-xl bg-superficie-2 px-4 py-3">
           <div className="flex items-baseline justify-between text-xs text-suave">
             <span>Treino de hoje</span>
             <span>
@@ -230,31 +353,42 @@ export default function RegistrarTreinoPage() {
             )
           )}
         </div>
+        )}
 
-        <label className="block px-4 pb-4 pt-3">
+        <label className="block px-4 pb-3 pt-3">
           <span className="sr-only">Texto do post</span>
           <textarea
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             maxLength={LIMITE_TEXTO}
             rows={3}
-            placeholder="escreve algo pro post"
+            placeholder={tipo === "treino" ? "Como foi o treino?" : "O que você quer contar?"}
             className="w-full resize-none border-0 border-b border-borda-forte bg-transparent px-0 pb-2 pt-1 text-sm leading-[1.55] text-tinta outline-none placeholder:text-suave focus:border-tinta"
           />
         </label>
+
+        <EscolherFoto foto={foto} aoEscolher={setFoto} />
       </article>
 
       {erro && <Erro>{erro}</Erro>}
 
       <div className="flex flex-col gap-2 border-t border-borda pt-3">
         <p className="text-center text-xs text-balance text-suave">
-          {texto.trim()
-            ? `Vale 1 dia na granja e +10 de força${diasNaSemana !== null ? `. Essa semana você treinou ${diasNaSemana} ${diasNaSemana === 1 ? "dia" : "dias"} até agora.` : "."}`
-            : "Escreve algo no post pra liberar o registro."}
+          {!texto.trim()
+            ? "Escreve algo no post pra liberar."
+            : tipo === "post"
+              ? "Post sem treino: aparece no feed, mas não conta dia na granja."
+              : `Vale 1 dia na granja e +10 de força${diasNaSemana !== null ? `. Essa semana você treinou ${diasNaSemana} ${diasNaSemana === 1 ? "dia" : "dias"} até agora.` : "."}`}
         </p>
-        <Botao type="submit" disabled={enviando || !texto.trim()} className="w-full">
-          {enviando ? "Registrando..." : GLOSSARIO.registrarTreino}
-        </Botao>
+        {publicado ? (
+          <Botao onClick={() => router.push("/")} className="w-full">
+            Ver no feed
+          </Botao>
+        ) : (
+          <Botao type="submit" disabled={enviando || !texto.trim()} className="w-full">
+            {enviando ? "Publicando..." : tipo === "treino" ? GLOSSARIO.registrarTreino : "Postar"}
+          </Botao>
+        )}
       </div>
     </form>
   );

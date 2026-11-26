@@ -64,6 +64,12 @@ class PostOut(BaseModel):
     comentarios: int = 0
     eu_curti: bool = False
     treino: TreinoOut | None = None
+    # foto opcional: caminho na API (o front põe a URL base na frente); null sem foto
+    imagem_url: str | None = None
+
+
+class ImagemOut(BaseModel):
+    imagem_url: str
 
 
 class PostPage(BaseModel):

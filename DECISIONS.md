@@ -58,6 +58,15 @@ A **Frangaria** é uma rede social de calistenia para quem está começando.
   do próprio corpo e do próprio treino, e essa vergonha faz parte do problema
   que queremos resolver. Trapacear no ranking de quem você segue não rende
   nada para ninguém.
+- **Depois:** a foto voltou como **opcional**, no mesmo lugar onde se escreve o
+  post. Muita gente gosta de mostrar o treino, e quem tem vergonha continua
+  registrando sem foto. Ela nunca vale como prova nem muda o placar. O celular
+  reduz a foto para cerca de 1080 px antes de enviar, e a API guarda os bytes no
+  próprio banco, numa tabela separada (`post_imagens`): o disco do Render free
+  zera a cada deploy, então uma pasta de uploads perderia as fotos, e assim a
+  foto dura o mesmo que o post. O tipo é conferido pelos primeiros bytes do
+  arquivo, não pelo nome, e a URL leva uma chave aleatória, para ninguém achar
+  a foto de um post chutando o número.
 
 ### 3. Feed cronológico; quem acabou de chegar começa pelo Explorar
 

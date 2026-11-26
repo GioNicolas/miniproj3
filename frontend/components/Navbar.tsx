@@ -62,7 +62,7 @@ export function Navbar() {
               key={item.href}
               href={item.href}
               aria-current={ativo(item.href) ? "page" : undefined}
-              className={`flex min-h-11 items-center gap-1.5 border-b-[3px] text-sm ${ativo(item.href) ? "border-tinta font-semibold text-tinta" : "border-transparent text-suave hover:text-tinta"}`}
+              className={`flex min-h-11 items-center gap-1.5 border-b-[3px] text-sm transition-colors duration-200 ${ativo(item.href) ? "border-tinta font-semibold text-tinta" : "border-transparent text-suave hover:text-tinta"}`}
             >
               {item.rotulo}
               <Aviso total={aviso(item.href)} />
@@ -91,7 +91,7 @@ export function Navbar() {
             key={item.href}
             href={item.href}
             aria-current={ativo(item.href) ? "page" : undefined}
-            className={`flex min-h-11 flex-col items-center gap-0.5 whitespace-nowrap border-t-[3px] py-2 text-xs ${ativo(item.href) ? "border-tinta font-semibold text-tinta" : "border-transparent text-suave"}`}
+            className={`flex min-h-11 flex-col items-center gap-0.5 whitespace-nowrap border-t-[3px] py-2 text-xs transition-[color,border-color,transform] duration-200 active:scale-95 ${ativo(item.href) ? "border-tinta font-semibold text-tinta" : "border-transparent text-suave"}`}
           >
             <span className="relative">
               <Icone d={item.icone} />
