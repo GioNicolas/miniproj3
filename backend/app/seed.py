@@ -35,6 +35,7 @@ from app.models.post import Post
 from app.models.progressao_dominada import ProgressaoDominada
 from app.models.treino import Treino
 from app.models.user import User
+from app.services import fotos_de_perfil
 
 # A mesma senha para todo usuário do seed, para dar para logar na demo.
 SENHA_SEED = "senha-forte-123"
@@ -454,7 +455,7 @@ def _semear_perfil_fixo(db: Session, usuarios: dict[str, User], hoje: date) -> N
     foto = FotoDePerfil(user_id=eu.id, tipo="image/jpeg", conteudo=(FOTOS_DO_SEED / perfil["foto_de_perfil"]).read_bytes())
     db.add(foto)
     db.flush()
-    eu.avatar_url = f"/usuarios/{eu.username}/foto/{foto.chave}"
+    eu.avatar_url = fotos_de_perfil.url(eu.username, foto.chave)
 
     # o post de hoje, uns minutos atrás (no máximo a 0h01 de hoje, para contar o dia certo)
     inicio_de_hoje = datetime.combine(hoje, time(0, 1), tzinfo=FUSO_RECIFE).astimezone(timezone.utc)
