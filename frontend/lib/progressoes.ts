@@ -1,6 +1,6 @@
 // Progressões que dá para escolher no registro de treino, por trilha.
-// Lista provisória até o catálogo da árvore (#10) entrar: quando ele vier, esta
-// lista passa a ser lida de lá. Os códigos são os mesmos que o backend guarda.
+// Espelha o catálogo de backend/app/core/progressoes.py (#10): mesmos códigos,
+// nomes e trilhas. A árvore em /treinos lê o catálogo direto da API.
 
 export type Progressao = { codigo: string; nome: string };
 
@@ -53,3 +53,10 @@ const NOMES = new Map(TRILHAS.flatMap((t) => t.progressoes.map((p) => [p.codigo,
 export function nomeDaProgressao(codigo: string): string {
   return NOMES.get(codigo) ?? codigo.split("_").join(" ");
 }
+
+/** Equipamento que libera parte da árvore (backend: schemas/progressao.py). */
+export const EQUIPAMENTOS = [
+  { codigo: "barra_fixa", nome: "Barra fixa" },
+  { codigo: "paralelas", nome: "Paralelas" },
+  { codigo: "elastico", nome: "Elástico" },
+] as const;

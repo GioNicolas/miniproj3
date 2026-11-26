@@ -173,3 +173,27 @@ export type Granja = {
   alvo: { usuario: UsuarioNaGranja; dias_treinados: number; faltam_dias: number } | null;
   dias_que_ainda_contam: number;
 };
+
+// ---- árvore de progressões (espelha backend/app/schemas/progressao.py, #10) ----
+
+export type Equipamento = "barra_fixa" | "paralelas" | "elastico";
+export type EstadoDaSkill = "dominada" | "disponivel" | "bloqueada";
+
+export type SkillNaArvore = {
+  codigo: string;
+  nome: string;
+  trilha: string;
+  prerequisitos: string[];
+  equipamento: Equipamento[];
+  nivel: number; // 1 = raiz
+  estado: EstadoDaSkill;
+};
+
+// GET /progressoes: a árvore de quem está logado, em ordem topológica
+export type Arvore = {
+  equipamentos: Equipamento[];
+  progressoes: SkillNaArvore[];
+};
+
+// GET /usuarios/{username}/progressoes
+export type SkillDominada = { codigo: string; nome: string; trilha: string };

@@ -9,27 +9,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Carregando } from "@/components/Carregando";
 import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
-import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api";
+import { apiDelete, apiGet, apiPatch, apiPost, type Arvore, type Equipamento, type SkillNaArvore as Progressao } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
-
-type Estado = "dominada" | "disponivel" | "bloqueada";
-type Progressao = {
-  codigo: string;
-  nome: string;
-  trilha: string;
-  prerequisitos: string[];
-  equipamento: string[];
-  nivel: number;
-  estado: Estado;
-};
-type Arvore = { equipamentos: string[]; progressoes: Progressao[] };
+import { EQUIPAMENTOS } from "@/lib/progressoes";
 
 const TRILHAS = ["Puxar", "Empurrar", "Pernas", "Core"];
-const EQUIPAMENTOS: { codigo: string; nome: string }[] = [
-  { codigo: "barra_fixa", nome: "Barra fixa" },
-  { codigo: "paralelas", nome: "Paralelas" },
-  { codigo: "elastico", nome: "Elástico" },
-];
 const NOME_DO_EQUIPAMENTO = Object.fromEntries(EQUIPAMENTOS.map((e) => [e.codigo, e.nome.toLowerCase()]));
 const SERIES = 3;
 
@@ -327,7 +311,7 @@ function ArvoreDeProgressoes({ arvore, recarregar }: { arvore: Arvore; recarrega
     }
   }
 
-  function alternarEquipamento(codigo: string) {
+  function alternarEquipamento(codigo: Equipamento) {
     const novos = arvore.equipamentos.includes(codigo)
       ? arvore.equipamentos.filter((e) => e !== codigo)
       : [...arvore.equipamentos, codigo];

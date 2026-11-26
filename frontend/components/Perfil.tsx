@@ -12,7 +12,7 @@ import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
 import { CartaoDoFrango } from "@/components/Frango";
 import { GradeDePosts } from "@/components/GradeDePosts";
-import { apiGet, type Perfil as PerfilDados } from "@/lib/api";
+import { apiGet, type Perfil as PerfilDados, type SkillDominada as Dominada } from "@/lib/api";
 import { diaIso, ultimosDias, useDiasTreinados } from "@/lib/dias";
 import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
@@ -20,7 +20,6 @@ import { GLOSSARIO } from "@/lib/glossario";
 const ESTILO_LINK_BOTAO =
   "inline-flex min-h-11 items-center justify-center rounded-[10px] border border-borda-forte px-4 text-sm font-semibold text-tinta hover:bg-superficie-2";
 
-type Dominada = { codigo: string; nome: string; trilha: string };
 
 /** Últimos 28 dias em 2 linhas de 14, como no canvas. Hoje ganha borda tracejada. */
 function Calendario({ username, diasSemTreinar }: { username: string; diasSemTreinar: number | null }) {

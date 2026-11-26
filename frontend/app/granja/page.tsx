@@ -43,7 +43,11 @@ function Recado({ granja }: { granja: Granja }) {
   if (alvo.faltam_dias > restam) {
     return <p>Essa semana não dá mais pra passar {quem}. Segunda zera e todo mundo começa do zero.</p>;
   }
-  if (alvo.faltam_dias === 1) return <p>Treina hoje e você passa {quem}.</p>;
+  if (alvo.faltam_dias === 1) {
+    // dias_que_ainda_contam não inclui hoje quando você já treinou hoje (o 2º treino do dia não conta)
+    const ateDomingo = 7 - ((new Date().getDay() + 6) % 7);
+    return <p>Treina {restam === ateDomingo ? "hoje" : "amanhã"} e você passa {quem}.</p>;
+  }
   return (
     <p>
       {eu.dias_treinados === 0 ? "Bora começar: f" : "F"}altam {dias(alvo.faltam_dias)} de treino pra passar {quem}.
@@ -53,9 +57,9 @@ function Recado({ granja }: { granja: Granja }) {
 
 // Pódio: cor da medalha no número e altura do degrau.
 const MEDALHA: Record<number, { cor: string; degrau: string; arte: number }> = {
-  1: { cor: "#e8b23a", degrau: "h-[142px] bg-[#202b42]", arte: 118 },
-  2: { cor: "#c3c7cc", degrau: "h-[116px] bg-superficie", arte: 92 },
-  3: { cor: "#c27a45", degrau: "h-[100px] bg-superficie", arte: 84 },
+  1: { cor: "#e8b23a", degrau: "min-h-[160px] bg-[#202b42]", arte: 118 },
+  2: { cor: "#c3c7cc", degrau: "min-h-[136px] bg-superficie", arte: 92 },
+  3: { cor: "#c27a45", degrau: "min-h-[122px] bg-superficie", arte: 84 },
 };
 
 function TreinouHoje() {
@@ -77,7 +81,7 @@ function Degrau({ c, souEu }: { c: Colocado; souEu: boolean }) {
       <Link href={`/u/${c.usuario.username}`} className="-mb-1">
         <ArteDoFrango patente={patente} altura={m.arte} alt={`${patente} de ${souEu ? "você" : primeiroNome(c.usuario.name)}`} />
       </Link>
-      <div className={`flex w-full flex-col items-center justify-center rounded-t-xl px-1 py-2 ${m.degrau}`}>
+      <div className={`flex w-full flex-col items-center justify-start rounded-t-xl px-1 py-2 ${m.degrau}`}>
         <span className="font-placar text-4xl leading-none" style={{ color: m.cor }}>
           {c.posicao}
           <span className="ml-px align-top font-corpo text-[15px] font-bold">º</span>
