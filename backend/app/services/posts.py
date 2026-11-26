@@ -10,6 +10,7 @@ from app.models.user import User
 from app.schemas.post import PostCreate, PostOut, PostUpdate
 from app.services import curtidas as curtidas_service
 from app.services import frango
+from app.services import imagens
 
 
 def buscar(db: Session, post_id: int) -> Post:
@@ -19,7 +20,7 @@ def buscar(db: Session, post_id: int) -> Post:
     return post
 
 
-def _do_autor(db: Session, post_id: int, eu: User) -> Post:
+def do_autor_ou_403(db: Session, post_id: int, eu: User) -> Post:
     post = buscar(db, post_id)
     if post.autor_id != eu.id:
         raise HTTPException(status_code=403, detail="só o autor pode mexer no post")
@@ -35,7 +36,7 @@ def criar(db: Session, eu: User, dados: PostCreate) -> Post:
 
 
 def editar(db: Session, post_id: int, eu: User, dados: PostUpdate) -> Post:
-    post = _do_autor(db, post_id, eu)
+    post = do_autor_ou_403(db, post_id, eu)
     post.texto = dados.texto
     db.commit()
     db.refresh(post)
@@ -43,9 +44,10 @@ def editar(db: Session, post_id: int, eu: User, dados: PostUpdate) -> Post:
 
 
 def apagar(db: Session, post_id: int, eu: User) -> None:
-    post = _do_autor(db, post_id, eu)
+    post = do_autor_ou_403(db, post_id, eu)
     dia_do_treino = post.treino.dia if post.treino else None
     curtidas_service.apagar_do_post(db, post.id)
+    imagens.apagar(db, post.id)
     # sem isso o SQLite deixa comentários órfãos apontando para um post que não existe
     db.execute(delete(Comentario).where(Comentario.post_id == post.id))
     db.delete(post)
@@ -117,6 +119,7 @@ def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
         ).tuples().all()
     )
     niveis = frango.niveis(db, {post.autor_id for post in posts})
+    fotos = imagens.urls_em_lote(db, ids)
     saida = []
     for post in posts:
         out = PostOut.model_validate(post)
@@ -124,6 +127,7 @@ def montar_posts(db: Session, posts: list[Post], eu: User) -> list[PostOut]:
         out.curtidas = curtidas.get(post.id, 0)
         out.eu_curti = post.id in eu_curti
         out.autor.nivel = niveis.get(post.autor_id)
+        out.imagem_url = fotos.get(post.id)
         saida.append(out)
     return saida
 

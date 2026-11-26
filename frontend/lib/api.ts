@@ -56,6 +56,29 @@ export function apiDelete<T = void>(path: string): Promise<T> {
   return request<T>("DELETE", path);
 }
 
+/** URL completa de um caminho da API, para <img src> (a foto do post vem como "/posts/1/imagem/..."). */
+export function urlDaApi(path: string): string {
+  return `${BASE}${path}`;
+}
+
+/** Sobe a foto opcional do post (multipart, campo "arquivo"). Só o autor. */
+export async function subirFotoDoPost(postId: number, foto: Blob): Promise<{ imagem_url: string }> {
+  const corpo = new FormData();
+  corpo.append("arquivo", foto, "foto.jpg");
+  const token = localStorage.getItem("token");
+  // sem Content-Type: o navegador monta o multipart com o boundary certo
+  const res = await fetch(`${BASE}/posts/${postId}/imagem`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: corpo,
+  });
+  if (!res.ok) {
+    const erro = await res.json().catch(() => null);
+    throw new Error(typeof erro?.detail === "string" ? erro.detail : `a foto não subiu (${res.status})`);
+  }
+  return res.json();
+}
+
 // ---- tipos do slice de exemplo (espelham backend/app/schemas/user.py) ----
 
 export type User = {
@@ -102,6 +125,7 @@ export type Post = {
   comentarios: number;
   eu_curti: boolean;
   treino: Treino | null;
+  imagem_url: string | null; // caminho na API; usar urlDaApi() para montar o src
 };
 
 export type Comentario = {

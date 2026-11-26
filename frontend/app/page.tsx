@@ -6,7 +6,6 @@ import { useState } from "react";
 import { Card } from "@/components/Card";
 import { Carregando } from "@/components/Carregando";
 import { ListaDePosts } from "@/components/ListaDePosts";
-import { NovoPost } from "@/components/NovoPost";
 import { GLOSSARIO } from "@/lib/glossario";
 import { useSeguindo } from "@/lib/seguindo";
 
@@ -24,8 +23,6 @@ export default function Home() {
   // Explorar continua no Explorar para seguir mais gente.
   const [aba, setAba] = useState<Aba | null>(null);
   if (aba === null && sigoAlguem !== null) setAba(sigoAlguem ? "seguindo" : "explorar");
-  // muda a cada post novo para a lista recarregar e mostrar o post no topo
-  const [versao, setVersao] = useState(0);
 
   return (
     <div className="flex flex-col gap-4">
@@ -43,11 +40,16 @@ export default function Home() {
         </Link>
       </Card>
 
-      <NovoPost onCriado={() => setVersao((v) => v + 1)} />
-
       <section className="flex flex-col gap-4">
         {/* Controle segmentado: a aba escolhida fica preenchida (elevado) */}
-        <div role="tablist" aria-label="O que mostrar" className="grid grid-cols-2 gap-1 rounded-[10px] bg-superficie p-1">
+        <div role="tablist" aria-label="O que mostrar" className="relative grid grid-cols-2 gap-1 rounded-[10px] bg-superficie p-1">
+          {/* o fundo da aba escolhida desliza de uma para a outra */}
+          <span
+            aria-hidden="true"
+            className={`absolute inset-y-1 left-1 w-[calc(50%-6px)] rounded-lg bg-elevado transition-transform duration-300 ease-saida ${
+              aba === "explorar" ? "translate-x-[calc(100%+4px)]" : ""
+            } ${aba === null ? "opacity-0" : ""}`}
+          />
           {ABAS.map(({ id, rotulo }) => (
             <button
               key={id}
@@ -55,8 +57,8 @@ export default function Home() {
               role="tab"
               aria-selected={aba === id}
               onClick={() => setAba(id)}
-              className={`min-h-11 rounded-lg text-sm transition-colors ${
-                aba === id ? "bg-elevado font-semibold text-tinta" : "font-medium text-suave hover:text-tinta"
+              className={`relative min-h-11 rounded-lg text-sm transition-colors duration-200 ${
+                aba === id ? "font-semibold text-tinta" : "font-medium text-suave hover:text-tinta"
               }`}
             >
               {rotulo}
@@ -68,7 +70,7 @@ export default function Home() {
           <Carregando />
         ) : aba === "seguindo" ? (
           <ListaDePosts
-            key={`seguindo-${versao}`}
+            key="seguindo"
             caminho="/feed"
             vazio={
               sigoAlguem
@@ -87,7 +89,7 @@ export default function Home() {
                 : "Você ainda não segue ninguém: olha o que a galera tá treinando e toca em Seguir em quem treina parecido com você."}
             </p>
             <ListaDePosts
-              key={`explorar-${versao}`}
+              key="explorar"
               caminho="/explorar"
               vazio={{ titulo: "Ninguém postou ainda", texto: "Que tal ser o primeiro a contar o treino de hoje?" }}
             />

@@ -243,7 +243,8 @@ export default function GranjaPage() {
           }
         />
       ) : (
-        <ol aria-label="Pódio" className="grid grid-cols-3 items-end gap-x-3 pt-1">
+        // o pódio sobe junto quando a Granja abre
+        <ol aria-label="Pódio" className="grid animate-subir grid-cols-3 items-end gap-x-3 pt-1">
           {podio.map((c) => (
             <Degrau key={c.usuario.username} c={c} souEu={c.usuario.username === euUsername} />
           ))}
