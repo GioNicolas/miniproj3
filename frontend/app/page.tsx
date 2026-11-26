@@ -26,7 +26,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Chamada do dia: o único botão de milho do feed */}
+      {/* Chamada do dia: o único botão principal do feed */}
       <Card className="flex flex-col gap-4">
         <div>
           <h1 className="text-[17px] font-bold leading-tight tracking-[-0.02em]">Treinou hoje? Conta pra granja.</h1>

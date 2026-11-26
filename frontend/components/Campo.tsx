@@ -8,8 +8,8 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
 };
 
 // Campo de formulário com rótulo. O visual dos inputs da rede mora só aqui.
-// Contorno #66749A (3:1 no fundo); aria-invalid="true" pinta a borda de brasa;
-// o foco ganha anel de milho. text-base (16px) evita o zoom do iPhone ao tocar.
+// Contorno #8C8679 (3:1 no fundo); aria-invalid="true" pinta a borda de brasa;
+// o foco ganha anel preto. text-base (16px) evita o zoom do iPhone ao tocar.
 export function Campo({ rotulo, dica, fim, className = "", ...props }: Props) {
   return (
     <label className="flex flex-col gap-2 text-[13px] font-semibold">

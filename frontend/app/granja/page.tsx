@@ -61,9 +61,9 @@ function Recado({ granja }: { granja: Granja }) {
 
 // Pódio: cor da medalha no número e altura do degrau.
 const MEDALHA: Record<number, { cor: string; degrau: string; arte: number }> = {
-  1: { cor: "#e8b23a", degrau: "min-h-[160px] bg-[#202b42]", arte: 118 },
-  2: { cor: "#c3c7cc", degrau: "min-h-[136px] bg-superficie", arte: 92 },
-  3: { cor: "#c27a45", degrau: "min-h-[122px] bg-superficie", arte: 84 },
+  1: { cor: "#c8951f", degrau: "min-h-[160px] bg-superficie-2", arte: 118 },
+  2: { cor: "#8a9099", degrau: "min-h-[136px] bg-superficie", arte: 92 },
+  3: { cor: "#b06a38", degrau: "min-h-[122px] bg-superficie", arte: 84 },
 };
 
 function TreinouHoje() {
@@ -129,7 +129,7 @@ function Linha({ c, souEu }: { c: Colocado; souEu: boolean }) {
         <span className="mt-1 flex min-h-[18px] items-center gap-2">
           <span role="img" aria-label={`Treinou ${feitos} de 7 dias nesta semana`} className="flex shrink-0 gap-[3px]">
             {semana.map((d) => (
-              <span key={d} className={`h-2.5 w-2.5 rounded-sm ${carregou && treinados.has(d) ? "bg-[#b8891f]" : "bg-elevado"}`} />
+              <span key={d} className={`h-2.5 w-2.5 rounded-sm ${carregou && treinados.has(d) ? "bg-tinta" : "bg-elevado"}`} />
             ))}
           </span>
           {hoje && <TreinouHoje />}

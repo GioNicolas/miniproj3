@@ -232,7 +232,7 @@ export default function ConversaPage() {
             type="submit"
             disabled={enviando || !texto.trim()}
             aria-label="Enviar"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-destaque text-sobre-destaque transition-[transform,filter] hover:brightness-105 active:scale-95 disabled:bg-elevado disabled:text-suave"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-destaque text-sobre-destaque transition-[transform,filter] hover:brightness-105 active:scale-95 disabled:bg-superficie-2 disabled:text-suave"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6" />

@@ -1,51 +1,52 @@
 @import "tailwindcss";
 
 /*
- * Tokens da Frangaria (paleta Madrugada azul + Milho, tema escuro). Use SEMPRE
+ * Tokens da Frangaria (paleta Off-white + Preto, tema claro). Use SEMPRE
  * estes nomes, nunca cor solta: bg-fundo, bg-superficie, text-tinta, text-suave,
  * border-borda, bg-destaque, text-sobre-destaque, font-titulo, font-placar...
- * Mudar uma cor aqui muda a rede inteira. Fonte da verdade: o canvas de design.
+ * Mudar uma cor aqui muda a rede inteira.
  *
- * Cada cor de apoio tem uma função, e só essa:
- *   milho (destaque) = SÓ o botão principal de cada tela
+ * O preto é a voz da rede e as artes dos frangos são a cor. Cada cor de apoio
+ * tem uma função, e só essa:
+ *   preto (destaque) = SÓ o botão principal de cada tela e o que já foi feito
  *   céu   = conversa e informação: comentários, links, "Mostrar"
  *   folha = conquista: Comprovado, skill dominada, subiu no ranking
  *   brasa = alerta e prazo: erro, definhando, caiu no ranking
  */
 @theme {
-  --color-fundo: #0d1220;
-  --color-superficie: #1b2438; /* card */
-  --color-superficie-2: #253049; /* card dentro de card */
-  --color-elevado: #2f3b56; /* item escolhido: aba ativa, "Seguindo", avatar sem foto */
-  --color-superficie-escura: #1b2438;
-  --color-tinta: #f1f0ea;
-  --color-tinta-clara: #f1f0ea;
-  --color-suave: #a0a5b2;
-  --color-borda: #34405c; /* linha entre posts e seções */
-  --color-borda-forte: #66749a; /* contorno de campo e botão secundário (3:1 no fundo) */
+  --color-fundo: #f5f2eb;
+  --color-superficie: #ebe7de; /* card */
+  --color-superficie-2: #e2ddd2; /* card dentro de card */
+  --color-elevado: #fdfcf9; /* item escolhido: aba ativa, "Seguindo", avatar sem foto */
+  --color-superficie-escura: #ebe7de;
+  --color-tinta: #141414;
+  --color-tinta-clara: #141414;
+  --color-suave: #67625a;
+  --color-borda: #dcd6ca; /* linha entre posts e seções */
+  --color-borda-forte: #8c8679; /* contorno de campo e botão secundário (3:1 no fundo) */
 
-  /* milho: preenche o botão principal; texto em cima dele usa sobre-destaque */
-  --color-destaque: #ffb81c;
-  --color-destaque-texto: #ffb81c;
-  --color-sobre-destaque: #141414;
-  --color-destaque-fundo: #33290f; /* "feito": dia treinado, série marcada */
-  --color-destaque-borda: #5a4614;
+  /* preto: preenche o botão principal; texto em cima dele usa sobre-destaque */
+  --color-destaque: #141414;
+  --color-destaque-texto: #141414;
+  --color-sobre-destaque: #f5f2eb;
+  --color-destaque-fundo: #d9d1bf; /* "feito": dia treinado, série marcada */
+  --color-destaque-borda: #a69e8b;
 
-  --color-ceu: #7fb2ff;
-  --color-ceu-fundo: #17233d;
-  --color-ceu-borda: #2a3d63;
+  --color-ceu: #1f5bc4;
+  --color-ceu-fundo: #e2eaf8;
+  --color-ceu-borda: #b7c8ea;
 
-  --color-folha: #7dd69a;
-  --color-folha-fundo: #15281f;
-  --color-folha-borda: #24402e;
+  --color-folha: #1d7a45;
+  --color-folha-fundo: #dff0e5;
+  --color-folha-borda: #b2d8bf;
 
-  --color-brasa: #ff8a5c;
-  --color-brasa-fundo: #2e1a1a;
+  --color-brasa: #b8461c;
+  --color-brasa-fundo: #f8e3da;
 
   /* nomes antigos, mantidos para quem já usa: perigo = brasa, sucesso = folha */
-  --color-perigo: #ff8a5c;
-  --color-perigo-fundo: #2e1a1a;
-  --color-sucesso: #7dd69a;
+  --color-perigo: #b8461c;
+  --color-perigo-fundo: #f8e3da;
+  --color-sucesso: #1d7a45;
 
   /* cores das patentes do frango (#11), tiradas das artes: selo e anel do avatar */
   --color-patente-pintinho: #f2d06b;
@@ -82,7 +83,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
