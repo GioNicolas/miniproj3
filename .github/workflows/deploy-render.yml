@@ -1,0 +1,21 @@
+# Sobe a API no Render a cada merge na main que mexe no backend.
+# O serviço do Render foi criado à mão, sem o Blueprint, então o autoDeploy do
+# render.yaml não vale para ele; quem dispara o deploy é o hook guardado no
+# secret RENDER_DEPLOY_HOOK. Cada deploy recria o banco com o seed, por isso
+# mudança só de front não redeploya a API (e não apaga as contas de teste).
+name: deploy-render
+
+on:
+  push:
+    branches: [main]
+    paths: ["backend/**"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispara o deploy no Render
+        run: curl -fsS -X POST "$RENDER_DEPLOY_HOOK" > /dev/null
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
