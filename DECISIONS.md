@@ -133,6 +133,7 @@ tirem linhas quando mudarem de ideia.
 | Seed fake (núcleo) | @EduardoSanturbano | A banca precisa ver uma comunidade viva de calistenia, não Lorem ipsum. |
 | Identidade visual e navegação | @SofiaLimar | O nicho precisa aparecer na interface. |
 | Registro de treino | @GioNicolas | É o dado que mede a constância e alimenta o frango e a granja. |
+| Foto opcional no post | @GioNicolas | Mostrar o treino é parte do hábito de quem posta, mas nunca vira prova obrigatória (decisão 2). |
 | Chat (conversa direta e grupo) | @GioNicolas | O "bora na barra do CCEN às 17h?" acontece dentro da rede, sem perder a pessoa para o WhatsApp. |
 | Árvore de progressões | @davicgois, @GioNicolas | Mostra a ordem certa das progressões e o próximo passo possível. |
 | O Frango | @SofiaLimar, @GioNicolas | Dá motivo para voltar: o frango definha se você some. |
