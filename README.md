@@ -35,9 +35,15 @@ Depois validem o ambiente:
 
 ```bash
 make check      # tudo precisa ficar verde
-make seed       # cria 3 usuários de exemplo
-make test       # deve mostrar "4 passed, 10 skipped"
+make seed       # cria a rede de exemplo (22 frangos, posts, treinos, follows)
+make test       # todos os testes passam
 ```
+
+Para ver a rede como a banca vai ver, entrem como `frango_demo`, senha
+`senha-forte-123` (a mesma para todo usuário do seed). Ele já segue metade da
+rede, então o feed e a Granja da Semana abrem cheios. O seed só roda com o
+banco vazio: para recriar, apaguem `backend/app.db` e rodem `make seed` de
+novo. No deploy, `SEED_ON_BOOT=true` faz a API rodar o mesmo seed ao subir.
 
 Para rodar o projeto, abram dois terminais:
 

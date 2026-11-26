@@ -110,8 +110,6 @@ def test_feed_cronologico_dos_seguidos(client, logar):
 
 # ---------- PERFIL ----------
 
-
-@pytest.mark.skip(reason="Remova ao implementar perfil: PATCH /usuarios/eu + GET /usuarios/{username} (núcleo)")
 def test_perfil_editavel(client, logar):
     ana = logar("ana", "Ana")
 
@@ -137,7 +135,6 @@ def test_perfil_editavel(client, logar):
 # ---------- FOLLOW ----------
 
 
-@pytest.mark.skip(reason="Remova ao implementar follow/unfollow com contadores (núcleo)")
 def test_follow_unfollow_com_contadores(client, logar):
     ana = logar("ana")
     logar("bia")
@@ -158,7 +155,6 @@ def test_follow_unfollow_com_contadores(client, logar):
 # ---------- CURTIDAS ----------
 
 
-@pytest.mark.skip(reason="Remova ao implementar curtir/descurtir idempotente (núcleo)")
 def test_curtidas_idempotentes(client, logar):
     ana = logar("ana")
     bia = logar("bia")
@@ -194,7 +190,6 @@ def test_comentarios_planos_cronologicos(client, logar):
 # ---------- SEED FAKE ----------
 
 
-@pytest.mark.skip(reason="Remova ao implementar seed_fake(db) com faker em scripts/seed.py (núcleo)")
 def test_seed_fake_popula_a_rede(client):
     # contrato: função seed_fake(db) em scripts/seed.py — a demo nunca começa vazia
     import sys

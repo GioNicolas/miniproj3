@@ -10,6 +10,7 @@ const ANEL: Record<Patente, string> = {
 const TAMANHO = {
   p: "h-8 w-8 border-2 text-[11px]",
   m: "h-11 w-11 border-[3px] text-[13px]",
+  g: "h-24 w-24 border-4 text-[28px]",
 };
 
 function iniciais(nome: string): string {
@@ -23,16 +24,19 @@ export function Avatar({
   name,
   avatarUrl,
   patente,
-  tamanho = "m",
+  tamanho,
+  grande = false,
 }: {
   name: string;
   avatarUrl: string;
-  patente?: Patente;
+  patente?: Patente | null;
   tamanho?: keyof typeof TAMANHO;
+  grande?: boolean; // atalho para tamanho="g" (cabeçalho do perfil)
 }) {
+  const t = tamanho ?? (grande ? "g" : "m");
   return (
     <div
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-elevado font-semibold text-tinta ${TAMANHO[tamanho]} ${patente ? ANEL[patente] : "border-transparent"}`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-elevado font-semibold text-tinta ${TAMANHO[t]} ${patente ? ANEL[patente] : "border-transparent"}`}
     >
       {avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element

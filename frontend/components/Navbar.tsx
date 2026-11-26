@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useNaoLidas } from "@/lib/chat";
 import { GLOSSARIO } from "@/lib/glossario";
 import { ROTAS_PUBLICAS, sair } from "@/lib/sessao";
 
 // Os 5 destinos da rede. Explorar é uma aba dentro do Feed; a árvore de
-// progressões fica dentro de Treinos; Chat reúne os posts sem treino
-// (dúvidas, combinados, resenha). Mudou uma rota? Mude só esta lista.
+// progressões fica dentro de Treinos; Chat são as conversas privadas e os
+// grupos (#21). Mudou uma rota? Mude só esta lista.
 const ITENS = [
   { href: "/", rotulo: "Feed", icone: "M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" },
   { href: "/granja", rotulo: "Granja", icone: "M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3" },
@@ -16,6 +17,19 @@ const ITENS = [
   { href: "/chat", rotulo: GLOSSARIO.conversa, icone: "M4 5h16v11H9l-5 4z" },
   { href: "/perfil", rotulo: GLOSSARIO.perfil, icone: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0" },
 ];
+
+// Bolinha céu com o número de mensagens não lidas, só na aba do Chat.
+function Aviso({ total, className = "" }: { total: number; className?: string }) {
+  if (total === 0) return null;
+  return (
+    <span
+      className={`flex h-4 min-w-4 items-center justify-center rounded-full bg-ceu px-1 text-xs font-bold leading-none text-sobre-destaque ${className}`}
+    >
+      {total > 99 ? "99+" : total}
+      <span className="sr-only"> mensagens não lidas</span>
+    </span>
+  );
+}
 
 function Icone({ d }: { d: string }) {
   return (
@@ -28,9 +42,12 @@ function Icone({ d }: { d: string }) {
 export function Navbar() {
   const caminho = usePathname();
   const ativo = (href: string) => (href === "/" ? caminho === "/" : caminho.startsWith(href));
+  const publica = ROTAS_PUBLICAS.includes(caminho);
+  const naoLidas = useNaoLidas(!publica, caminho);
+  const aviso = (href: string) => (href === "/chat" ? naoLidas : 0);
 
   // Login e cadastro são telas cheias, sem navegação.
-  if (ROTAS_PUBLICAS.includes(caminho)) return null;
+  if (publica) return null;
 
   return (
     <>
@@ -45,9 +62,10 @@ export function Navbar() {
               key={item.href}
               href={item.href}
               aria-current={ativo(item.href) ? "page" : undefined}
-              className={`flex min-h-11 items-center border-b-[3px] text-sm ${ativo(item.href) ? "border-tinta font-semibold text-tinta" : "border-transparent text-suave hover:text-tinta"}`}
+              className={`flex min-h-11 items-center gap-1.5 border-b-[3px] text-sm ${ativo(item.href) ? "border-tinta font-semibold text-tinta" : "border-transparent text-suave hover:text-tinta"}`}
             >
               {item.rotulo}
+              <Aviso total={aviso(item.href)} />
             </Link>
           ))}
           <button type="button" onClick={sair} className="min-h-11 text-sm text-suave hover:text-tinta">
@@ -75,7 +93,10 @@ export function Navbar() {
             aria-current={ativo(item.href) ? "page" : undefined}
             className={`flex min-h-11 flex-col items-center gap-0.5 whitespace-nowrap border-t-[3px] py-2 text-xs ${ativo(item.href) ? "border-tinta font-semibold text-tinta" : "border-transparent text-suave"}`}
           >
-            <Icone d={item.icone} />
+            <span className="relative">
+              <Icone d={item.icone} />
+              <Aviso total={aviso(item.href)} className="absolute -right-3 -top-1" />
+            </span>
             {item.rotulo}
           </Link>
         ))}

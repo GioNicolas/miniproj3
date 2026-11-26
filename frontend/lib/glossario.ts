@@ -12,6 +12,6 @@ export const GLOSSARIO = {
   comprovado: "Comprovado",
 } as const;
 
-// Granja é o ranking da semana (e o Papo da granja); nunca nome de patente.
+// Granja é o ranking da semana; nunca nome de patente. Os nomes batem com backend/app/core/frango.py.
 export const PATENTES = ["Pintinho", "Frango", "Galo", "Monstro"] as const;
 export type Patente = (typeof PATENTES)[number];

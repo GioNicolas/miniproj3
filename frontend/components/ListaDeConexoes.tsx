@@ -80,9 +80,7 @@ export function ListaDeConexoes({ username, tipo }: Props) {
       <ul className="border-t border-borda">
         {usuarios.map((u) => (
           <li key={u.id}>
-            <Link href={`/u/${u.username}`} className="block hover:bg-superficie/60">
-              <UserCard user={u} />
-            </Link>
+            <UserCard user={u} />
           </li>
         ))}
       </ul>

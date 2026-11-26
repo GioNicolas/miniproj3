@@ -6,10 +6,11 @@ import { useState } from "react";
 import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
+import { BotaoTamoJunto } from "@/components/BotaoTamoJunto";
 import { Erro } from "@/components/Erro";
+import { SeloDaPatente } from "@/components/Frango";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
-import { GLOSSARIO } from "@/lib/glossario";
 import { nomeDaProgressao } from "@/lib/progressoes";
 import { seguir, useSeguindo } from "@/lib/seguindo";
 import { tempoRelativo } from "@/lib/tempo";
@@ -94,14 +95,19 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
     // Post é linha, não card: a linha de cima separa um do outro (igual ao canvas).
     <article className="flex flex-col border-t border-borda pt-1">
       <header className="flex items-center gap-3 pb-3 pt-4">
-        <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
+        <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} patente={post.autor.nivel} />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-semibold">{post.autor.name}</p>
-          <p className="mt-0.5 truncate text-xs text-suave">
+          <Link href={`/u/${post.autor.username}`} className="block truncate text-[15px] font-semibold hover:underline">
+            {post.autor.name}
+          </Link>
+          <p className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-suave">
+            {post.autor.nivel && <SeloDaPatente patente={post.autor.nivel} />}
+            <span className="truncate">
             @{post.autor.username} ·{" "}
             <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
               {tempoRelativo(post.created_at)}
             </time>
+            </span>
           </p>
         </div>
         {/* Seguir: só contorno, igual ao canvas; some depois de seguir */}
@@ -175,13 +181,12 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
       )}
 
       <footer className="flex items-center gap-4 pb-2 pt-1 text-[13px]">
-        <span className="flex min-h-11 items-center gap-2">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-destaque">
-            <path d="M12 3c.6 3 4.5 4.8 4.5 9.2a4.5 4.5 0 0 1-9 0c0-1.7.7-2.9 1.8-3.9.2 1.4.9 2.2 1.9 2.4-.6-2.4-.2-5.1.8-7.7z" />
-          </svg>
-          <span className="font-semibold">{GLOSSARIO.curtida}</span>
-          <span className="font-medium tabular-nums text-suave">{post.curtidas}</span>
-        </span>
+        <BotaoTamoJunto
+          key={`${post.id}-${post.curtidas}`}
+          postId={post.id}
+          curtidasIniciais={post.curtidas}
+          euCurtiInicial={post.eu_curti}
+        />
         <Link href={`/posts/${post.id}`} className="flex min-h-11 items-center gap-2 font-medium text-ceu hover:underline">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M4 5h16v11H9l-5 4z" />
