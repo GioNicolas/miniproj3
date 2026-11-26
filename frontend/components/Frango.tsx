@@ -165,7 +165,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
 export function SeloDaPatente({ patente }: { patente: Patente }) {
   return (
     <span
-      className="shrink-0 whitespace-nowrap rounded px-1.5 py-px text-xs font-bold text-sobre-destaque"
+      className="shrink-0 whitespace-nowrap rounded px-1.5 py-px text-xs font-bold text-tinta"
       style={{ background: COR_DA_PATENTE[patente] }}
     >
       {patente}
