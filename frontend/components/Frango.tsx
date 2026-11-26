@@ -21,6 +21,14 @@ export const FAIXA_DA_PATENTE: Record<Patente, [number, number]> = {
   Monstro: [75, 100],
 };
 
+// Onde fica o topo da crista em cada arte, em fração da largura (medido nos PNGs): a coroa do 1º lugar vai ali.
+export const CABECA_NA_ARTE: Record<Patente, number> = {
+  Pintinho: 0.7,
+  Frango: 0.73,
+  Galo: 0.55,
+  Monstro: 0.6,
+};
+
 const ARTE: Record<Patente, string> = {
   Pintinho: "/frangos/pintinho.png",
   Frango: "/frangos/frango.png",

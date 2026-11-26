@@ -10,7 +10,7 @@ import { Avatar } from "@/components/Avatar";
 import { Carregando } from "@/components/Carregando";
 import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
-import { ArteDoFrango, SeloDaPatente } from "@/components/Frango";
+import { ArteDoFrango, CABECA_NA_ARTE, SeloDaPatente } from "@/components/Frango";
 import { SemanaDeTreinos } from "@/components/SemanaDeTreinos";
 import { apiGet, type Colocado, type Granja } from "@/lib/api";
 import { diaIso, semanaAtual, useDiasTreinados } from "@/lib/dias";
@@ -77,13 +77,21 @@ function Degrau({ c, souEu }: { c: Colocado; souEu: boolean }) {
   const patente = c.usuario.nivel ?? "Pintinho";
   return (
     <li className={`flex flex-col items-center ${c.posicao === 1 ? "order-2" : c.posicao === 2 ? "order-1" : "order-3"}`}>
-      {c.posicao === 1 && (
-        <svg width="30" height="20" viewBox="0 0 30 20" aria-hidden="true" className="-mb-0.5">
-          <path d="M2 18L4 5l7 6 4-9 4 9 7-6 2 13z" fill="#e8b23a" stroke="#b9831a" strokeWidth="1.2" strokeLinejoin="round" />
-        </svg>
-      )}
-      <Link href={`/u/${c.usuario.username}`} className="-mb-1">
+      <Link href={`/u/${c.usuario.username}`} className={`relative -mb-1 ${c.posicao === 1 ? "mt-4" : ""}`}>
         <ArteDoFrango patente={patente} altura={m.arte} alt={`${patente} de ${souEu ? "você" : primeiroNome(c.usuario.name)}`} />
+        {c.posicao === 1 && (
+          // a coroa senta na cabeça: cada arte tem a cabeça num ponto diferente
+          <svg
+            width="30"
+            height="20"
+            viewBox="0 0 30 20"
+            aria-hidden="true"
+            className="absolute -top-3.5 -translate-x-1/2 -rotate-6"
+            style={{ left: `${CABECA_NA_ARTE[patente] * 100}%` }}
+          >
+            <path d="M2 18L4 5l7 6 4-9 4 9 7-6 2 13z" fill="#e8b23a" stroke="#b9831a" strokeWidth="1.2" strokeLinejoin="round" />
+          </svg>
+        )}
       </Link>
       <div className={`flex w-full flex-col items-center justify-start rounded-t-xl px-1 py-2 ${m.degrau}`}>
         <span className="font-placar text-4xl leading-none" style={{ color: m.cor }}>
