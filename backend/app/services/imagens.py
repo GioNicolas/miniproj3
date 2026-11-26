@@ -13,7 +13,7 @@ from app.models.post_imagem import PostImagem
 MAX_BYTES = 2 * 1024 * 1024  # 2 MB, como no CONTRATO
 
 
-def _tipo_pelo_conteudo(dados: bytes) -> str | None:
+def tipo_pelo_conteudo(dados: bytes) -> str | None:
     """O tipo vem dos primeiros bytes, não do nome nem do Content-Type, que o cliente escolhe."""
     if dados.startswith(b"\xff\xd8\xff"):
         return "image/jpeg"
@@ -28,13 +28,22 @@ def url(post_id: int, chave: str) -> str:
     return f"/posts/{post_id}/imagem/{chave}"
 
 
-async def salvar(db: Session, post_id: int, arquivo: UploadFile) -> PostImagem:
+async def ler_foto(arquivo: UploadFile) -> tuple[bytes, str]:
+    """Lê o upload e devolve (bytes, tipo). 413 acima de 2 MB; 422 se não for imagem.
+
+    Também usado pela foto de perfil (services/fotos_de_perfil.py).
+    """
     dados = await arquivo.read(MAX_BYTES + 1)
     if len(dados) > MAX_BYTES:
         raise HTTPException(status_code=413, detail="a foto passa de 2 MB")
-    tipo = _tipo_pelo_conteudo(dados)
+    tipo = tipo_pelo_conteudo(dados)
     if tipo is None:
         raise HTTPException(status_code=422, detail="a foto precisa ser JPG, PNG ou WEBP")
+    return dados, tipo
+
+
+async def salvar(db: Session, post_id: int, arquivo: UploadFile) -> PostImagem:
+    dados, tipo = await ler_foto(arquivo)
     antiga = db.get(PostImagem, post_id)
     if antiga is not None:  # trocar a foto: a nova ganha outra chave
         db.delete(antiga)

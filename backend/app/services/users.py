@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.contadores import contador_iniciais
 from app.models.user import User
 from app.schemas.user import PerfilOut, UserCreate, UserOut, UserUpdate
-from app.services import follows, frango, progressoes
+from app.services import follows, fotos_de_perfil, frango, progressoes
 
 
 def listar(db: Session, offset: int, limit: int) -> tuple[list[User], int]:
@@ -35,6 +35,8 @@ def criar(db: Session, dados: UserCreate, password_hash: str = "") -> User:
 def atualizar(db: Session, eu: User, dados: UserUpdate) -> User:
     mudancas = dados.model_dump(exclude_unset=True)
     equipamentos = mudancas.pop("equipamentos", None)
+    if "avatar_url" in mudancas:
+        fotos_de_perfil.esquecer_se_trocou_por_link(db, eu, mudancas["avatar_url"])
     if equipamentos is not None:
         progressoes.trocar_equipamentos(db, eu, equipamentos)
     for campo, valor in mudancas.items():

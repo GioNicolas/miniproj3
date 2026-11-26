@@ -5,6 +5,7 @@ from app.models.curtida import Curtida  # noqa: F401
 from app.models.equipamento_usuario import EquipamentoUsuario  # noqa: F401
 from app.models.exercicio import Exercicio  # noqa: F401
 from app.models.follow import Follow  # noqa: F401
+from app.models.foto_de_perfil import FotoDePerfil  # noqa: F401
 from app.models.mensagem import Mensagem  # noqa: F401
 from app.models.post import Post  # noqa: F401
 from app.models.post_imagem import PostImagem  # noqa: F401

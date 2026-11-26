@@ -4,7 +4,7 @@ Toda feature nova imita este caminho. 1 arquivo por router — registre o seu
 com uma linha em main.py.
 """
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Response, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.contadores import contador_iniciais
@@ -13,6 +13,7 @@ from app.deps import get_current_user
 from app.models.user import User
 from app.schemas.post import PostPage
 from app.schemas.user import PerfilOut, UserCreate, UserOut, UserPage, UserUpdate
+from app.services import fotos_de_perfil
 from app.services import posts as posts_service
 from app.services import users as service
 
@@ -48,6 +49,34 @@ def editar_meu_perfil(
     db: Session = Depends(get_db),
 ):
     return service.atualizar(db, eu, dados)
+
+
+@router.post("/eu/foto", response_model=UserOut)
+async def trocar_minha_foto(
+    arquivo: UploadFile,
+    eu: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Foto de perfil escolhida dos arquivos (multipart, campo "arquivo"). Mandar de novo troca."""
+    return await fotos_de_perfil.trocar(db, eu, arquivo)
+
+
+@router.delete("/eu/foto", response_model=UserOut)
+def remover_minha_foto(eu: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Tira a foto: o avatar volta a mostrar as iniciais do nome."""
+    return fotos_de_perfil.remover(db, eu)
+
+
+@router.get("/{username}/foto/{chave}")
+def ver_foto(username: str, chave: str, db: Session = Depends(get_db)):
+    """Sem login: a tag <img> não manda o token. A chave na URL protege a foto."""
+    foto = fotos_de_perfil.buscar(db, service.buscar_por_username(db, username), chave)
+    # a URL muda quando a foto muda, então o navegador pode guardar para sempre
+    return Response(
+        content=foto.conteudo,
+        media_type=foto.tipo,
+        headers={"Cache-Control": "public, max-age=31536000, immutable"},
+    )
 
 
 @router.get("/{username}", response_model=PerfilOut)
