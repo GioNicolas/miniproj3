@@ -39,13 +39,13 @@ export function NovoPost({ onCriado }: { onCriado?: (post: Post) => void }) {
           placeholder="Como foi o treino hoje?"
           aria-label="Novo post"
           maxLength={LIMITE_TEXTO}
-          rows={3}
+          rows={2}
         />
         <div className="flex items-center justify-between">
-          <span className="text-sm text-suave">
+          <span className="text-xs tabular-nums text-suave">
             {texto.length}/{LIMITE_TEXTO}
           </span>
-          <Botao type="submit" disabled={enviando || !texto.trim()}>
+          <Botao type="submit" variante="escuro" disabled={enviando || !texto.trim()}>
             {enviando ? "Postando..." : "Postar"}
           </Botao>
         </div>

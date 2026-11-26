@@ -45,17 +45,25 @@ export function BotaoTamoJunto({ postId, curtidasIniciais, euCurtiInicial }: Pro
 
   return (
     <span className="inline-flex items-center gap-2">
+      {/* Pílula: só contorno; depois de mandar fica preenchida (elevado). A chama é o milho. */}
       <button
         type="button"
         onClick={alternar}
         disabled={enviando}
         aria-pressed={euCurti}
-        className={`min-h-11 ${euCurti ? "font-semibold text-destaque-texto" : "hover:text-tinta"}`}
+        aria-label={`Mandar ${GLOSSARIO.curtida.toLowerCase()}. ${curtidas} ${curtidas === 1 ? "pessoa já mandou" : "pessoas já mandaram"}`}
+        className={`flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-3 text-[13px] text-tinta transition-colors ${
+          euCurti ? "border-elevado bg-elevado" : "border-borda-forte bg-transparent hover:bg-superficie"
+        }`}
       >
-        {GLOSSARIO.curtida} · {curtidas}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-destaque">
+          <path d="M12 3c.6 3 4.5 4.8 4.5 9.2a4.5 4.5 0 0 1-9 0c0-1.7.7-2.9 1.8-3.9.2 1.4.9 2.2 1.9 2.4-.6-2.4-.2-5.1.8-7.7z" />
+        </svg>
+        <span className="font-semibold">{GLOSSARIO.curtida}</span>
+        <span className="font-medium tabular-nums text-suave">{curtidas}</span>
       </button>
       {falhou && (
-        <span role="alert" className="text-perigo">
+        <span role="alert" className="text-xs text-brasa">
           não deu, tenta de novo
         </span>
       )}

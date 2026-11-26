@@ -7,12 +7,10 @@ import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
 import { BotaoTamoJunto } from "@/components/BotaoTamoJunto";
-import { Card } from "@/components/Card";
 import { Erro } from "@/components/Erro";
 import { SeloDaPatente } from "@/components/Frango";
 import { apiDelete, apiPatch, type Exercicio, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
-import { GLOSSARIO } from "@/lib/glossario";
 import { nomeDaProgressao } from "@/lib/progressoes";
 import { seguir, useSeguindo } from "@/lib/seguindo";
 import { tempoRelativo } from "@/lib/tempo";
@@ -91,93 +89,113 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
     setErro(null);
   }
 
+  const exercicios = post.treino?.exercicios ?? [];
+
   return (
-    // Post de treino ganha a faixa laranja na esquerda: é o check-in que conta pro frango.
-    <Card className={post.treino ? "border-l-4 border-l-destaque" : ""}>
-      <article className="space-y-3">
-        <header className="flex items-center gap-3">
-          <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} />
-          <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-2">
-              <Link href={`/u/${post.autor.username}`} className="truncate font-semibold hover:underline">
-                {post.autor.name}
-              </Link>
-              {post.autor.nivel && <SeloDaPatente patente={post.autor.nivel} />}
-            </p>
-            <p className="truncate text-sm text-suave">
-              @{post.autor.username} ·{" "}
-              <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
-                {tempoRelativo(post.created_at)}
-              </time>
-            </p>
-          </div>
-          {podeSeguir && (
-            <Botao variante="contorno" onClick={seguirAutor} disabled={salvando} className="shrink-0 px-3 text-lg">
-              Seguir
-            </Botao>
-          )}
-          {souAutor && !editando && (
-            <div className="flex gap-3 text-sm text-suave">
-              <button type="button" onClick={() => setEditando(true)} disabled={salvando} className="min-h-11 hover:text-tinta">
-                editar
-              </button>
-              <button type="button" onClick={apagar} disabled={salvando} className="min-h-11 hover:text-perigo">
-                apagar
-              </button>
-            </div>
-          )}
-        </header>
-
-        {editando ? (
-          <div className="space-y-2">
-            <AreaDeTexto
-              value={rascunho}
-              onChange={(e) => setRascunho(e.target.value)}
-              maxLength={LIMITE_TEXTO}
-              rows={3}
-              aria-label="Texto do post"
-            />
-            <div className="flex justify-end gap-2">
-              <Botao variante="contorno" onClick={cancelar} disabled={salvando}>
-                Cancelar
-              </Botao>
-              <Botao onClick={salvar} disabled={salvando || !rascunho.trim()}>
-                {salvando ? "Salvando..." : "Salvar"}
-              </Botao>
-            </div>
-          </div>
-        ) : (
-          <>
-            {post.treino && (
-              <ul aria-label="Treino do dia" className="flex flex-wrap gap-1.5">
-                <li className="rounded-full bg-destaque px-2.5 py-0.5 font-titulo text-base tracking-wide text-tinta">
-                  Treino
-                </li>
-                {post.treino.exercicios.map((exercicio, i) => (
-                  <li key={i} className="rounded-full border border-borda bg-fundo px-2.5 py-0.5 text-sm">
-                    {resumoExercicio(exercicio)}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p className="whitespace-pre-wrap break-words">{post.texto}</p>
-          </>
-        )}
-
-        <footer className="flex items-center gap-4 text-sm text-suave">
-          <BotaoTamoJunto
-            key={`${post.id}-${post.curtidas}`}
-            postId={post.id}
-            curtidasIniciais={post.curtidas}
-            euCurtiInicial={post.eu_curti}
-          />
-          <Link href={`/posts/${post.id}`} className="hover:text-tinta hover:underline">
-            {contagem(post.comentarios, "comentário", "comentários")}
+    // Post é linha, não card: a linha de cima separa um do outro (igual ao canvas).
+    <article className="flex flex-col border-t border-borda pt-1">
+      <header className="flex items-center gap-3 pb-3 pt-4">
+        <Avatar name={post.autor.name} avatarUrl={post.autor.avatar_url} patente={post.autor.nivel} />
+        <div className="min-w-0 flex-1">
+          <Link href={`/u/${post.autor.username}`} className="block truncate text-[15px] font-semibold hover:underline">
+            {post.autor.name}
           </Link>
-        </footer>
+          <p className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-suave">
+            {post.autor.nivel && <SeloDaPatente patente={post.autor.nivel} />}
+            <span className="truncate">
+            @{post.autor.username} ·{" "}
+            <time dateTime={post.created_at} title={new Date(post.created_at).toLocaleString("pt-BR")}>
+              {tempoRelativo(post.created_at)}
+            </time>
+            </span>
+          </p>
+        </div>
+        {/* Seguir: só contorno, igual ao canvas; some depois de seguir */}
+        {podeSeguir && (
+          <button
+            type="button"
+            onClick={seguirAutor}
+            disabled={salvando}
+            className="min-h-11 min-w-[88px] shrink-0 rounded-full border border-borda-forte px-3.5 text-sm font-semibold text-tinta transition-colors hover:bg-superficie disabled:opacity-50"
+          >
+            Seguir
+          </button>
+        )}
+        {souAutor && !editando && (
+          <div className="flex shrink-0 text-[13px] font-medium text-suave">
+            <button type="button" onClick={() => setEditando(true)} disabled={salvando} className="min-h-11 px-2 hover:text-tinta">
+              Editar
+            </button>
+            <button type="button" onClick={apagar} disabled={salvando} className="min-h-11 px-2 hover:text-brasa">
+              Apagar
+            </button>
+          </div>
+        )}
+      </header>
 
-        {erro && <Erro>{erro}</Erro>}
-      </article>
-    </Card>
+      {editando ? (
+        <div className="space-y-2 pb-4">
+          <AreaDeTexto
+            value={rascunho}
+            onChange={(e) => setRascunho(e.target.value)}
+            maxLength={LIMITE_TEXTO}
+            rows={3}
+            aria-label="Texto do post"
+          />
+          <div className="flex justify-end gap-2">
+            <Botao variante="contorno" onClick={cancelar} disabled={salvando}>
+              Cancelar
+            </Botao>
+            <Botao variante="escuro" onClick={salvar} disabled={salvando || !rascunho.trim()}>
+              {salvando ? "Salvando..." : "Salvar"}
+            </Botao>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Bloco do treino: o check-in que conta pro frango */}
+          {post.treino && (
+            <div className="flex items-center gap-4 rounded-xl bg-superficie px-4 py-3">
+              <div className="flex w-14 shrink-0 flex-col items-center">
+                <span className="font-placar text-[32px] leading-[0.9]">{exercicios.length}</span>
+                <span className="text-xs text-suave">{exercicios.length === 1 ? "exercício" : "exercícios"}</span>
+              </div>
+              {exercicios.length > 0 ? (
+                <ul aria-label="Treino do dia" className="min-w-0 flex-1 space-y-0.5">
+                  {exercicios.map((exercicio, i) => (
+                    <li key={i} className="truncate text-[15px] font-semibold leading-tight">
+                      {resumoExercicio(exercicio)}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="min-w-0 flex-1 text-[15px] font-semibold leading-tight">
+                  Treino registrado
+                  <span className="mt-0.5 block text-xs font-normal text-suave">Vale 1 dia na granja</span>
+                </p>
+              )}
+            </div>
+          )}
+          <p className="whitespace-pre-wrap break-words pt-3 text-[15px] leading-[1.55] text-pretty">{post.texto}</p>
+        </>
+      )}
+
+      <footer className="flex items-center gap-4 pb-2 pt-1 text-[13px]">
+        <BotaoTamoJunto
+          key={`${post.id}-${post.curtidas}`}
+          postId={post.id}
+          curtidasIniciais={post.curtidas}
+          euCurtiInicial={post.eu_curti}
+        />
+        <Link href={`/posts/${post.id}`} className="flex min-h-11 items-center gap-2 font-medium text-ceu hover:underline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 5h16v11H9l-5 4z" />
+          </svg>
+          {contagem(post.comentarios, "comentário", "comentários")}
+        </Link>
+      </footer>
+
+      {erro && <div className="pb-3"><Erro>{erro}</Erro></div>}
+    </article>
   );
 }

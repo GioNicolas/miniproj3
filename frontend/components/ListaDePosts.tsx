@@ -62,8 +62,8 @@ export function ListaDePosts({ caminho, vazio }: Props) {
   if (total === 0) return <EstadoVazio titulo={vazio.titulo} texto={vazio.texto} />;
 
   return (
-    <div className="space-y-3">
-      <ul className="space-y-3">
+    <div className="space-y-4">
+      <ul>
         {posts.map((post) => (
           <li key={post.id}>
             <PostCard post={post} onAtualizado={atualizar} onApagado={remover} />
@@ -72,7 +72,7 @@ export function ListaDePosts({ caminho, vazio }: Props) {
       </ul>
       {posts.length < total && (
         <Botao variante="contorno" onClick={() => carregar(posts.length)} disabled={carregando} className="w-full">
-          {carregando ? "Carregando..." : "Carregar mais"}
+          {carregando ? "Carregando..." : "Ver posts mais antigos"}
         </Botao>
       )}
     </div>

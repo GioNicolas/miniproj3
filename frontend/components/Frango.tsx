@@ -1,9 +1,10 @@
 // O Frango (#11): o avatar que fica forte com a constância e murcha quando você some.
-// O desenho é provisório, em SVG, até a arte da #8 entrar; as cores são as das patentes
-// do canvas (as mesmas de --color-patente-* do PR de identidade).
+// Artes da #8 em public/frangos/<patente>.png; cores = --color-patente-* do globals.css.
+
+import Link from "next/link";
 
 import type { Frango as EstadoFrango } from "@/lib/api";
-import type { Patente } from "@/lib/glossario";
+import { GLOSSARIO, PATENTES, type Patente } from "@/lib/glossario";
 
 export const COR_DA_PATENTE: Record<Patente, string> = {
   Pintinho: "#f2d06b",
@@ -12,98 +13,151 @@ export const COR_DA_PATENTE: Record<Patente, string> = {
   Monstro: "#e0704a",
 };
 
-const ESCALA: Record<Patente, number> = { Pintinho: 0.72, Frango: 0.84, Galo: 0.94, Monstro: 1 };
+// Faixas de força de cada patente (backend/app/core/frango.py).
+export const FAIXA_DA_PATENTE: Record<Patente, [number, number]> = {
+  Pintinho: [0, 24],
+  Frango: [25, 49],
+  Galo: [50, 74],
+  Monstro: [75, 100],
+};
 
-/** O bicho em si. `definhando` deixa ele cinza e de cabeça baixa. */
-export function DesenhoDoFrango({ patente, definhando, tamanho = 96 }: { patente: Patente; definhando: boolean; tamanho?: number }) {
-  const cor = COR_DA_PATENTE[patente];
-  const crista = patente === "Galo" || patente === "Monstro";
+const ARTE: Record<Patente, string> = {
+  Pintinho: "/frangos/pintinho.png",
+  Frango: "/frangos/frango.png",
+  Galo: "/frangos/galo.png",
+  Monstro: "/frangos/monstro.png",
+};
+
+/** A arte da patente. `definhando` apaga a cor; `apagada` vira silhueta (patente que ainda não chegou). */
+export function ArteDoFrango({
+  patente,
+  altura,
+  definhando = false,
+  apagada = false,
+  alt = "",
+}: {
+  patente: Patente;
+  altura: number;
+  definhando?: boolean;
+  apagada?: boolean;
+  alt?: string;
+}) {
+  const filtro = apagada ? "opacity-20 brightness-0 invert" : definhando ? "grayscale-[0.55] brightness-75" : "";
   return (
-    <svg
-      viewBox="0 0 100 100"
-      width={tamanho}
-      height={tamanho}
-      aria-hidden
-      className={definhando ? "grayscale opacity-70" : ""}
-    >
-      <g transform={`translate(50 96) scale(${ESCALA[patente]}) translate(-50 -96)`}>
-        {/* pernas */}
-        <path d="M42 80 L40 94 M58 80 L60 94 M36 94 h8 M56 94 h8" stroke="#c8641c" strokeWidth="3" strokeLinecap="round" fill="none" />
-        {/* corpo */}
-        <ellipse cx="50" cy="64" rx={patente === "Monstro" ? 28 : 24} ry="20" fill={cor} stroke="#1b1b1b" strokeWidth="2.5" />
-        {/* asa: no Monstro vira braço flexionado */}
-        {patente === "Monstro" ? (
-          <path d="M28 62 q-12 -4 -10 -18 q8 -2 12 6" fill={cor} stroke="#1b1b1b" strokeWidth="2.5" strokeLinejoin="round" />
-        ) : (
-          <path d="M36 60 q10 14 24 6" fill="none" stroke="#1b1b1b" strokeWidth="2.5" strokeLinecap="round" />
-        )}
-        {/* cabeça (cai para o lado quando definha) */}
-        <g transform={definhando ? "rotate(28 62 50)" : undefined}>
-          {crista && <path d="M56 22 q3 -9 8 -2 q4 -8 8 0 q5 -5 5 4 z" fill="#d43a2a" stroke="#1b1b1b" strokeWidth="2" strokeLinejoin="round" />}
-          <circle cx="64" cy="36" r="14" fill={cor} stroke="#1b1b1b" strokeWidth="2.5" />
-          {patente === "Monstro" && <path d="M51 30 h26" stroke="#d43a2a" strokeWidth="4" />}
-          {definhando ? (
-            <path d="M66 32 l5 5 M71 32 l-5 5" stroke="#1b1b1b" strokeWidth="2" strokeLinecap="round" />
-          ) : (
-            <circle cx="69" cy="34" r="2.4" fill="#1b1b1b" />
-          )}
-          <path d="M77 37 l9 3 l-9 4 z" fill="#f0a020" stroke="#1b1b1b" strokeWidth="1.5" strokeLinejoin="round" />
-        </g>
-        {definhando && <path d="M80 18 q3 6 0 8 q-3 -2 0 -8 z" fill="#7fb3e0" />}
-      </g>
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={ARTE[patente]} alt={alt} style={{ height: altura }} className={`w-auto select-none ${filtro}`} draggable={false} />
   );
 }
 
-function frase(frango: EstadoFrango, souEu: boolean): string {
-  const { dias_sem_treinar: dias, definhando, proximo_nivel, falta_para_proximo } = frango;
-  if (dias === null) return souEu ? "Registre o primeiro treino e o seu frango começa a crescer." : "Ainda não registrou nenhum treino.";
-  if (definhando) {
-    return souEu
-      ? `Definhando há ${dias - 1} ${dias - 1 === 1 ? "dia" : "dias"}: cada dia sem treino tira 5 de força. Treina hoje!`
-      : `Sumiu há ${dias} dias e o frango está definhando.`;
-  }
-  if (!proximo_nivel) return "Patente máxima. Agora é manter a constância.";
-  return `Faltam ${falta_para_proximo} de força para virar ${proximo_nivel}.`;
-}
-
-/** O cartão do frango no perfil: desenho, patente, barra de força e o que falta. */
+/** O cartão do frango no perfil, igual ao canvas: arte grande, patente, força, o que falta e a régua. */
 export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu: boolean }) {
-  const cor = COR_DA_PATENTE[frango.nivel];
+  const { nivel, forca, definhando, proximo_nivel, falta_para_proximo, dias_sem_treinar } = frango;
+  const [de, ate] = FAIXA_DA_PATENTE[nivel];
+  const progresso = proximo_nivel ? Math.round(((forca - de) / (ate + 1 - de)) * 100) : 100;
+  const atual = PATENTES.indexOf(nivel);
+
   return (
-    <div className="flex items-center gap-4 rounded-2xl bg-fundo p-3">
-      <DesenhoDoFrango patente={frango.nivel} definhando={frango.definhando} />
-      <div className="min-w-0 flex-1 space-y-2">
-        <p className="flex flex-wrap items-baseline gap-x-2">
-          <span className="font-titulo text-3xl leading-none tracking-wide">{frango.nivel}</span>
-          {frango.definhando && <span className="text-sm font-semibold text-perigo">definhando</span>}
-        </p>
-        <div
-          role="meter"
-          aria-label="Força do frango"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={frango.forca}
-          className="relative h-3 overflow-hidden rounded-full bg-borda"
-        >
-          <div className="h-full rounded-full transition-[width]" style={{ width: `${frango.forca}%`, background: cor }} />
-          {[25, 50, 75].map((marco) => (
-            <span key={marco} className="absolute top-0 h-full w-px bg-superficie" style={{ left: `${marco}%` }} />
-          ))}
+    <section aria-label="Seu frango" className="flex flex-col items-center gap-4 rounded-[20px] bg-superficie p-4">
+      {definhando && (
+        <div role="status" className="flex w-full flex-col gap-3 rounded-xl bg-brasa-fundo p-4">
+          <p className="flex items-center gap-2 text-base font-bold tracking-[-0.02em] text-brasa">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7.5v5.5M12 16.5h.01" />
+            </svg>
+            {souEu ? "Seu frango tá definhando" : "Esse frango tá definhando"}
+          </p>
+          <p className="text-sm leading-snug">
+            {dias_sem_treinar} dias sem treinar.{" "}
+            {souEu ? "Cada dia a mais tira 5 de força. Treina hoje e ele para de definhar na hora." : "Cada dia a mais tira 5 de força."}
+          </p>
+          {souEu && (
+            <Link
+              href="/treinos/registrar"
+              className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque hover:brightness-105"
+            >
+              {GLOSSARIO.registrarTreino}
+            </Link>
+          )}
         </div>
-        <p className="text-sm text-suave">
-          <span className="font-semibold text-tinta">{frango.forca}/100 de força.</span> {frase(frango, souEu)}
+      )}
+
+      <ArteDoFrango patente={nivel} altura={232} definhando={definhando} alt={`${souEu ? "Seu frango" : "Frango"}, patente ${nivel}`} />
+
+      <div className="-mt-2 flex flex-col items-center">
+        <p className="text-[34px] font-extrabold leading-none tracking-[-0.02em]" style={{ color: COR_DA_PATENTE[nivel] }}>
+          {nivel}
+        </p>
+        <p className="mt-1 flex items-baseline gap-2">
+          <span className="font-placar text-[34px] leading-none">{forca}</span>
+          <span className="text-[15px] font-semibold text-suave">de força</span>
         </p>
       </div>
-    </div>
+
+      {dias_sem_treinar === null && souEu && (
+        <p className="text-center text-sm text-pretty text-suave">Registra o primeiro treino e o seu frango começa a crescer.</p>
+      )}
+
+      {proximo_nivel ? (
+        <div className="flex w-full flex-col gap-2 border-t border-borda pt-4">
+          <p className="flex items-baseline justify-between">
+            <span className="text-[13px] text-suave">Faltam {falta_para_proximo} de força pro</span>
+            <span className="text-sm font-bold" style={{ color: COR_DA_PATENTE[proximo_nivel] }}>
+              {proximo_nivel}
+            </span>
+          </p>
+          <div
+            role="progressbar"
+            aria-label={`Força até ${proximo_nivel}`}
+            aria-valuemin={de}
+            aria-valuemax={ate + 1}
+            aria-valuenow={forca}
+            className="h-3 overflow-hidden rounded-md bg-elevado"
+          >
+            <div className="h-3 rounded-md bg-[#d6dae4]" style={{ width: `${progresso}%` }} />
+          </div>
+          <p className="flex justify-between text-xs text-suave">
+            <span>{de}</span>
+            <span>{ate + 1}</span>
+          </p>
+        </div>
+      ) : (
+        <p className="w-full border-t border-borda pt-4 text-center text-sm text-suave">Patente máxima. Agora é manter a constância.</p>
+      )}
+
+      <ol aria-label="As 4 patentes" className="grid w-full grid-cols-4 gap-2 border-t border-borda pt-4">
+        {PATENTES.map((p, i) => {
+          const estado = i < atual ? "passou" : i === atual ? "atual" : "futuro";
+          const [min, max] = FAIXA_DA_PATENTE[p];
+          return (
+            <li
+              key={p}
+              aria-current={estado === "atual" ? "step" : undefined}
+              className={`flex flex-col items-center gap-1 rounded-xl px-1 py-2 ${estado === "atual" ? "bg-superficie-2" : ""}`}
+            >
+              <ArteDoFrango patente={p} altura={44} apagada={estado === "futuro"} />
+              <span
+                className={`text-[13px] font-bold ${estado === "futuro" ? "text-suave" : estado === "passou" ? "text-tinta" : ""}`}
+                style={estado === "atual" ? { color: COR_DA_PATENTE[p] } : undefined}
+              >
+                {p}
+              </span>
+              <span className="text-xs text-suave">
+                {min}–{max}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
   );
 }
 
-/** Selo pequeno com a patente, ao lado do nome nos posts. */
+/** Selo pequeno com a patente, ao lado do nome nos posts e no ranking. */
 export function SeloDaPatente({ patente }: { patente: Patente }) {
   return (
     <span
-      className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold leading-none text-[#1b1b1b]"
+      className="shrink-0 whitespace-nowrap rounded px-1.5 py-px text-xs font-bold text-sobre-destaque"
       style={{ background: COR_DA_PATENTE[patente] }}
     >
       {patente}

@@ -74,7 +74,7 @@ export function NovaConversa({ onFechar }: { onFechar: () => void }) {
     <Card>
       <form onSubmit={criar} className="space-y-4">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="font-titulo text-2xl tracking-wide">Nova conversa</h2>
+          <h2 className="text-[17px] font-bold tracking-[-0.02em]">Nova conversa</h2>
           <button type="button" onClick={onFechar} className="min-h-11 px-2 text-sm text-suave hover:text-tinta">
             Cancelar
           </button>

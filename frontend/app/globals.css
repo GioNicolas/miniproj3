@@ -1,34 +1,90 @@
 @import "tailwindcss";
 
 /*
- * Tokens da Frangaria (paleta Osso). Use SEMPRE estes nomes, nunca cor solta:
- * bg-fundo, bg-superficie, text-tinta, text-suave, border-borda,
- * bg-destaque, text-destaque-texto, font-titulo, font-corpo...
- * Mudar uma cor aqui muda a rede inteira.
+ * Tokens da Frangaria (paleta Madrugada azul + Milho, tema escuro). Use SEMPRE
+ * estes nomes, nunca cor solta: bg-fundo, bg-superficie, text-tinta, text-suave,
+ * border-borda, bg-destaque, text-sobre-destaque, font-titulo, font-placar...
+ * Mudar uma cor aqui muda a rede inteira. Fonte da verdade: o canvas de design.
+ *
+ * Cada cor de apoio tem uma função, e só essa:
+ *   milho (destaque) = SÓ o botão principal de cada tela
+ *   céu   = conversa e informação: comentários, links, "Mostrar"
+ *   folha = conquista: Comprovado, skill dominada, subiu no ranking
+ *   brasa = alerta e prazo: erro, definhando, caiu no ranking
  */
 @theme {
-  --color-fundo: #f3f3f1;
-  --color-superficie: #ffffff;
-  --color-superficie-escura: #161616;
-  --color-tinta: #161616;
-  --color-tinta-clara: #f3f3f1;
-  --color-suave: #5f5f5a;
-  --color-borda: #deded9;
+  --color-fundo: #0d1220;
+  --color-superficie: #1b2438; /* card */
+  --color-superficie-2: #253049; /* card dentro de card */
+  --color-elevado: #2f3b56; /* item escolhido: aba ativa, "Seguindo", avatar sem foto */
+  --color-superficie-escura: #1b2438;
+  --color-tinta: #f1f0ea;
+  --color-tinta-clara: #f1f0ea;
+  --color-suave: #a0a5b2;
+  --color-borda: #34405c; /* linha entre posts e seções */
+  --color-borda-forte: #66749a; /* contorno de campo e botão secundário (3:1 no fundo) */
 
-  /* laranja-fogo: áreas grandes (botão, destaque). Texto pequeno em fundo claro usa destaque-texto. */
-  --color-destaque: #ff4d1a;
-  --color-destaque-texto: #d93a0b;
+  /* milho: preenche o botão principal; texto em cima dele usa sobre-destaque */
+  --color-destaque: #ffb81c;
+  --color-destaque-texto: #ffb81c;
+  --color-sobre-destaque: #141414;
+  --color-destaque-fundo: #33290f; /* "feito": dia treinado, série marcada */
+  --color-destaque-borda: #5a4614;
 
-  --color-perigo: #b3261e;
-  --color-perigo-fundo: #fbeae6;
-  --color-sucesso: #1f7a3a;
+  --color-ceu: #7fb2ff;
+  --color-ceu-fundo: #17233d;
+  --color-ceu-borda: #2a3d63;
 
-  /* cores das patentes do frango (#11) */
-  --color-patente-frango: #9a9a94;
-  --color-patente-granja: #c27a45;
-  --color-patente-galo: #a9aeb5;
-  --color-patente-monstro: #e8b23a;
+  --color-folha: #7dd69a;
+  --color-folha-fundo: #15281f;
+  --color-folha-borda: #24402e;
 
-  --font-titulo: var(--font-bebas), "Arial Narrow", sans-serif;
-  --font-corpo: var(--font-inter), system-ui, sans-serif;
+  --color-brasa: #ff8a5c;
+  --color-brasa-fundo: #2e1a1a;
+
+  /* nomes antigos, mantidos para quem já usa: perigo = brasa, sucesso = folha */
+  --color-perigo: #ff8a5c;
+  --color-perigo-fundo: #2e1a1a;
+  --color-sucesso: #7dd69a;
+
+  /* cores das patentes do frango (#11), tiradas das artes: selo e anel do avatar */
+  --color-patente-pintinho: #f2d06b;
+  --color-patente-frango: #e9cfa4;
+  --color-patente-galo: #e38a3e;
+  --color-patente-monstro: #e0704a;
+  /* nome antigo (de antes da #11): telas que ainda usam caem na cor do Frango */
+  --color-patente-granja: #e9cfa4;
+
+  --font-corpo: var(--font-work-sans), system-ui, sans-serif;
+}
+
+/*
+ * Tipografia em três papéis:
+ *   font-titulo = impacto (Archivo larga, 900, itálica, maiúscula): SÓ a marca,
+ *                 o título da tela e o botão principal
+ *   font-placar = números grandes (Big Shoulders Stencil): só algarismos, de 28px pra cima
+ *   font-corpo  = leitura (Work Sans): todo o resto, inclusive rótulos e abas
+ */
+@utility font-titulo {
+  font-family: var(--font-archivo), "Arial Black", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  font-stretch: 125%;
+  text-transform: uppercase;
+  letter-spacing: -0.2px;
+  line-height: 1;
+}
+
+@utility font-placar {
+  font-family: var(--font-stencil), "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  letter-spacing: -0.01em;
 }

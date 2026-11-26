@@ -57,18 +57,27 @@ export function ListaDeConexoes({ username, tipo }: Props) {
 
   return (
     <div className="space-y-4">
-      <div>
-        <Link href={`/u/${username}`} className="inline-flex min-h-11 items-center text-sm text-suave hover:text-tinta">
-          ← @{username}
+      <header className="flex items-center gap-1 pt-2">
+        <Link
+          href={`/u/${username}`}
+          aria-label={`Voltar para @${username}`}
+          className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-superficie"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
         </Link>
-        <h1 className="font-titulo text-4xl tracking-wide">{TITULO[tipo]}</h1>
-      </div>
+        <div className="min-w-0">
+          <h1 className="font-titulo text-[22px]">{TITULO[tipo]}</h1>
+          <p className="mt-1 text-[13px] text-suave">@{username}</p>
+        </div>
+      </header>
 
       {erro && <Erro>{erro}</Erro>}
 
-      {total === 0 && <p className="text-suave">{VAZIO[tipo]}</p>}
+      {total === 0 && <p className="py-6 text-[15px] text-suave">{VAZIO[tipo]}</p>}
 
-      <ul className="space-y-2">
+      <ul className="border-t border-borda">
         {usuarios.map((u) => (
           <li key={u.id}>
             <UserCard user={u} />

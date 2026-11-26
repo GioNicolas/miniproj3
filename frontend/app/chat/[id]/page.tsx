@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
-import { Botao } from "@/components/Botao";
 import { Carregando } from "@/components/Carregando";
 import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
@@ -38,18 +37,20 @@ function Cabecalho({ conversa, eu }: { conversa: Conversa; eu: string | undefine
     ? `@${demais[0]?.username ?? ""}`
     : `${conversa.participantes.length} pessoas: ${[...demais.map((p) => p.name.split(" ")[0]), "você"].join(", ")}`;
   return (
-    <div className="flex items-center gap-3 border-b border-borda pb-3">
+    <div className="-ml-3 flex items-center gap-2 border-b border-borda pb-3 pt-2">
       <Link
         href="/chat"
         aria-label="Voltar para as conversas"
-        className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-2xl hover:bg-superficie"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-superficie"
       >
-        ←
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
       </Link>
-      {demais[0] && <Avatar name={demais[0].name} avatarUrl={demais[0].avatar_url} />}
+      {demais[0] && <Avatar name={demais[0].name} avatarUrl={demais[0].avatar_url} patente={demais[0].nivel} />}
       <div className="min-w-0">
-        <h1 className="truncate font-titulo text-3xl leading-none tracking-wide">{tituloDaConversa(conversa, eu)}</h1>
-        <p className="truncate text-sm text-suave">{subtitulo}</p>
+        <h1 className="truncate text-[17px] font-bold tracking-[-0.02em]">{tituloDaConversa(conversa, eu)}</h1>
+        <p className="truncate text-[13px] text-suave">{subtitulo}</p>
       </div>
     </div>
   );
@@ -190,8 +191,8 @@ export default function ConversaPage() {
                       <p
                         className={`flow-root whitespace-pre-wrap break-words rounded-2xl px-3 py-2 ${
                           minha
-                            ? "rounded-br-md bg-superficie-escura text-tinta-clara"
-                            : "rounded-bl-md border border-borda bg-superficie text-tinta"
+                            ? "rounded-br-md bg-elevado text-tinta"
+                            : "rounded-bl-md bg-superficie text-tinta"
                         }`}
                       >
                         {m.texto}
@@ -213,7 +214,7 @@ export default function ConversaPage() {
       {/* Caixa de mensagem presa embaixo, acima da barra de navegação do celular */}
       <form
         onSubmit={enviar}
-        className="sticky bottom-[calc(3.25rem+max(1rem,env(safe-area-inset-bottom)))] -mx-4 space-y-2 border-t border-borda bg-fundo px-4 py-3 md:bottom-0"
+        className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] -mx-5 space-y-2 border-t border-borda bg-fundo px-5 py-3 md:bottom-0"
       >
         {erro && <Erro>{erro}</Erro>}
         <div className="flex items-end gap-2">
@@ -227,9 +228,16 @@ export default function ConversaPage() {
             placeholder="Mensagem"
             className="min-h-11 resize-none"
           />
-          <Botao type="submit" disabled={enviando || !texto.trim()} className="shrink-0">
-            Enviar
-          </Botao>
+          <button
+            type="submit"
+            disabled={enviando || !texto.trim()}
+            aria-label="Enviar"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-destaque text-sobre-destaque transition-[transform,filter] hover:brightness-105 active:scale-95 disabled:bg-elevado disabled:text-suave"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </button>
         </div>
       </form>
     </div>

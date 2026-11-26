@@ -54,16 +54,9 @@ export function nomeDaProgressao(codigo: string): string {
   return NOMES.get(codigo) ?? codigo.split("_").join(" ");
 }
 
-/** Total de skills do catálogo: o "de 20" do perfil. */
-export const TOTAL_DE_SKILLS = TRILHAS.reduce((total, t) => total + t.progressoes.length, 0);
-
 /** Equipamento que libera parte da árvore (backend: schemas/progressao.py). */
 export const EQUIPAMENTOS = [
   { codigo: "barra_fixa", nome: "Barra fixa" },
   { codigo: "paralelas", nome: "Paralelas" },
   { codigo: "elastico", nome: "Elástico" },
 ] as const;
-
-export function nomeDoEquipamento(codigo: string): string {
-  return EQUIPAMENTOS.find((e) => e.codigo === codigo)?.nome ?? codigo;
-}

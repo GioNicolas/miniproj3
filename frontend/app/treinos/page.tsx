@@ -1,117 +1,289 @@
 "use client";
 
-// Árvore de progressões (#10): cada trilha em ordem de pré-requisito, com
-// cadeado no que ainda não dá, destaque no próximo passo e o equipamento que
-// libera parte da árvore. O estado de cada skill vem pronto da API.
+// Aba Treinos: o treino de hoje e a árvore de progressões (#10), no desenho do canvas.
+// O treino de hoje é o próximo passo liberado de cada trilha (o "disponível" da árvore).
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-import { Botao } from "@/components/Botao";
-import { Card } from "@/components/Card";
 import { Carregando } from "@/components/Carregando";
 import { Erro } from "@/components/Erro";
-import { apiDelete, apiGet, apiPatch, apiPost, type Arvore, type Equipamento, type SkillNaArvore } from "@/lib/api";
+import { EstadoVazio } from "@/components/EstadoVazio";
+import { apiDelete, apiGet, apiPatch, apiPost, type Arvore, type Equipamento, type SkillNaArvore as Progressao } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
-import { EQUIPAMENTOS, TRILHAS, nomeDoEquipamento } from "@/lib/progressoes";
+import { EQUIPAMENTOS } from "@/lib/progressoes";
 
-function Marcador({ skill, proximo }: { skill: SkillNaArvore; proximo: boolean }) {
-  const base = "relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2";
-  if (skill.estado === "dominada") {
-    return (
-      <span className={`${base} border-destaque bg-destaque text-tinta`} aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 12l5 5 9-10" />
-        </svg>
-      </span>
-    );
-  }
-  if (skill.estado === "disponivel") {
-    return (
-      <span className={`${base} border-destaque bg-superficie ${proximo ? "ring-4 ring-destaque/25" : ""}`} aria-hidden="true">
-        <span className={`h-3 w-3 rounded-full ${proximo ? "bg-destaque" : "bg-borda"}`} />
-      </span>
-    );
-  }
+const TRILHAS = ["Puxar", "Empurrar", "Pernas", "Core"];
+const NOME_DO_EQUIPAMENTO = Object.fromEntries(EQUIPAMENTOS.map((e) => [e.codigo, e.nome.toLowerCase()]));
+const SERIES = 3;
+
+function Segmentado<T extends string>({
+  opcoes,
+  valor,
+  aoMudar,
+  rotulo,
+}: {
+  opcoes: { id: T; nome: string }[];
+  valor: T;
+  aoMudar: (v: T) => void;
+  rotulo: string;
+}) {
   return (
-    <span className={`${base} border-borda bg-fundo text-suave`} aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="5" y="11" width="14" height="10" rx="2" />
-        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-      </svg>
-    </span>
+    <div
+      role="tablist"
+      aria-label={rotulo}
+      className="grid gap-1 rounded-[10px] bg-superficie p-1"
+      style={{ gridTemplateColumns: `repeat(${opcoes.length}, minmax(0, 1fr))` }}
+    >
+      {opcoes.map((o) => (
+        <button
+          key={o.id}
+          type="button"
+          role="tab"
+          aria-selected={valor === o.id}
+          onClick={() => aoMudar(o.id)}
+          className={`min-h-11 rounded-lg text-sm transition-colors ${
+            valor === o.id ? "bg-elevado font-semibold text-tinta" : "font-medium text-suave hover:text-tinta"
+          }`}
+        >
+          {o.nome}
+        </button>
+      ))}
+    </div>
   );
 }
 
-/** "Falta: Barra negativa · Precisa de paralelas" para quem está bloqueado. */
-function oQueFalta(skill: SkillNaArvore, arvore: Arvore, nomes: Map<string, SkillNaArvore>): string {
-  const pre = skill.prerequisitos
-    .map((codigo) => nomes.get(codigo))
-    .filter((p): p is SkillNaArvore => !!p && p.estado !== "dominada")
-    .map((p) => (p.trilha === skill.trilha ? p.nome : `${p.nome} (${p.trilha})`));
-  const equip = skill.equipamento.filter((e) => !arvore.equipamentos.includes(e)).map(nomeDoEquipamento);
-  return [
-    pre.length > 0 ? `Domine antes: ${pre.join(", ")}` : null,
-    equip.length > 0 ? `Precisa de ${equip.join(" e ").toLowerCase()}` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+/** Um exercício do treino de hoje: número, nome, trilha e as séries para marcar. */
+function Exercicio({ p, ordem, feitas, aoMarcar }: { p: Progressao; ordem: number; feitas: number; aoMarcar: (n: number) => void }) {
+  const completo = feitas >= SERIES;
+  return (
+    <article aria-label={p.nome} className="flex flex-col gap-3 rounded-[14px] bg-superficie p-4">
+      <div className="flex items-center gap-3">
+        <span
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums ${
+            completo ? "bg-destaque-fundo text-destaque" : "bg-elevado"
+          }`}
+        >
+          {completo ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+          ) : (
+            ordem
+          )}
+        </span>
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-[15px] font-semibold">{p.nome}</h3>
+          <p className="text-xs text-suave">{p.trilha}</p>
+        </div>
+      </div>
+      <div role="group" aria-label={`Séries de ${p.nome}`} className="grid grid-cols-3 gap-2">
+        {Array.from({ length: SERIES }, (_, k) => {
+          const feita = k < feitas;
+          return (
+            <button
+              key={k}
+              type="button"
+              aria-pressed={feita}
+              onClick={() => aoMarcar(feita ? k : k + 1)}
+              className={`flex min-h-11 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold ${
+                feita ? "border-destaque-fundo bg-destaque-fundo text-destaque" : "border-borda-forte bg-superficie-2 text-tinta"
+              }`}
+            >
+              {feita && (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" />
+                </svg>
+              )}
+              Série {k + 1}
+            </button>
+          );
+        })}
+      </div>
+    </article>
+  );
+}
+
+type Series = Record<string, number>;
+
+function TreinoDeHoje({
+  arvore,
+  series,
+  setSeries,
+  aoVerArvore,
+}: {
+  arvore: Arvore;
+  series: Series;
+  setSeries: React.Dispatch<React.SetStateAction<Series>>;
+  aoVerArvore: () => void;
+}) {
+  // O próximo passo liberado de cada trilha entra no treino.
+  const hoje = TRILHAS.map((t) => arvore.progressoes.find((p) => p.trilha === t && p.estado === "disponivel")).filter(
+    (p): p is Progressao => Boolean(p)
+  );
+  const feitas = hoje.reduce((soma, p) => soma + (series[p.codigo] ?? 0), 0);
+  const total = hoje.length * SERIES;
+  const marcadas = hoje.filter((p) => (series[p.codigo] ?? 0) > 0);
+  const registrar = marcadas.length
+    ? `/treinos/registrar?ex=${marcadas.map((p) => `${p.codigo}:${series[p.codigo]}`).join(",")}`
+    : "/treinos/registrar";
+
+  if (hoje.length === 0) {
+    return (
+      <EstadoVazio
+        titulo="Nada liberado agora"
+        texto="Marca na Árvore o equipamento que você tem: algumas progressões precisam de barra ou paralelas."
+        acao={
+          <button type="button" onClick={aoVerArvore} className="flex min-h-12 items-center justify-center rounded-xl border border-borda-forte text-[15px] font-semibold">
+            Ver a árvore
+          </button>
+        }
+      />
+    );
+  }
+
+  return (
+    <>
+      <section aria-label="Resumo do treino de hoje" className="rounded-[14px] bg-superficie p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-[17px] font-bold tracking-[-0.02em]">Treino de hoje</h2>
+            <p className="mt-0.5 text-[13px] text-suave">
+              {hoje.length} {hoje.length === 1 ? "exercício" : "exercícios"} · o próximo passo de cada trilha
+            </p>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="text-lg font-bold leading-none tabular-nums">
+              {feitas}
+              <span className="text-[13px] font-medium text-suave">/{total}</span>
+            </p>
+            <p className="mt-0.5 text-xs text-suave">séries feitas</p>
+          </div>
+        </div>
+        <div
+          role="progressbar"
+          aria-label="Séries feitas"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={feitas}
+          className="mt-3 h-2 overflow-hidden rounded bg-elevado"
+        >
+          <div className="h-2 rounded bg-destaque transition-[width]" style={{ width: `${(feitas / total) * 100}%` }} />
+        </div>
+      </section>
+
+      {hoje.map((p, i) => (
+        <Exercicio
+          key={p.codigo}
+          p={p}
+          ordem={i + 1}
+          feitas={series[p.codigo] ?? 0}
+          aoMarcar={(n) => setSeries((s) => ({ ...s, [p.codigo]: n }))}
+        />
+      ))}
+
+      <div className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] -mx-5 border-t border-borda bg-fundo px-5 py-3 md:bottom-0">
+        <Link
+          href={registrar}
+          className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque hover:brightness-105"
+        >
+          {GLOSSARIO.registrarTreino}
+        </Link>
+      </div>
+    </>
+  );
+}
+
+function detalhe(p: Progressao, porCodigo: Map<string, Progressao>, tenho: string[]): string {
+  if (p.estado === "dominada") return p.prerequisitos.length === 0 ? "Primeiro passo" : "Você já domina";
+  const faltam = p.prerequisitos.filter((c) => porCodigo.get(c)?.estado !== "dominada").map((c) => porCodigo.get(c)?.nome ?? c);
+  const semEquip = p.equipamento.filter((e) => !tenho.includes(e)).map((e) => NOME_DO_EQUIPAMENTO[e] ?? e);
+  const partes: string[] = [];
+  if (faltam.length) partes.push(`Libera depois de ${faltam.join(" e ")}`);
+  if (semEquip.length) partes.push(`${faltam.length ? "p" : "P"}recisa de ${semEquip.join(" e ")}`);
+  return partes.length ? partes.join(" · ") : "Entra no treino de hoje. Marca quando dominar.";
 }
 
 function Passo({
-  skill,
-  proximo,
+  p,
   ultimo,
-  falta,
+  texto,
   ocupado,
-  onDominar,
-  onDesfazer,
+  aoDominar,
+  aoDesfazer,
 }: {
-  skill: SkillNaArvore;
-  proximo: boolean;
+  p: Progressao;
   ultimo: boolean;
-  falta: string;
-  ocupado: boolean;
-  onDominar: () => void;
-  onDesfazer: () => void;
+  texto: string;
+  ocupado: string | null;
+  aoDominar: () => void;
+  aoDesfazer: () => void;
 }) {
   return (
-    <li className="relative flex gap-3 pb-4 last:pb-0">
-      {/* a linha que liga um passo ao próximo */}
-      {!ultimo && (
+    <li className="flex gap-3">
+      <div className="flex flex-col items-center">
         <span
-          aria-hidden="true"
-          className={`absolute left-[17px] top-9 h-[calc(100%-2.25rem)] w-0.5 ${skill.estado === "dominada" ? "bg-destaque" : "bg-borda"}`}
-        />
-      )}
-      <Marcador skill={skill} proximo={proximo} />
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+            p.estado === "dominada" ? "bg-folha text-sobre-destaque" : p.estado === "disponivel" ? "bg-elevado text-destaque" : "bg-elevado text-suave"
+          }`}
+        >
+          {p.estado === "dominada" && (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+          )}
+          {p.estado === "disponivel" && (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          )}
+          {p.estado === "bloqueada" && (
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+            </svg>
+          )}
+        </span>
+        {!ultimo && <span aria-hidden="true" className="w-0.5 flex-1 bg-borda" />}
+      </div>
       <div
-        className={`flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2 rounded-xl px-3 py-1.5 ${proximo ? "border-2 border-destaque bg-superficie" : ""}`}
+        className={`mb-2 flex flex-1 flex-col gap-1 rounded-[10px] p-3 ${
+          p.estado === "dominada"
+            ? "border border-folha-borda bg-folha-fundo"
+            : p.estado === "disponivel"
+              ? "bg-superficie"
+              : "border border-dashed border-borda bg-superficie"
+        }`}
       >
-        <div className="min-w-0 flex-1">
-          {proximo && <p className="text-[11px] font-bold uppercase tracking-wider text-destaque-texto">Próximo passo</p>}
-          <p className={`font-semibold ${skill.estado === "bloqueada" ? "text-suave" : ""}`}>
-            {skill.nome}
-            <span className="sr-only">
-              {skill.estado === "dominada" ? ", dominada" : skill.estado === "disponivel" ? ", disponível" : ", bloqueada"}
-            </span>
-          </p>
-          {skill.estado === "bloqueada" && <p className="text-xs text-suave">{falta}</p>}
-          {skill.estado === "disponivel" && !proximo && <p className="text-xs text-suave">Liberada: dá para tentar</p>}
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="text-[15px] font-semibold">{p.nome}</span>
+          <span
+            className={`shrink-0 whitespace-nowrap text-xs font-semibold ${
+              p.estado === "dominada" ? "text-folha" : p.estado === "disponivel" ? "text-destaque" : "text-suave"
+            }`}
+          >
+            {p.estado === "dominada" ? "Dominada" : p.estado === "disponivel" ? "No treino de hoje" : "Bloqueada"}
+          </span>
         </div>
-        {skill.estado === "disponivel" && (
-          <Botao variante={proximo ? "principal" : "contorno"} disabled={ocupado} onClick={onDominar} className="text-lg">
-            Dominei
-          </Botao>
-        )}
-        {skill.estado === "dominada" && (
+        <p className="text-[13px] text-suave">{texto}</p>
+        {p.estado === "disponivel" && (
           <button
             type="button"
-            disabled={ocupado}
-            onClick={onDesfazer}
-            className="min-h-11 px-1 text-xs text-suave underline-offset-2 hover:underline disabled:opacity-50"
+            disabled={ocupado !== null}
+            onClick={aoDominar}
+            className="mt-1 flex min-h-11 items-center justify-center rounded-[10px] border border-borda-forte text-[13px] font-semibold hover:bg-superficie-2 disabled:opacity-60"
           >
-            Desfazer
+            {ocupado === p.codigo ? "Marcando..." : "Já domino"}
+          </button>
+        )}
+        {p.estado === "dominada" && (
+          <button
+            type="button"
+            disabled={ocupado !== null}
+            onClick={aoDesfazer}
+            className="flex min-h-11 items-center self-start text-[13px] font-semibold text-ceu hover:underline disabled:opacity-60"
+          >
+            {ocupado === p.codigo ? "Desfazendo..." : "Marquei sem querer · desfazer"}
           </button>
         )}
       </div>
@@ -119,140 +291,122 @@ function Passo({
   );
 }
 
-export default function TreinosPage() {
-  const [arvore, setArvore] = useState<Arvore | null>(null);
-  const [erroAoCarregar, setErroAoCarregar] = useState<string | null>(null);
-  const [aviso, setAviso] = useState<string | null>(null);
-  const [ocupado, setOcupado] = useState(false);
+function ArvoreDeProgressoes({ arvore, recarregar }: { arvore: Arvore; recarregar: () => Promise<void> }) {
+  const [trilha, setTrilha] = useState(TRILHAS[0]);
+  const [ocupado, setOcupado] = useState<string | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  const porCodigo = new Map(arvore.progressoes.map((p) => [p.codigo, p]));
+  const passos = arvore.progressoes.filter((p) => p.trilha === trilha);
 
-  const carregar = useCallback(async () => {
+  async function agir(chave: string, acao: () => Promise<unknown>) {
+    setOcupado(chave);
+    setErro(null);
+    try {
+      await acao();
+      await recarregar();
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "não deu agora, tenta de novo");
+    } finally {
+      setOcupado(null);
+    }
+  }
+
+  function alternarEquipamento(codigo: Equipamento) {
+    const novos = arvore.equipamentos.includes(codigo)
+      ? arvore.equipamentos.filter((e) => e !== codigo)
+      : [...arvore.equipamentos, codigo];
+    agir(`eq-${codigo}`, () => apiPatch("/usuarios/eu", { equipamentos: novos }));
+  }
+
+  return (
+    <section aria-label="Árvore de progressões" className="flex flex-col gap-4">
+      <p className="text-[13px] leading-snug text-pretty text-suave">
+        Cada trilha libera o próximo passo quando você domina o atual. O passo com a seta é o que entra no seu treino.
+      </p>
+
+      <div role="group" aria-label="O que você tem pra treinar">
+        <h2 className="mb-2 text-[13px] font-semibold">O que você tem pra treinar</h2>
+        <div className="flex flex-wrap gap-2">
+          {EQUIPAMENTOS.map((e) => {
+            const tem = arvore.equipamentos.includes(e.codigo);
+            return (
+              <button
+                key={e.codigo}
+                type="button"
+                aria-pressed={tem}
+                disabled={ocupado !== null}
+                onClick={() => alternarEquipamento(e.codigo)}
+                className={`min-h-11 rounded-full border px-3.5 text-[13px] font-semibold text-tinta disabled:opacity-60 ${
+                  tem ? "border-tinta bg-elevado" : "border-borda-forte bg-transparent"
+                }`}
+              >
+                {e.nome}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <Segmentado rotulo="Trilha" opcoes={TRILHAS.map((t) => ({ id: t, nome: t }))} valor={trilha} aoMudar={setTrilha} />
+
+      {erro && <Erro>{erro}</Erro>}
+
+      <ol className="flex flex-col">
+        {passos.map((p, i) => (
+          <Passo
+            key={p.codigo}
+            p={p}
+            ultimo={i === passos.length - 1}
+            texto={detalhe(p, porCodigo, arvore.equipamentos)}
+            ocupado={ocupado}
+            aoDominar={() => agir(p.codigo, () => apiPost(`/progressoes/${p.codigo}/dominar`))}
+            aoDesfazer={() => agir(p.codigo, () => apiDelete(`/progressoes/${p.codigo}/dominar`))}
+          />
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+export default function TreinosPage() {
+  const [vista, setVista] = useState<"hoje" | "arvore">("hoje");
+  const [arvore, setArvore] = useState<Arvore | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  // Fica aqui em cima para as séries marcadas não sumirem ao trocar de aba.
+  const [series, setSeries] = useState<Series>({});
+
+  const recarregar = useCallback(async () => {
     try {
       setArvore(await apiGet<Arvore>("/progressoes"));
-      setErroAoCarregar(null);
-    } catch (e) {
-      setErroAoCarregar(e instanceof Error ? e.message : "não deu para carregar a árvore");
+      setErro(null);
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "não deu para carregar a árvore");
     }
   }, []);
 
   useEffect(() => {
-    void carregar();
-  }, [carregar]);
-
-  async function mudar(acao: () => Promise<unknown>) {
-    setOcupado(true);
-    setAviso(null);
-    try {
-      await acao();
-      await carregar();
-    } catch (e) {
-      // 409 da API já diz o que falta: "desfaça antes: Barra fixa"
-      const msg = e instanceof Error ? e.message : "não deu para salvar";
-      setAviso(msg.charAt(0).toUpperCase() + msg.slice(1));
-    } finally {
-      setOcupado(false);
-    }
-  }
-
-  if (erroAoCarregar && !arvore) {
-    return (
-      <div className="space-y-3">
-        <Erro>{erroAoCarregar}</Erro>
-        <Botao variante="contorno" onClick={() => void carregar()}>
-          Tentar de novo
-        </Botao>
-      </div>
-    );
-  }
-  if (!arvore) return <Carregando texto="Montando a sua árvore…" />;
-
-  const porCodigo = new Map(arvore.progressoes.map((p) => [p.codigo, p]));
-  const dominadas = arvore.progressoes.filter((p) => p.estado === "dominada").length;
-
-  function alternarEquipamento(codigo: Equipamento) {
-    const atual = arvore!.equipamentos;
-    const equipamentos = atual.includes(codigo) ? atual.filter((e) => e !== codigo) : [...atual, codigo];
-    void mudar(() => apiPatch("/usuarios/eu", { equipamentos }));
-  }
+    recarregar();
+  }, [recarregar]);
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-3">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="font-titulo text-4xl tracking-wide">Sua árvore</h1>
-            <p className="text-sm text-suave">
-              <span className="font-semibold text-tinta">
-                {dominadas} de {arvore.progressoes.length}
-              </span>{" "}
-              skills dominadas. Cada uma libera a próxima: nada de tentar a barra fixa antes da australiana.
-            </p>
-          </div>
-          <Link
-            href="/treinos/registrar"
-            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-destaque px-4 font-titulo text-xl tracking-wide text-tinta hover:brightness-95"
-          >
-            {GLOSSARIO.registrarTreino}
-          </Link>
-        </div>
-
-        <fieldset disabled={ocupado} className="space-y-2">
-          <legend className="text-sm font-semibold">O que você tem para treinar</legend>
-          <div className="flex flex-wrap gap-2">
-            {EQUIPAMENTOS.map((e) => {
-              const tem = arvore.equipamentos.includes(e.codigo);
-              return (
-                <button
-                  key={e.codigo}
-                  type="button"
-                  aria-pressed={tem}
-                  onClick={() => alternarEquipamento(e.codigo)}
-                  className={`min-h-11 rounded-full border px-4 text-sm disabled:opacity-50 ${tem ? "border-tinta bg-tinta text-tinta-clara" : "border-borda bg-superficie text-suave hover:text-tinta"}`}
-                >
-                  {tem ? "✓ " : "+ "}
-                  {e.nome}
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
+    <div className="flex flex-col gap-4">
+      <header className="flex flex-col gap-3 pt-2">
+        <h1 className="flex min-h-11 items-center font-titulo text-[22px]">Treinos</h1>
+        <Segmentado
+          rotulo="O que ver"
+          opcoes={[
+            { id: "hoje" as const, nome: "Treino de hoje" },
+            { id: "arvore" as const, nome: "Árvore" },
+          ]}
+          valor={vista}
+          aoMudar={setVista}
+        />
       </header>
 
-      {aviso && <Erro>{aviso}</Erro>}
-
-      <div className="grid gap-4 md:grid-cols-2">
-        {TRILHAS.map(({ nome: trilha }) => {
-          const skills = arvore.progressoes.filter((p) => p.trilha === trilha).sort((a, b) => a.nivel - b.nivel);
-          const proximo = skills.find((p) => p.estado === "disponivel");
-          const feitas = skills.filter((p) => p.estado === "dominada").length;
-          return (
-            <Card key={trilha} className="space-y-4">
-              <div className="flex items-baseline justify-between">
-                <h2 className="font-titulo text-3xl tracking-wide">{trilha}</h2>
-                <span className="text-sm text-suave">
-                  {feitas}/{skills.length}
-                </span>
-              </div>
-              <ol aria-label={`Trilha ${trilha}`}>
-                {skills.map((skill, i) => (
-                  <Passo
-                    key={skill.codigo}
-                    skill={skill}
-                    proximo={skill.codigo === proximo?.codigo}
-                    ultimo={i === skills.length - 1}
-                    falta={oQueFalta(skill, arvore, porCodigo)}
-                    ocupado={ocupado}
-                    onDominar={() => void mudar(() => apiPost(`/progressoes/${skill.codigo}/dominar`))}
-                    onDesfazer={() => void mudar(() => apiDelete(`/progressoes/${skill.codigo}/dominar`))}
-                  />
-                ))}
-              </ol>
-              {!proximo && feitas === skills.length && (
-                <p className="text-sm font-semibold text-sucesso">Trilha completa. Agora é manter a constância.</p>
-              )}
-            </Card>
-          );
-        })}
-      </div>
+      {erro && <Erro>{erro}</Erro>}
+      {!arvore && !erro && <Carregando />}
+      {arvore && vista === "hoje" && <TreinoDeHoje arvore={arvore} series={series} setSeries={setSeries} aoVerArvore={() => setVista("arvore")} />}
+      {arvore && vista === "arvore" && <ArvoreDeProgressoes arvore={arvore} recarregar={recarregar} />}
     </div>
   );
 }

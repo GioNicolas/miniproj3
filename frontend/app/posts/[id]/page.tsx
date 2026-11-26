@@ -22,14 +22,27 @@ export default function PostPage() {
       .catch((err) => setErro(err instanceof Error ? err.message : "erro ao carregar o post"));
   }, [id]);
 
-  if (erro) return <Erro>{erro}</Erro>;
-  if (!post) return <Carregando />;
+  const cabecalho = (
+    <header className="flex items-center gap-1 pt-2">
+      <Link
+        href="/"
+        aria-label="Voltar pro feed"
+        className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-superficie"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+      </Link>
+      <h1 className="font-titulo text-[22px]">Post</h1>
+    </header>
+  );
+
+  if (erro) return <div className="space-y-4">{cabecalho}<Erro>{erro}</Erro></div>;
+  if (!post) return <div className="space-y-4">{cabecalho}<Carregando /></div>;
 
   return (
-    <div className="space-y-6">
-      <Link href="/" className="inline-flex min-h-11 items-center text-sm text-suave hover:text-tinta">
-        ← voltar pro feed
-      </Link>
+    <div className="flex flex-col gap-4">
+      {cabecalho}
       <PostCard post={post} onAtualizado={setPost} onApagado={() => router.push("/")} />
       <Comentarios
         postId={post.id}

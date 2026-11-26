@@ -6,14 +6,26 @@ import { useState } from "react";
 
 import { Botao } from "@/components/Botao";
 import { Campo } from "@/components/Campo";
-import { Card } from "@/components/Card";
+import { BotaoVerSenha } from "@/components/BotaoVerSenha";
+import { Erro } from "@/components/Erro";
 import { apiPost } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
+
+// O backend responde 401 com "usuário ou senha inválidos". Aqui vira uma frase que
+// diz o que conferir; qualquer outra falha (rede, servidor fora) ganha a sua.
+function mensagemDeErro(err: unknown): string {
+  const texto = err instanceof Error ? err.message : "";
+  if (/inv[aá]lid/i.test(texto)) {
+    return "Usuário ou senha não batem. O usuário é tudo minúsculo, sem @.";
+  }
+  return "Não deu pra entrar agora. Confere a internet e tenta de novo.";
+}
 
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [verSenha, setVerSenha] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -26,50 +38,71 @@ export default function LoginPage() {
       localStorage.setItem("token", token);
       router.push("/");
     } catch (err) {
-      setErro(err instanceof Error ? err.message : "não consegui entrar");
+      setErro(mensagemDeErro(err));
     } finally {
       setEnviando(false);
     }
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-6 pt-6">
-      <div className="text-center">
-        <h1 className="font-titulo text-5xl tracking-wide">{GLOSSARIO.rede}</h1>
-        <p className="text-suave">{GLOSSARIO.slogan}</p>
-      </div>
+    <div className="mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col">
+      <header className="flex min-h-11 items-center pb-4 pt-5">
+        <span className="font-titulo text-[22px]">{GLOSSARIO.rede}</span>
+      </header>
 
-      <Card>
-        <form onSubmit={entrar} className="space-y-4">
+      <form onSubmit={entrar} className="flex flex-1 flex-col gap-6 pt-8">
+        <div>
+          <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">
+            Entra pra registrar o treino de hoje
+          </h1>
+          <p className="mt-2 text-[15px] leading-normal text-suave">{GLOSSARIO.slogan}</p>
+        </div>
+
+        <div className="flex flex-col gap-4">
           <Campo
             rotulo="Usuário"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value.toLowerCase());
+              setErro(null);
+            }}
             autoComplete="username"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            aria-invalid={erro ? true : undefined}
+            aria-describedby={erro ? "erro-login" : undefined}
             required
           />
           <Campo
             rotulo="Senha"
-            type="password"
+            type={verSenha ? "text" : "password"}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setErro(null);
+            }}
             autoComplete="current-password"
+            aria-invalid={erro ? true : undefined}
+            aria-describedby={erro ? "erro-login" : undefined}
             required
+            fim={<BotaoVerSenha ver={verSenha} alternar={() => setVerSenha((v) => !v)} />}
           />
           {erro && (
-            <p role="alert" className="rounded-lg bg-perigo-fundo px-3 py-2 text-sm text-perigo">
-              {erro}
-            </p>
+            <div id="erro-login">
+              <Erro>{erro}</Erro>
+            </div>
           )}
-          <Botao type="submit" disabled={enviando} className="w-full">
-            {enviando ? "Entrando..." : "Entrar"}
-          </Botao>
-        </form>
-      </Card>
+        </div>
 
-      <p className="text-center text-sm text-suave">
-        Ainda não tem conta?{" "}
-        <Link href="/registro" className="font-semibold text-destaque-texto underline">
+        <Botao type="submit" disabled={enviando} className="w-full">
+          {enviando ? "Entrando..." : "Entrar"}
+        </Botao>
+      </form>
+
+      <p className="flex items-center justify-center gap-1 pb-8 pt-4 text-center text-sm text-suave">
+        Ainda não tem conta?
+        <Link href="/registro" className="inline-flex min-h-11 items-center px-1 font-semibold text-tinta underline">
           Criar conta
         </Link>
       </p>

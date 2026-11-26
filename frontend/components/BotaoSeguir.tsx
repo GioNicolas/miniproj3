@@ -1,13 +1,12 @@
 "use client";
 
-// Botão Seguir / Deixar de seguir do perfil. Passa pelo lib/seguindo.ts para que
+// Botão Seguir / Seguindo do perfil. Passa pelo lib/seguindo.ts para que
 // o "Seguir" dos posts da mesma pessoa apareça ou suma junto, sem recarregar.
 // Quem usa passa o estado inicial (`eu_sigo` do GET /usuarios/{username}) e
 // recebe +1/-1 em `aoMudar` para atualizar o contador de seguidores.
 
 import { useState } from "react";
 
-import { Botao } from "@/components/Botao";
 import { deixarDeSeguir, seguir } from "@/lib/seguindo";
 
 type Props = {
@@ -43,10 +42,20 @@ export function BotaoSeguir({ username, euSigoInicial, aoMudar, className = "" }
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
-      <Botao variante={euSigo ? "contorno" : "principal"} onClick={alternar} disabled={enviando} className="w-full">
-        {euSigo ? "Deixar de seguir" : "Seguir"}
-      </Botao>
-      {erro && <p className="text-xs text-perigo">{erro}</p>}
+      {/* Seguindo fica preenchido (elevado); Seguir fica só com contorno */}
+      <button
+        type="button"
+        onClick={alternar}
+        disabled={enviando}
+        aria-pressed={euSigo}
+        aria-label={euSigo ? `Deixar de seguir @${username}` : `Seguir @${username}`}
+        className={`min-h-11 min-w-24 w-full shrink-0 rounded-full border px-4 text-sm font-semibold text-tinta transition-colors disabled:opacity-50 ${
+          euSigo ? "border-elevado bg-elevado" : "border-borda-forte bg-transparent hover:bg-superficie-2"
+        }`}
+      >
+        {euSigo ? "Seguindo" : "Seguir"}
+      </button>
+      {erro && <p className="text-xs text-brasa">{erro}</p>}
     </div>
   );
 }

@@ -37,7 +37,7 @@ function ItemDaConversa({ conversa, eu }: { conversa: Conversa; eu: string | und
     <li>
       <Link
         href={`/chat/${conversa.id}`}
-        className="flex min-h-16 items-center gap-3 rounded-2xl border border-borda bg-superficie p-3 hover:border-tinta"
+        className="flex min-h-16 items-center gap-3 border-b border-borda py-3 hover:bg-superficie/60"
       >
         {/* grupo: dois avatares sobrepostos; direta: o avatar da pessoa */}
         <span className="relative flex shrink-0">
@@ -58,7 +58,7 @@ function ItemDaConversa({ conversa, eu }: { conversa: Conversa; eu: string | und
               <Previa conversa={conversa} eu={eu} />
             </span>
             {naoLidas > 0 && (
-              <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-destaque px-1.5 text-xs font-bold text-tinta">
+              <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-ceu px-1.5 text-xs font-bold text-sobre-destaque">
                 {naoLidas}
                 <span className="sr-only"> não lidas</span>
               </span>
@@ -76,6 +76,7 @@ export default function ChatPage() {
   const [conversas, setConversas] = useState<Conversa[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [criando, setCriando] = useState(false);
+  const totalNaoLidas = conversas?.reduce((soma, c) => soma + c.nao_lidas, 0) ?? 0;
 
   const carregar = useCallback(async () => {
     try {
@@ -106,11 +107,33 @@ export default function ChatPage() {
   }, [carregar]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="font-titulo text-4xl tracking-wide">{GLOSSARIO.conversa}</h1>
-        {!criando && <Botao onClick={() => setCriando(true)}>+ Nova conversa</Botao>}
-      </div>
+    <div className="flex flex-col gap-4">
+      <header className="pt-2">
+        <div className="flex min-h-11 items-center justify-between gap-3">
+          <h1 className="font-titulo text-[22px]">{GLOSSARIO.conversa}</h1>
+          {!criando && (
+            <button
+              type="button"
+              onClick={() => setCriando(true)}
+              className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full bg-superficie px-4 text-[13px] font-medium hover:bg-superficie-2"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Nova conversa
+            </button>
+          )}
+        </div>
+        <p className="mt-3 flex items-baseline gap-2">
+          <span className="text-[17px] font-bold tracking-[-0.02em]">Conversas e grupos</span>
+          {totalNaoLidas > 0 && (
+            <span className="text-[13px] font-semibold text-ceu">
+              {totalNaoLidas} {totalNaoLidas === 1 ? "nova" : "novas"}
+            </span>
+          )}
+        </p>
+        <p className="mt-1 text-[13px] text-pretty text-suave">Pra combinar treino com quem você segue. Só quem tá na conversa vê.</p>
+      </header>
 
       {criando && <NovaConversa onFechar={() => setCriando(false)} />}
 
@@ -127,7 +150,7 @@ export default function ChatPage() {
       )}
 
       {conversas && conversas.length > 0 && (
-        <ul className="space-y-2">
+        <ul className="border-t border-borda">
           {conversas.map((c) => (
             <ItemDaConversa key={c.id} conversa={c} eu={eu?.username} />
           ))}

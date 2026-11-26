@@ -1,75 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { diaIso, LETRAS_DA_SEMANA, NOMES_DOS_DIAS, semanaAtual } from "@/lib/dias";
 
-import { Card } from "@/components/Card";
-import { apiGet } from "@/lib/api";
-
-const LETRAS = ["S", "T", "Q", "Q", "S", "S", "D"];
-const NOMES_DOS_DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"];
-
-function diaIso(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-/** Os 7 dias desta semana, de segunda a domingo: a mesma semana da Granja. */
-function semanaAtual(): string[] {
-  const hoje = new Date();
-  const segunda = new Date(hoje);
-  segunda.setDate(hoje.getDate() - ((hoje.getDay() + 6) % 7));
-  return Array.from({ length: 7 }, (_, i) => {
-    const dia = new Date(segunda);
-    dia.setDate(segunda.getDate() + i);
-    return diaIso(dia);
-  });
-}
-
-/** Os dias treinados nesta semana (segunda a domingo, a mesma semana da Granja). */
-export function SemanaDeTreinos({ username, titulo = "Esta semana" }: { username: string; titulo?: string }) {
-  // null enquanto carrega; "erro" se a lista não veio, para não mostrar 0 dias como verdade.
-  const [treinados, setTreinados] = useState<Set<string> | "erro" | null>(null);
+/**
+ * Os 7 dias desta semana (segunda a domingo, a mesma da Granja), igual ao canvas:
+ * quadrado "feito" com check nos dias treinados e borda tracejada de milho em hoje.
+ */
+export function SemanaDeTreinos({ treinados }: { treinados: Set<string> | "erro" | null }) {
   const semana = semanaAtual();
   const hoje = diaIso(new Date());
-
-  useEffect(() => {
-    apiGet<{ dias: string[] }>(`/usuarios/${username}/treinos?dias=7`)
-      .then(({ dias }) => setTreinados(new Set(dias)))
-      .catch(() => setTreinados("erro"));
-  }, [username]);
-
   const carregou = treinados instanceof Set;
-  const total = carregou ? semana.filter((d) => treinados.has(d)).length : null;
 
   return (
-    <Card escuro>
-      <div className="space-y-3">
-        <p className="font-titulo text-2xl tracking-wide">
-          {titulo}:{" "}
-          {treinados === "erro"
-            ? "não deu para carregar"
-            : total === null
-              ? "…"
-              : `${total} ${total === 1 ? "dia" : "dias"}`}
-        </p>
-        <ol className="flex justify-between gap-1" aria-label="Dias com treino nesta semana">
-          {semana.map((dia, i) => {
-            const treinou = carregou && treinados.has(dia);
-            return (
-              <li key={dia} className="flex flex-col items-center gap-1 text-xs">
-                <span
-                  aria-label={`${NOMES_DOS_DIAS[i]}, ${Number(dia.slice(8))}: ${treinou ? "treinou" : "sem treino"}`}
-                  className={`flex size-9 items-center justify-center rounded-full font-semibold ${
-                    treinou ? "bg-destaque text-tinta" : "border border-suave text-suave"
-                  } ${dia === hoje ? "ring-2 ring-destaque ring-offset-2 ring-offset-superficie-escura" : ""}`}
-                >
-                  {LETRAS[i]}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-        <p className="text-sm text-suave">Vários treinos no mesmo dia contam um dia só. A semana zera na segunda.</p>
-      </div>
-    </Card>
+    <ol aria-label="Dias com treino nesta semana" className="grid grid-cols-7 gap-2">
+      {semana.map((dia, i) => {
+        const treinou = carregou && treinados.has(dia);
+        const ehHoje = dia === hoje;
+        return (
+          <li key={dia} className="flex flex-col items-center gap-1">
+            <span aria-hidden="true" className={`text-xs ${ehHoje ? "font-bold text-destaque" : "text-suave"}`}>
+              {LETRAS_DA_SEMANA[i]}
+            </span>
+            <span
+              aria-label={`${NOMES_DOS_DIAS[i]}, ${Number(dia.slice(8))}: ${treinou ? "treinou" : "sem treino"}${ehHoje ? " (hoje)" : ""}`}
+              className={`flex aspect-square w-full items-center justify-center rounded-lg ${treinou ? "bg-destaque-fundo" : "bg-superficie-2"} ${
+                ehHoje ? "border-2 border-dashed border-destaque" : ""
+              }`}
+            >
+              {treinou && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-destaque">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" />
+                </svg>
+              )}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
