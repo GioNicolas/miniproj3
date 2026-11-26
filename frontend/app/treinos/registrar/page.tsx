@@ -125,6 +125,21 @@ export default function RegistrarTreinoPage() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
+  // Vindo do Treino de hoje (/treinos?...): ?ex=barra_australiana:3,flexao:2 já preenche
+  // os exercícios com as séries que a pessoa marcou.
+  useEffect(() => {
+    const ex = new URLSearchParams(window.location.search).get("ex");
+    if (!ex) return;
+    const codigos = new Set(TRILHAS.flatMap((t) => t.progressoes.map((p) => p.codigo)));
+    const vindos = ex
+      .split(",")
+      .map((item) => item.split(":"))
+      .filter(([codigo]) => codigos.has(codigo))
+      .slice(0, LIMITE_EXERCICIOS)
+      .map(([codigo, series]) => ({ progressao: codigo, series: series ?? "", reps: "" }));
+    if (vindos.length) setExercicios(vindos);
+  }, []);
+
   async function registrar(e: React.FormEvent) {
     e.preventDefault();
     setErro(null);

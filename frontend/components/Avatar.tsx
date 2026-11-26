@@ -10,6 +10,7 @@ const ANEL: Record<Patente, string> = {
 const TAMANHO = {
   p: "h-8 w-8 border-2 text-[11px]",
   m: "h-11 w-11 border-[3px] text-[13px]",
+  l: "h-14 w-14 border-[3px] text-lg",
   g: "h-24 w-24 border-4 text-[28px]",
 };
 
