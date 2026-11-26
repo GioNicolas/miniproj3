@@ -15,9 +15,9 @@ function EsqueletoDePosts() {
   return (
     <div role="status" aria-label="Carregando posts" className="animate-brilho">
       {[0, 1, 2].map((i) => (
-        <div key={i} className="flex flex-col gap-3 border-t border-borda py-4">
+        <div key={i} className="mb-3 flex flex-col gap-3 rounded-2xl border border-borda bg-elevado p-4">
           <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-full bg-superficie" />
+            <div className="h-10 w-10 rounded-full bg-superficie" />
             <div className="flex flex-col gap-1.5">
               <div className="h-3 w-32 rounded bg-superficie" />
               <div className="h-2.5 w-20 rounded bg-superficie" />
@@ -83,7 +83,7 @@ export function ListaDePosts({ caminho, vazio }: Props) {
 
   return (
     <div className="space-y-4">
-      <ul>
+      <ul className="flex flex-col gap-3">
         {posts.map((post, i) => (
           // entrada em cascata só nos primeiros da página: o resto já nasce fora da tela
           <li key={post.id} className="animate-entrar" style={{ animationDelay: `${Math.min(i % POR_PAGINA, 6) * 45}ms` }}>

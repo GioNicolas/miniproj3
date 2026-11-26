@@ -45,43 +45,43 @@ export function BotaoTamoJunto({ postId, curtidasIniciais, euCurtiInicial }: Pro
     }
   }
 
+  // Ocupa metade do rodapé do post; a chama acende em preto e dá um pulo quando você manda.
   return (
-    <span className="inline-flex items-center gap-2">
-      {/* Discreto até alguém mandar: aí a chama acende em preto e dá um pulo. */}
-      <button
-        type="button"
-        onClick={alternar}
-        disabled={enviando}
-        aria-pressed={euCurti}
-        aria-label={`Mandar ${GLOSSARIO.curtida.toLowerCase()}. ${curtidas} ${curtidas === 1 ? "pessoa já mandou" : "pessoas já mandaram"}`}
-        title={GLOSSARIO.curtida}
-        className={`flex min-h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-[13px] font-medium transition-colors ${
-          euCurti ? "text-destaque hover:bg-destaque-fundo" : "text-suave hover:bg-superficie hover:text-tinta"
-        }`}
+    <button
+      type="button"
+      onClick={alternar}
+      disabled={enviando}
+      aria-pressed={euCurti}
+      aria-label={`Mandar ${GLOSSARIO.curtida.toLowerCase()}. ${curtidas} ${curtidas === 1 ? "pessoa já mandou" : "pessoas já mandaram"}`}
+      className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-xl text-[14px] transition-[background-color,color,transform] duration-150 active:scale-[0.97] ${
+        euCurti ? "font-semibold text-destaque hover:bg-destaque-fundo" : "font-medium text-suave hover:bg-superficie hover:text-tinta"
+      }`}
+    >
+      <svg
+        key={euCurti ? "aceso" : "apagado"}
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill={euCurti ? "currentColor" : "none"}
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className={euCurti && !enviandoInicial ? "animate-pulo" : ""}
       >
-        <svg
-          key={euCurti ? "aceso" : "apagado"}
-          width="19"
-          height="19"
-          viewBox="0 0 24 24"
-          fill={euCurti ? "currentColor" : "none"}
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-          className={euCurti && !enviandoInicial ? "animate-pulo" : ""}
-        >
-          <path d="M12 3c.6 3 4.5 4.8 4.5 9.2a4.5 4.5 0 0 1-9 0c0-1.7.7-2.9 1.8-3.9.2 1.4.9 2.2 1.9 2.4-.6-2.4-.2-5.1.8-7.7z" />
-        </svg>
-        <span>{GLOSSARIO.curtida}</span>
-        <span className="tabular-nums">{curtidas}</span>
-      </button>
-      {falhou && (
-        <span role="alert" className="text-xs text-brasa">
-          não deu, tenta de novo
+        <path d="M12 3c.6 3 4.5 4.8 4.5 9.2a4.5 4.5 0 0 1-9 0c0-1.7.7-2.9 1.8-3.9.2 1.4.9 2.2 1.9 2.4-.6-2.4-.2-5.1.8-7.7z" />
+      </svg>
+      {falhou ? (
+        <span role="alert" className="text-brasa">
+          Não deu, tenta de novo
         </span>
+      ) : (
+        <>
+          <span>{GLOSSARIO.curtida}</span>
+          {curtidas > 0 && <span className="tabular-nums">{curtidas}</span>}
+        </>
       )}
-    </span>
+    </button>
   );
 }
