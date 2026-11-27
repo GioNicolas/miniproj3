@@ -52,7 +52,7 @@ function Contador({ rotulo, valor, minimo, maximo, atalhos, aoMudar }: {
 }) {
   const limitar = (n: number) => Math.min(maximo, Math.max(minimo, n));
   const botao =
-    "flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-borda-forte bg-elevado text-tinta transition-transform duration-150 active:scale-90 disabled:opacity-40 disabled:active:scale-100";
+    "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-borda-forte bg-elevado text-tinta transition-transform duration-150 active:scale-90 disabled:opacity-40 disabled:active:scale-100";
   return (
     <div className="flex flex-col gap-3 rounded-2xl bg-superficie p-4">
       <span className="text-xs font-semibold uppercase tracking-wider text-suave">{rotulo}</span>
@@ -62,7 +62,7 @@ function Contador({ rotulo, valor, minimo, maximo, atalhos, aoMudar }: {
             <path d="M5 12h14" />
           </svg>
         </button>
-        <output aria-live="polite" className="font-titulo text-[44px] leading-none tabular-nums">
+        <output aria-live="polite" className="font-titulo text-[34px] leading-none tabular-nums md:text-[30px]">
           {valor}
         </output>
         <button type="button" onClick={() => aoMudar(limitar(valor + 1))} disabled={valor >= maximo} aria-label={`Mais ${rotulo.toLowerCase()}`} className={botao}>
@@ -146,12 +146,13 @@ export function EscolherExercicio({ inicial, noTreino, aoSalvar, aoTirar, aoFech
   const degrau = codigo ? TRILHAS.find((t) => t.nome === trilhaDe(codigo))!.progressoes.findIndex((p) => p.codigo === codigo) + 1 : 0;
 
   return createPortal(
-    <div role="dialog" aria-modal="true" aria-labelledby="titulo-da-gaveta" className="fixed inset-0 z-50 flex items-end justify-center">
+    <div role="dialog" aria-modal="true" aria-labelledby="titulo-da-gaveta" className="fixed inset-0 z-50 flex items-end justify-center md:items-center md:p-6">
       <div aria-hidden="true" onClick={aoFechar} className="absolute inset-0 animate-aparecer bg-black/45" />
       <div
         ref={painel}
         tabIndex={-1}
-        className="relative flex max-h-[90dvh] w-full max-w-xl animate-gaveta flex-col overflow-y-auto overscroll-contain rounded-t-3xl bg-fundo px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] outline-none"
+        // no computador vira uma janela no centro, mais estreita, sem a alça e sem rolagem lateral
+        className="relative flex max-h-[90dvh] w-full max-w-xl animate-gaveta flex-col overflow-y-auto overflow-x-hidden overscroll-contain rounded-t-3xl bg-fundo px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] outline-none md:max-h-[85dvh] md:max-w-md md:animate-surgir md:rounded-3xl md:pb-5 md:shadow-[0_16px_48px_rgba(20,20,20,0.22)]"
       >
         <div className="sticky top-0 z-10 -mx-5 flex items-center justify-between bg-fundo px-3 pb-2 pt-2">
           {codigo && !inicial ? (
@@ -162,7 +163,7 @@ export function EscolherExercicio({ inicial, noTreino, aoSalvar, aoTirar, aoFech
               Trocar exercício
             </button>
           ) : (
-            <span aria-hidden="true" className="ml-2 h-1 w-10 rounded-full bg-borda-forte" />
+            <span aria-hidden="true" className="ml-2 h-1 w-10 rounded-full bg-borda-forte md:invisible" />
           )}
           <button type="button" onClick={aoFechar} aria-label="Fechar" className="flex h-11 w-11 items-center justify-center rounded-full text-suave hover:bg-superficie hover:text-tinta">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
@@ -174,7 +175,7 @@ export function EscolherExercicio({ inicial, noTreino, aoSalvar, aoTirar, aoFech
         {!codigo ? (
           <div key="lista" className="flex animate-entrar flex-col gap-4">
             <div>
-              <h2 id="titulo-da-gaveta" className="font-titulo text-[24px] leading-tight">
+              <h2 id="titulo-da-gaveta" className="font-titulo text-[20px] leading-tight md:text-[18px]">
                 Qual exercício?
               </h2>
               <p className="mt-1 text-[13px] text-suave">Cada trilha é uma escada: de cima para baixo, do mais fácil ao mais difícil.</p>
@@ -254,7 +255,7 @@ export function EscolherExercicio({ inicial, noTreino, aoSalvar, aoTirar, aoFech
               <p className="text-xs font-semibold uppercase tracking-wider text-suave">
                 {trilhaDe(codigo)} · degrau {degrau}
               </p>
-              <h2 id="titulo-da-gaveta" className="mt-1 font-titulo text-[26px] leading-tight">
+              <h2 id="titulo-da-gaveta" className="mt-1 font-titulo text-[21px] leading-tight md:text-[19px]">
                 {nomeDaProgressao(codigo)}
               </h2>
             </div>
@@ -269,7 +270,7 @@ export function EscolherExercicio({ inicial, noTreino, aoSalvar, aoTirar, aoFech
               aoMudar={setReps}
             />
 
-            <Botao onClick={() => aoSalvar({ progressao: codigo, series, reps })} className="mt-2 w-full">
+            <Botao onClick={() => aoSalvar({ progressao: codigo, series, reps })} className="mt-2 w-full md:text-[15px]">
               {inicial ? "Salvar" : "Adicionar"} {series}×{reps}
               {segundos ? " s" : ""}
             </Botao>
