@@ -11,7 +11,7 @@ https://rede-trilha-api.onrender.com). Para ver a rede cheia, entrem como
 
 ## Produto
 
-A **Frangaria** é uma rede social de calistenia para quem está começando.
+O **Frangym** é uma rede social de calistenia para quem está começando.
 
 - **Público:** estudantes da UFPB nos primeiros meses de calistenia, que treinam
   sozinhos e sem treinador na barra da praça, do campus ou em casa.

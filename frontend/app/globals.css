@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Tokens da Frangaria (paleta Off-white + Preto, tema claro). Use SEMPRE
+ * Tokens do Frangym (paleta Off-white + Preto, tema claro). Use SEMPRE
  * estes nomes, nunca cor solta: bg-fundo, bg-superficie, text-tinta, text-suave,
  * border-borda, bg-destaque, text-sobre-destaque, font-titulo, font-placar...
  * Mudar uma cor aqui muda a rede inteira.

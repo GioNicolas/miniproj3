@@ -12,9 +12,9 @@ diferente da outra.
 
 Este é o treino final antes do hackathon de novembro.
 
-## Frangaria no ar
+## Frangym no ar
 
-A rede deste time é a **Frangaria**, uma rede social de calistenia para quem está
+A rede deste time é o **Frangym**, uma rede social de calistenia para quem está
 começando. O que ela resolve e por quê está no [DECISIONS.md](DECISIONS.md).
 
 | | |
