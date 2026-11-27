@@ -53,7 +53,7 @@ function Forca({ antes, depois, frango }: { antes: number | null; depois: number
   const proximo = frango.proximo_nivel;
 
   return (
-    <Card aria-label="Força do frango" className="flex flex-col gap-3">
+    <Card aria-label="Força do frango" className="flex flex-col gap-3 lg:col-start-2 lg:row-start-2 lg:self-end">
       <div className="flex items-end justify-between">
         <div className="flex flex-col gap-2">
           <h2 className="text-[13px] font-semibold">Força</h2>
@@ -111,7 +111,7 @@ function Forca({ antes, depois, frango }: { antes: number | null; depois: number
 function NaGranja({ granja, treinados }: { granja: Granja; treinados: Set<string> | "erro" | null }) {
   const { eu, alvo } = granja;
   return (
-    <Card aria-label={GLOSSARIO.ranking} className="flex flex-col gap-3">
+    <Card aria-label={GLOSSARIO.ranking} className="flex flex-col gap-3 lg:col-start-2 lg:row-start-3 lg:self-start">
       <div className="flex items-end justify-between">
         <h2 className="text-[13px] font-semibold">{GLOSSARIO.ranking}</h2>
         <p className="flex items-baseline gap-2">
@@ -219,8 +219,10 @@ export default function TreinoRegistradoPage() {
   const seguidos = treinados instanceof Set ? diasSeguidos(treinados) : null;
 
   return (
-    <div className="flex flex-col gap-4">
-      <header className="-ml-3 flex pt-2">
+    // No computador (lg), duas colunas para caber sem rolar: frango, título e botões
+    // à esquerda; força e granja à direita. No celular, tudo em coluna, como no canvas.
+    <div className="pagina-larga mx-auto flex max-w-xl flex-col gap-4 lg:grid lg:max-w-4xl lg:grid-cols-2 lg:gap-x-12 lg:gap-y-4">
+      <header className="-ml-3 flex pt-2 lg:col-span-2">
         <Link href="/" aria-label="Fechar e voltar pro feed" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-superficie">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18" />
@@ -228,8 +230,8 @@ export default function TreinoRegistradoPage() {
         </Link>
       </header>
 
-      <div className="flex flex-col items-center text-center">
-        <div className="animate-surgir">
+      <div className="flex flex-col items-center text-center lg:col-start-1 lg:row-start-2 lg:self-end">
+        <div className="animate-surgir lg:[&>img]:!h-[150px]">
           <ArteDoFrango patente={frango.nivel} altura={168} alt={`Seu frango, patente ${frango.nivel}`} />
         </div>
         <h1 className="mt-2 font-titulo text-[30px] leading-[0.95]">{contouHoje ? "Treino registrado" : "Hoje já tava contado"}</h1>
@@ -248,7 +250,7 @@ export default function TreinoRegistradoPage() {
       <Forca antes={antes} depois={frango.forca} frango={frango} />
       <NaGranja granja={granja} treinados={treinados} />
 
-      <div className="flex flex-col gap-2 pt-1">
+      <div className="flex flex-col gap-2 pt-1 lg:col-start-1 lg:row-start-3 lg:self-start">
         <Link
           href="/granja"
           className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque transition-[transform,filter] duration-150 ease-out hover:brightness-105 active:scale-[0.97]"
