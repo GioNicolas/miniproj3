@@ -340,7 +340,7 @@ export default function RegistrarTreinoPage() {
             maxLength={LIMITE_TEXTO}
             rows={3}
             placeholder={tipo === "treino" ? "Como foi o treino? (opcional)" : "O que você quer contar?"}
-            className="w-full resize-none border-0 border-b border-borda-forte bg-transparent px-0 pb-2 pt-1 text-sm leading-[1.55] text-tinta outline-none placeholder:text-suave focus:border-tinta"
+            className="w-full resize-none border-0 border-b border-borda-forte bg-transparent px-0 pb-2 pt-1 text-base leading-[1.55] text-tinta outline-none placeholder:text-suave focus:border-tinta md:text-sm"
           />
         </label>
 
