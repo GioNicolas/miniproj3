@@ -22,9 +22,9 @@ export function GuardaDeRota({ children }: { children: React.ReactNode }) {
 
   // Página privada só aparece depois de confirmar o token: evita piscar a tela sem login.
   if (!publica && !logado) return null;
-  // key: cada tela nova entra com um fade curto
+  // key: cada tela nova entra com um fade curto; .tela é a coluna da tela (globals.css)
   return (
-    <div key={caminho} className="animate-aparecer">
+    <div key={caminho} className="tela animate-aparecer">
       {children}
     </div>
   );

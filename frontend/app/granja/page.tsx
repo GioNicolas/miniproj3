@@ -229,8 +229,9 @@ export default function GranjaPage() {
   const treineiHoje = minhaSemana instanceof Set && minhaSemana.has(diaIso(new Date()));
 
   return (
-    <div className="flex flex-col gap-4">
-      <header className="pt-2">
+    // No computador (lg): pódio e "Você" de um lado; classificação e regras do outro.
+    <div className="pagina-larga mx-auto flex max-w-xl flex-col gap-4 lg:grid lg:max-w-none lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)] lg:items-start lg:gap-x-10">
+      <header className="pt-2 lg:col-span-2">
         <h1 className="flex min-h-11 items-center font-titulo text-[22px]">{GLOSSARIO.ranking}</h1>
         <div className="mt-3 flex items-center justify-between gap-2 text-[13px] text-suave">
           <span>
@@ -242,6 +243,7 @@ export default function GranjaPage() {
         </div>
       </header>
 
+      <div className="flex flex-col gap-4">
       {soEu ? (
         <EstadoVazio
           titulo="Sua granja é só você"
@@ -292,7 +294,9 @@ export default function GranjaPage() {
           </Link>
         )}
       </section>
+      </div>
 
+      <div className="flex flex-col gap-4">
       {!soEu && (resto.length > 0 || !euNoTopo) && (
         <section aria-label="Classificação">
           <ol>
@@ -313,6 +317,7 @@ export default function GranjaPage() {
       )}
 
       <Regras />
+      </div>
     </div>
   );
 }

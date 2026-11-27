@@ -187,7 +187,7 @@ function TreinoDeHoje({
         />
       ))}
 
-      <div className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] -mx-5 border-t border-borda bg-fundo px-5 py-3 md:bottom-0">
+      <div className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] -mx-5 border-t border-borda bg-fundo px-5 py-3 md:bottom-0 md:mx-0 md:px-0">
         <Link
           href={registrar}
           className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque hover:brightness-105"

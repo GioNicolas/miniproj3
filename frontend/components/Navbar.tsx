@@ -53,7 +53,7 @@ export function Navbar() {
     <>
       {/* computador: barra no topo */}
       <header className="sticky top-0 z-20 hidden border-b border-borda bg-superficie md:block">
-        <nav aria-label="Navegação principal" className="mx-auto flex max-w-3xl items-center gap-6 px-5 py-3">
+        <nav aria-label="Navegação principal" className="mx-auto flex max-w-5xl items-center gap-6 px-5 py-3">
           <Link href="/" className="mr-auto font-titulo text-[22px]">
             {GLOSSARIO.rede}
           </Link>
@@ -68,7 +68,9 @@ export function Navbar() {
               <Aviso total={aviso(item.href)} />
             </Link>
           ))}
-          <button type="button" onClick={sair} className="min-h-11 text-sm text-suave hover:text-tinta">
+          {/* Sair não é uma aba: fica depois de um divisor, com cara de ação secundária */}
+          <span aria-hidden="true" className="h-6 w-px bg-borda" />
+          <button type="button" onClick={sair} className="min-h-9 rounded-full border border-borda-forte px-3 text-[13px] text-suave transition-colors hover:border-brasa hover:text-brasa">
             Sair
           </button>
         </nav>

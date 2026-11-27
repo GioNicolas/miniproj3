@@ -133,8 +133,9 @@ export function Perfil({ username }: { username: string }) {
   const souEu = eu.username === perfil.username;
 
   return (
-    <div className="flex flex-col gap-4">
-      <header className="flex min-h-11 items-center justify-between gap-3 pt-2">
+    // No computador (lg): quem é e o frango de um lado; constância, skills e posts do outro.
+    <div className="pagina-larga mx-auto flex max-w-xl flex-col gap-4 lg:grid lg:max-w-none lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-x-10">
+      <header className="flex min-h-11 items-center justify-between gap-3 pt-2 lg:col-span-2">
         <h1 className="truncate font-titulo text-[22px]">{souEu ? GLOSSARIO.perfil : perfil.name}</h1>
         {souEu && !editando && (
           <button
@@ -147,6 +148,7 @@ export function Perfil({ username }: { username: string }) {
         )}
       </header>
 
+      <div className="flex flex-col gap-4">
       {editando ? (
         <Card>
           <EditarPerfil
@@ -197,7 +199,9 @@ export function Perfil({ username }: { username: string }) {
       )}
 
       <CartaoDoFrango frango={perfil.frango} souEu={souEu} />
+      </div>
 
+      <div className="flex flex-col gap-4">
       <Calendario username={perfil.username} diasSemTreinar={perfil.frango.dias_sem_treinar} />
 
       <JaDomina username={perfil.username} souEu={souEu} />
@@ -218,6 +222,7 @@ export function Perfil({ username }: { username: string }) {
           vazio={souEu ? "Registra o treino de hoje: ele aparece aqui e no feed de quem te segue." : `@${perfil.username} ainda não postou nada.`}
         />
       </section>
+      </div>
     </div>
   );
 }

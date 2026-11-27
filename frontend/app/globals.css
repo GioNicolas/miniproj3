@@ -86,6 +86,29 @@ html {
   color-scheme: light;
 }
 
+/*
+ * Largura das telas. A barra de cima e o <main> usam o mesmo container
+ * (max-w-5xl); dentro dele, cada tela é uma coluna de 36rem, do jeito que foi
+ * desenhada para o celular. Telas com coluna lateral no computador marcam a
+ * raiz com .pagina-larga e ganham a largura toda a partir de lg.
+ */
+/* Foco de teclado (Tab) visível em tudo que é clicável, na cor da tinta: no
+   computador é assim que se navega sem mouse. Campos têm o próprio anel. */
+:where(a, button, [role="tab"], summary):focus-visible {
+  outline: 2px solid var(--color-tinta);
+  outline-offset: 2px;
+}
+
+.tela {
+  margin-inline: auto;
+  max-width: 36rem;
+}
+@media (width >= 64rem) {
+  .tela:has(> .pagina-larga) {
+    max-width: none;
+  }
+}
+
 body {
   letter-spacing: -0.01em;
 }

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Card } from "@/components/Card";
 import { Carregando } from "@/components/Carregando";
 import { ListaDePosts } from "@/components/ListaDePosts";
+import { ResumoDaSemana } from "@/components/ResumoDaSemana";
 import type { Post } from "@/lib/api";
 import { diaIso, useDiasTreinados } from "@/lib/dias";
 import { useEu } from "@/lib/eu";
@@ -83,6 +84,8 @@ export default function Home() {
   };
 
   return (
+    // No computador (lg), o feed ganha uma coluna lateral com o seu frango e a sua semana.
+    <div className="pagina-larga mx-auto max-w-xl lg:grid lg:max-w-none lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-10">
     <div className="flex flex-col gap-4">
       <ChamadaDoDia key={versaoDaChamada} />
 
@@ -144,6 +147,10 @@ export default function Home() {
           </>
         )}
       </section>
+    </div>
+      <aside aria-label="Sua semana" className="hidden lg:sticky lg:top-24 lg:flex lg:flex-col lg:gap-4">
+        <ResumoDaSemana />
+      </aside>
     </div>
   );
 }

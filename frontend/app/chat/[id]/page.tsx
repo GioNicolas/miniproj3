@@ -37,11 +37,11 @@ function Cabecalho({ conversa, eu }: { conversa: Conversa; eu: string | undefine
     ? `@${demais[0]?.username ?? ""}`
     : `${conversa.participantes.length} pessoas: ${[...demais.map((p) => p.name.split(" ")[0]), "você"].join(", ")}`;
   return (
-    <div className="-ml-3 flex items-center gap-2 border-b border-borda pb-3 pt-2">
+    <div className="flex items-center gap-2 border-b border-borda pb-3 pt-2">
       <Link
         href="/chat"
         aria-label="Voltar para as conversas"
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-superficie"
+        className="-ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-superficie"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M15 5l-7 7 7 7" />
@@ -214,7 +214,7 @@ export default function ConversaPage() {
       {/* Caixa de mensagem presa embaixo, acima da barra de navegação do celular */}
       <form
         onSubmit={enviar}
-        className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] -mx-5 space-y-2 border-t border-borda bg-fundo px-5 py-3 md:bottom-0"
+        className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] -mx-5 space-y-2 border-t border-borda bg-fundo px-5 py-3 md:bottom-0 md:mx-0 md:px-0"
       >
         {erro && <Erro>{erro}</Erro>}
         <div className="flex items-end gap-2">
