@@ -8,6 +8,7 @@ import { Botao } from "@/components/Botao";
 import { Campo } from "@/components/Campo";
 import { BotaoVerSenha } from "@/components/BotaoVerSenha";
 import { Erro } from "@/components/Erro";
+import { FilaDosFrangos, VitrineDosFrangos } from "@/components/FilaDosFrangos";
 import { apiPost } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
 
@@ -45,13 +46,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col md:min-h-[calc(100dvh-4rem)] md:justify-center">
+    // No computador (lg), os frangos à esquerda e o formulário à direita; no celular, uma coluna.
+    <div className="pagina-larga mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col md:min-h-[calc(100dvh-4rem)] md:justify-center lg:grid lg:max-w-4xl lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-center lg:gap-16">
+      <VitrineDosFrangos />
+      <div className="flex flex-1 flex-col md:flex-none">
       <header className="flex min-h-11 items-center pb-4 pt-5">
         <span className="font-titulo text-[22px]">{GLOSSARIO.rede}</span>
       </header>
 
       <form onSubmit={entrar} className="flex flex-1 flex-col gap-6 md:flex-none pt-8">
         <div>
+          <div className="mb-5 lg:hidden">
+            <FilaDosFrangos />
+          </div>
           <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">
             Entra pra registrar o treino de hoje
           </h1>
@@ -106,6 +113,7 @@ export default function LoginPage() {
           Criar conta
         </Link>
       </p>
+      </div>
     </div>
   );
 }
