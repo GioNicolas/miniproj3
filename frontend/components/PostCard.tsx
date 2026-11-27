@@ -7,6 +7,7 @@ import { AreaDeTexto } from "@/components/AreaDeTexto";
 import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
 import { BotaoTamoJunto } from "@/components/BotaoTamoJunto";
+import { Confirmacao } from "@/components/Confirmacao";
 import { Erro } from "@/components/Erro";
 import { TEXTO_DA_PATENTE } from "@/components/Frango";
 import { apiDelete, apiPatch, urlDaApi, type Exercicio, type Post } from "@/lib/api";
@@ -314,31 +315,25 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
 
         {post.treino && <BlocoDoTreino exercicios={post.treino.exercicios} comFoto={Boolean(post.imagem_url)} />}
 
-        {confirmandoApagar && (
-          // Post de treino carrega progresso: avisa antes do que sai junto com ele.
-          <div role="alertdialog" aria-labelledby={`apagar-${post.id}`} className="flex animate-surgir flex-col gap-3 rounded-xl border border-brasa/30 bg-brasa-fundo p-3">
-            <div>
-              <p id={`apagar-${post.id}`} className="text-[15px] font-bold">
-                {post.treino ? "Apagar esse treino?" : "Apagar esse post?"}
-              </p>
-              <p className="mt-1 text-[13px] leading-snug">
-                {post.treino
-                  ? "Seu progresso vai junto: se for o único treino desse dia, o dia sai da granja e o frango perde a força que ganhou com ele."
-                  : "Ele some do feed e não dá pra desfazer."}
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <Botao variante="contorno" onClick={() => setConfirmandoApagar(false)} disabled={salvando}>
-                Manter
-              </Botao>
-              <Botao variante="contorno" onClick={apagar} disabled={salvando} className="border-brasa text-brasa hover:bg-elevado">
-                {salvando ? "Apagando..." : "Apagar"}
-              </Botao>
-            </div>
-          </div>
-        )}
+        {/* Post de treino carrega progresso: avisa antes do que sai junto com ele. */}
+        <Confirmacao
+          aberta={confirmandoApagar}
+          titulo={post.treino ? "Apagar esse treino?" : "Apagar esse post?"}
+          texto={
+            post.treino
+              ? "Seu progresso vai junto: se for o único treino desse dia, o dia sai da granja e o frango perde a força que ganhou com ele."
+              : "Ele some do feed e não dá pra desfazer."
+          }
+          ocupado={salvando}
+          erro={erro}
+          aoConfirmar={apagar}
+          aoCancelar={() => {
+            setConfirmandoApagar(false);
+            setErro(null);
+          }}
+        />
 
-        {erro && <Erro>{erro}</Erro>}
+        {erro && !confirmandoApagar && <Erro>{erro}</Erro>}
       </div>
 
       {/* Rodapé: as duas ações dividem a largura, com alvo grande para o dedo */}

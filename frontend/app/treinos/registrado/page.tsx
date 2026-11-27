@@ -8,9 +8,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Botao } from "@/components/Botao";
 import { Card } from "@/components/Card";
 import { Carregando } from "@/components/Carregando";
+import { Confirmacao } from "@/components/Confirmacao";
 import { Erro } from "@/components/Erro";
 import { ArteDoFrango, FAIXA_DA_PATENTE, TEXTO_DA_PATENTE } from "@/components/Frango";
 import { SemanaDeTreinos } from "@/components/SemanaDeTreinos";
@@ -148,29 +148,24 @@ function Desfazer({ postId }: { postId: number }) {
     }
   }
 
-  if (!confirmando) {
-    return (
+  return (
+    <>
       <button type="button" onClick={() => setConfirmando(true)} className="inline-flex min-h-11 items-center self-center text-[13px] font-semibold text-suave hover:text-tinta">
         Registrei sem querer · desfazer
       </button>
-    );
-  }
-  return (
-    <div className="flex animate-surgir flex-col gap-2 rounded-xl bg-superficie p-3">
-      <div>
-        <p className="text-[15px] font-bold">Apagar esse treino?</p>
-        <p className="mt-1 text-[13px] leading-snug">Seu progresso de hoje vai junto: o dia sai da granja e o frango perde a força que ganhou.</p>
-      </div>
-      {erro && <Erro>{erro}</Erro>}
-      <div className="grid grid-cols-2 gap-2">
-        <Botao variante="contorno" onClick={() => setConfirmando(false)} disabled={apagando}>
-          Manter
-        </Botao>
-        <Botao variante="contorno" onClick={apagar} disabled={apagando} className="border-brasa text-brasa">
-          {apagando ? "Apagando..." : "Apagar"}
-        </Botao>
-      </div>
-    </div>
+      <Confirmacao
+        aberta={confirmando}
+        titulo="Apagar esse treino?"
+        texto="Seu progresso de hoje vai junto: o dia sai da granja e o frango perde a força que ganhou."
+        ocupado={apagando}
+        erro={erro}
+        aoConfirmar={apagar}
+        aoCancelar={() => {
+          setConfirmando(false);
+          setErro(null);
+        }}
+      />
+    </>
   );
 }
 
