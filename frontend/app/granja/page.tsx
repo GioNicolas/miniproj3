@@ -480,9 +480,11 @@ export default function GranjaPage() {
             ))}
             {!euNoTopo && <Linha c={granja.eu} souEu />}
           </ol>
-          {!mostrarSugestoes && !buscando && <ChamarMaisGente aoClicar={chamarMaisGente} />}
         </section>
       )}
+
+      {/* fora da classificação: com 3 ou menos na granja, todos estão no pódio e ela nem aparece */}
+      {!mostrarSugestoes && !buscando && <ChamarMaisGente aoClicar={chamarMaisGente} />}
 
       {/* sugestões depois da classificação real: quem ainda dá pra trazer pra disputa */}
       {mostrarSugestoes && previa && (
