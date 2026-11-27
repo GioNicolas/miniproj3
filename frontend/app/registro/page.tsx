@@ -8,6 +8,7 @@ import { Botao } from "@/components/Botao";
 import { Campo } from "@/components/Campo";
 import { BotaoVerSenha } from "@/components/BotaoVerSenha";
 import { Erro } from "@/components/Erro";
+import { ArteDoFrango } from "@/components/Frango";
 import { apiPost } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
 
@@ -48,7 +49,7 @@ export default function RegistroPage() {
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col md:min-h-[calc(100dvh-4rem)] md:justify-center">
-      <header className="-ml-3 flex min-h-11 items-center gap-1 pb-4 pt-5">
+      <header className="-ml-3 flex min-h-11 items-center gap-1 pt-5 md:pt-0">
         <Link
           href="/login"
           aria-label="Voltar pro login"
@@ -61,14 +62,16 @@ export default function RegistroPage() {
         <span className="font-titulo text-[22px]">{GLOSSARIO.rede}</span>
       </header>
 
-      <form onSubmit={criarConta} className="flex flex-1 flex-col gap-6 md:flex-none pt-4">
-        <div>
-          <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">
-            Bota seu frango pra treinar
-          </h1>
-          <p className="mt-2 text-[15px] leading-normal text-suave">
-            Você começa como Pintinho. Cada treino dá +10 de força.
-          </p>
+      <form onSubmit={criarConta} className="flex flex-1 flex-col gap-8 pt-6 md:flex-none">
+        {/* título à esquerda e o Monstro ao lado: o frango aparece sem empilhar mais uma camada */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-end justify-between gap-4">
+            <h1 className="pb-1 text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">Bota seu frango pra treinar</h1>
+            <div className="shrink-0 animate-subir">
+              <ArteDoFrango patente="Monstro" altura={112} alt="Frango Monstro, a patente mais alta" />
+            </div>
+          </div>
+          <p className="text-[15px] leading-normal text-pretty text-suave">A rede social de quem pratica calistenia: dispute o ranking da semana e conquiste novos frangos.</p>
         </div>
 
         <div className="flex flex-col gap-4">
