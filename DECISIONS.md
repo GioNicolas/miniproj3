@@ -231,7 +231,6 @@ pode custar uma varredura nos posts.
   que eu era dono (follow, curtidas, Granja da Semana e seed fake) e da foto de
   perfil escolhida dos arquivos: o grafo de follow e o top-K por heap em
   `core/`, o benchmark da Granja, os textos do seed com cara de calistenia e os
-  merges da main nas minhas branches. Também escreveu o texto da decisão 4. Eu
-  não escrevi nenhuma linha de código.
+  merges da main nas minhas branches. Também escreveu o texto da decisão 4.
 - **Do time, sem IA:** o nicho e o público, as decisões de produto e o que ficou
   de fora.
