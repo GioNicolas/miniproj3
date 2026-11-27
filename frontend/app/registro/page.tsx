@@ -8,7 +8,7 @@ import { Botao } from "@/components/Botao";
 import { Campo } from "@/components/Campo";
 import { BotaoVerSenha } from "@/components/BotaoVerSenha";
 import { Erro } from "@/components/Erro";
-import { FilaDosFrangos } from "@/components/FilaDosFrangos";
+import { ArteDoFrango } from "@/components/Frango";
 import { apiPost } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
 
@@ -64,8 +64,9 @@ export default function RegistroPage() {
 
       <form onSubmit={criarConta} className="flex flex-1 flex-col gap-6 md:flex-none pt-4">
         <div>
-          <div className="mb-5">
-            <FilaDosFrangos />
+          {/* o frango no topo da patente: o que a pessoa pode virar treinando */}
+          <div className="mb-4 animate-subir">
+            <ArteDoFrango patente="Monstro" altura={96} alt="Frango Monstro, a patente mais alta" />
           </div>
           <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">
             Bota seu frango pra treinar
