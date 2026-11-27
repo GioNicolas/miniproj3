@@ -65,9 +65,9 @@ function Recado({ granja }: { granja: Granja }) {
 // Pódio: cor da medalha no número e altura do degrau. O número é grande (3:1 basta),
 // e cada cor passa no fundo do próprio degrau.
 const MEDALHA: Record<number, { cor: string; degrau: string; arte: number }> = {
-  1: { cor: "#977117", degrau: "min-h-[160px] lg:min-h-[124px] bg-superficie-2", arte: 118 },
-  2: { cor: "#797e86", degrau: "min-h-[136px] lg:min-h-[108px] bg-superficie", arte: 92 },
-  3: { cor: "#b06a38", degrau: "min-h-[122px] lg:min-h-[100px] bg-superficie", arte: 84 },
+  1: { cor: "#977117", degrau: "min-h-[100px] bg-superficie-2", arte: 118 },
+  2: { cor: "#797e86", degrau: "min-h-[86px] bg-superficie", arte: 92 },
+  3: { cor: "#b06a38", degrau: "min-h-[78px] bg-superficie", arte: 84 },
 };
 
 function TreinouHoje() {
@@ -83,9 +83,9 @@ function Degrau({ c, souEu }: { c: Colocado; souEu: boolean }) {
     <li className={`flex flex-col items-center ${c.posicao === 1 ? "order-2" : c.posicao === 2 ? "order-1" : "order-3"}`}>
       <Link
         href={`/u/${c.usuario.username}`}
-        // no computador as artes encolhem um pouco para o lado esquerdo caber na tela
-        className={`relative -mb-1 lg:[&>img]:!h-[var(--arte-lg)] ${c.posicao === 1 ? "mt-4" : ""}`}
-        style={{ "--arte-lg": `${Math.round(m.arte * 0.7)}px` } as React.CSSProperties}
+        // artes do pódio um pouco menores que o tamanho cheio, para o card "Você" caber na primeira tela
+        className={`relative -mb-1 [&>img]:!h-[var(--arte-lg)] ${c.posicao === 1 ? "mt-4" : ""}`}
+        style={{ "--arte-lg": `${Math.round(m.arte * 0.6)}px` } as React.CSSProperties}
       >
         <ArteDoFrango patente={patente} altura={m.arte} alt={`${patente} de ${souEu ? "você" : primeiroNome(c.usuario.name)}`} />
         {c.posicao === 1 && (
@@ -102,7 +102,7 @@ function Degrau({ c, souEu }: { c: Colocado; souEu: boolean }) {
           </svg>
         )}
       </Link>
-      <div className={`flex w-full flex-col items-center justify-start rounded-t-xl px-1 py-2 ${m.degrau}`}>
+      <div className={`flex w-full flex-col items-center justify-start rounded-t-xl px-1 py-1.5 ${m.degrau}`}>
         <span className="font-placar text-4xl leading-none" style={{ color: m.cor }}>
           {c.posicao}
           <span className="ml-px align-top font-corpo text-[15px] font-bold">º</span>
@@ -110,7 +110,7 @@ function Degrau({ c, souEu }: { c: Colocado; souEu: boolean }) {
         <span className="mt-0.5 max-w-full truncate text-[13px] font-bold">{souEu ? "Você" : primeiroNome(c.usuario.name)}</span>
         <span className="mt-0.5 text-xs font-medium text-suave">{dias(c.dias_treinados)}</span>
         {hoje && (
-          <span className="mt-2">
+          <span className="mt-1.5">
             <TreinouHoje />
           </span>
         )}
@@ -398,9 +398,9 @@ export default function GranjaPage() {
   return (
     // No computador (lg): pódio e "Você" de um lado; classificação e regras do outro.
     <div className="pagina-larga mx-auto flex max-w-xl flex-col gap-4 lg:grid lg:max-w-none lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:items-start lg:gap-x-10">
-      <header className="pt-2 lg:col-span-2 lg:flex lg:items-center lg:justify-between lg:gap-6">
+      <header className="lg:col-span-2 lg:flex lg:items-center lg:justify-between lg:gap-6 lg:pt-2">
         <h1 className="flex min-h-11 items-center font-titulo text-[22px]">{GLOSSARIO.ranking}</h1>
-        <div className="mt-3 flex items-center justify-between gap-2 text-[13px] text-suave lg:mt-0 lg:gap-4">
+        <div className="mt-1 flex items-center justify-between gap-2 text-[13px] text-suave lg:mt-0 lg:gap-4">
           <span>
             {intervalo(granja.semana_inicio)} · {granja.items.length} na disputa
           </span>
