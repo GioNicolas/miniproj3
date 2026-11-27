@@ -229,3 +229,4 @@ pode custar uma varredura nos posts.
   os fluxos com contas minhas antes do merge.
 - **Do time, sem IA:** o nicho e o público, as decisões de produto e o que ficou
   de fora.
+- **@Davicgois:** Claude como mentor de programação: explicava o conceito primeiro e me passava uma tarefa para ser executado por mim. Usei para fazer o deploy público: configurei o Render (variáveis FRONTEND_URL, SEED_ON_BOOT e PYTHON_VERSION, sem DEBUG) e a Vercel, e conferi o resultado com o make smoke na URL pública e com curl. Usei para ler o código antes de mexer (PostPage, montar_posts) e para revisar o PR da identidade visual rodando o front no meu computador contra a API do Render.
