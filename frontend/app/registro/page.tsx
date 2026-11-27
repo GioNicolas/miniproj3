@@ -49,11 +49,11 @@ export default function RegistroPage() {
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col md:min-h-[calc(100dvh-4rem)] md:justify-center">
-      <header className="-ml-3 flex min-h-11 items-center gap-1 pb-4 pt-5">
+      <header className="relative flex min-h-11 items-center justify-center pb-2 pt-5 md:pt-0">
         <Link
           href="/login"
           aria-label="Voltar pro login"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-superficie"
+          className="absolute -left-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-full hover:bg-superficie"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M15 5l-7 7 7 7" />
@@ -62,11 +62,12 @@ export default function RegistroPage() {
         <span className="font-titulo text-[22px]">{GLOSSARIO.rede}</span>
       </header>
 
-      <form onSubmit={criarConta} className="flex flex-1 flex-col gap-6 md:flex-none pt-4">
-        <div>
+      <form onSubmit={criarConta} className="flex flex-1 flex-col gap-6 md:flex-none pt-0">
+        {/* topo centralizado: frango, título e a frase sobre a rede */}
+        <div className="text-center">
           {/* o frango no topo da patente: o que a pessoa pode virar treinando */}
-          <div className="mb-4 animate-subir">
-            <ArteDoFrango patente="Monstro" altura={96} alt="Frango Monstro, a patente mais alta" />
+          <div className="mb-4 flex animate-subir justify-center md:[&>img]:!h-[128px]">
+            <ArteDoFrango patente="Monstro" altura={150} alt="Frango Monstro, a patente mais alta" />
           </div>
           <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">
             Bota seu frango pra treinar
