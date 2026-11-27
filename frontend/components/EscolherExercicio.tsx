@@ -146,13 +146,13 @@ export function EscolherExercicio({ inicial, noTreino, aoSalvar, aoTirar, aoFech
   const degrau = codigo ? TRILHAS.find((t) => t.nome === trilhaDe(codigo))!.progressoes.findIndex((p) => p.codigo === codigo) + 1 : 0;
 
   return createPortal(
-    <div role="dialog" aria-modal="true" aria-labelledby="titulo-da-gaveta" className="fixed inset-0 z-50 flex items-end justify-center md:items-center md:p-6">
+    <div role="dialog" aria-modal="true" aria-labelledby="titulo-da-gaveta" className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
       <div aria-hidden="true" onClick={aoFechar} className="absolute inset-0 animate-aparecer bg-black/45" />
       <div
         ref={painel}
         tabIndex={-1}
-        // no computador vira uma janela no centro, mais estreita, sem a alça e sem rolagem lateral
-        className="relative flex max-h-[90dvh] w-full max-w-xl animate-gaveta flex-col overflow-y-auto overflow-x-hidden overscroll-contain rounded-t-3xl bg-fundo px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] outline-none md:max-h-[85dvh] md:max-w-md md:animate-surgir md:rounded-3xl md:pb-5 md:shadow-[0_16px_48px_rgba(20,20,20,0.22)]"
+        // janela no centro da tela, no celular e no computador, sem rolagem lateral
+        className="relative flex max-h-[85dvh] w-full max-w-md animate-surgir flex-col overflow-y-auto overflow-x-hidden overscroll-contain rounded-3xl bg-fundo px-5 pb-5 shadow-[0_16px_48px_rgba(20,20,20,0.22)] outline-none"
       >
         <div className="sticky top-0 z-10 -mx-5 flex items-center justify-between bg-fundo px-3 pb-2 pt-2">
           {codigo && !inicial ? (
@@ -163,7 +163,7 @@ export function EscolherExercicio({ inicial, noTreino, aoSalvar, aoTirar, aoFech
               Trocar exercício
             </button>
           ) : (
-            <span aria-hidden="true" className="ml-2 h-1 w-10 rounded-full bg-borda-forte md:invisible" />
+            <span aria-hidden="true" />
           )}
           <button type="button" onClick={aoFechar} aria-label="Fechar" className="flex h-11 w-11 items-center justify-center rounded-full text-suave hover:bg-superficie hover:text-tinta">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
