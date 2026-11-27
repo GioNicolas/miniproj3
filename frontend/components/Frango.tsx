@@ -99,12 +99,13 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
         </div>
       )}
 
-      {/* no computador a arte encolhe para o cartão caber na tela sem rolar */}
-      <div className="lg:[&>img]:!h-[112px]">
+      {/* no computador a arte fica ao lado da patente e da força, para o cartão caber na tela sem rolar */}
+      <div className="flex flex-col items-center lg:flex-row lg:justify-center lg:gap-5">
+      <div className="lg:[&>img]:!h-[104px]">
         <ArteDoFrango patente={nivel} altura={232} definhando={definhando} alt={`${souEu ? "Seu frango" : "Frango"}, patente ${nivel}`} />
       </div>
 
-      <div className="-mt-2 flex flex-col items-center">
+      <div className="-mt-2 flex flex-col items-center lg:mt-0 lg:items-start">
         <p className="text-[34px] font-extrabold leading-none tracking-[-0.02em]" style={{ color: TEXTO_DA_PATENTE[nivel] }}>
           {nivel}
         </p>
@@ -113,9 +114,10 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
           <span className="text-[15px] font-semibold text-suave">de força</span>
         </p>
       </div>
+      </div>
 
       {dias_sem_treinar === null && souEu && (
-        <p className="text-center text-sm text-pretty text-suave">Registra o primeiro treino e o seu frango começa a crescer.</p>
+        <p className="text-center text-sm text-pretty text-suave lg:text-[13px]">Registra o primeiro treino e o seu frango começa a crescer.</p>
       )}
 
       {proximo_nivel ? (
@@ -136,7 +138,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
           >
             <div className="h-3 origin-left animate-encher rounded-md bg-tinta" style={{ width: `${progresso}%` }} />
           </div>
-          <p className="flex justify-between text-xs text-suave">
+          <p className="flex justify-between text-xs text-suave lg:hidden">
             <span>{de}</span>
             <span>{ate + 1}</span>
           </p>
@@ -145,7 +147,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
         <p className="w-full border-t border-borda pt-4 text-center text-sm text-suave">Patente máxima. Agora é manter a constância.</p>
       )}
 
-      <ol aria-label="As 4 patentes" className="grid w-full grid-cols-4 gap-2 border-t border-borda pt-4 lg:pt-3 lg:[&_img]:!h-8">
+      <ol aria-label="As 4 patentes" className="grid w-full grid-cols-4 gap-2 border-t border-borda pt-4 lg:pt-3 lg:[&_img]:!h-7">
         {PATENTES.map((p, i) => {
           const estado = i < atual ? "passou" : i === atual ? "atual" : "futuro";
           const [min, max] = FAIXA_DA_PATENTE[p];
@@ -162,7 +164,7 @@ export function CartaoDoFrango({ frango, souEu }: { frango: EstadoFrango; souEu:
               >
                 {p}
               </span>
-              <span className="text-xs text-suave">
+              <span className="text-xs text-suave lg:hidden">
                 {min}–{max}
               </span>
             </li>
