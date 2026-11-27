@@ -21,7 +21,7 @@
   --color-superficie-escura: #ebe7de;
   --color-tinta: #141414;
   --color-tinta-clara: #141414;
-  --color-suave: #67625a;
+  --color-suave: #635e56; /* 4,7:1 até na superfície mais escura (#e2ddd2) */
   --color-borda: #dcd6ca; /* linha entre posts e seções */
   --color-borda-forte: #8c8679; /* contorno de campo e botão secundário (3:1 no fundo) */
 

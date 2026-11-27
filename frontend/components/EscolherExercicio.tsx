@@ -5,13 +5,12 @@ import { createPortal } from "react-dom";
 
 import { Botao } from "@/components/Botao";
 import { apiGet, type Arvore, type EstadoDaSkill } from "@/lib/api";
-import { nomeDaProgressao, TRILHAS } from "@/lib/progressoes";
+import { metaDa, nomeDaProgressao, TRILHAS } from "@/lib/progressoes";
 
-// Exercícios de segurar: o número é em segundos, não em repetições.
-const DE_TEMPO = new Set(["pendurar_na_barra", "prancha", "l_sit", "parada_de_maos_parede"]);
-
+// Exercícios de segurar contam em segundos. A lista e a dose padrão vêm das metas
+// de lib/progressoes.ts, a mesma fonte de Treinos e da Árvore.
 export function emSegundos(codigo: string): boolean {
-  return DE_TEMPO.has(codigo);
+  return metaDa(codigo).segundos ?? false;
 }
 
 export function trilhaDe(codigo: string): string {
@@ -21,7 +20,6 @@ export function trilhaDe(codigo: string): string {
 export type Escolha = { progressao: string; series: number; reps: number };
 
 const SERIES_PADRAO = 3;
-const repsPadrao = (codigo: string) => (emSegundos(codigo) ? 20 : 8);
 const ATALHOS = { reps: [5, 8, 10, 12], segundos: [10, 20, 30, 45] };
 
 // A árvore muda pouco enquanto a pessoa registra: busca uma vez por visita à tela.
@@ -136,8 +134,10 @@ export function EscolherExercicio({ inicial, noTreino, aoSalvar, aoTirar, aoFech
 
   function escolher(c: string) {
     setCodigo(c);
-    setSeries(SERIES_PADRAO);
-    setReps(repsPadrao(c));
+    // começa na dose do treino de hoje (ex.: australiana 3×8, prancha 3×30 s)
+    const [s, r] = metaDa(c).treino;
+    setSeries(s);
+    setReps(r);
     painel.current?.scrollTo({ top: 0 });
   }
 
