@@ -26,9 +26,19 @@ const stencil = Big_Shoulders_Stencil({
   adjustFontFallback: false,
 });
 
+const DESCRICAO = "Rede de calistenia para iniciantes da UFPB. Constância vence força.";
+
+// Ícones e prévia do link vêm dos arquivos em app/ (favicon.ico, icon.png, apple-icon.png,
+// opengraph-image.png) e do manifest.ts. metadataBase deixa a URL da imagem absoluta,
+// que é o que o WhatsApp precisa para mostrar a prévia.
 export const metadata: Metadata = {
+  metadataBase: new URL("https://miniproj3-six.vercel.app"),
   title: GLOSSARIO.rede,
-  description: "Rede de calistenia para iniciantes da UFPB. Constância vence força.",
+  description: DESCRICAO,
+  applicationName: GLOSSARIO.rede,
+  appleWebApp: { capable: true, title: GLOSSARIO.rede, statusBarStyle: "default" },
+  openGraph: { type: "website", locale: "pt_BR", siteName: GLOSSARIO.rede, title: GLOSSARIO.rede, description: DESCRICAO },
+  twitter: { card: "summary_large_image" },
 };
 
 // viewportFit "cover" libera o env(safe-area-inset-bottom) usado na barra do celular.

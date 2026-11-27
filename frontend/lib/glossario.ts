@@ -2,7 +2,7 @@
 // Precisa trocar um texto da rede? Troque aqui e todas as telas acompanham.
 
 export const GLOSSARIO = {
-  rede: "Frangaria",
+  rede: "Frangym",
   slogan: "Constância vence força.",
   curtida: "Tamo junto",
   registrarTreino: "Registrar treino",
