@@ -215,7 +215,7 @@ function Regras({ abertoInicial = false }: { abertoInicial?: boolean }) {
 const PESSOAS_CONSULTADAS = 12; // quantos autores do Explorar têm a semana conferida
 const PESSOAS_NA_PREVIA = 4;
 
-type NaPrevia = { usuario: Autor; dias: number; souEu: boolean };
+type NaPrevia = { usuario: Autor; dias: number; treinados: Set<string>; souEu: boolean };
 
 /**
  * Quem mais treinou nesta semana entre quem posta no Explorar, com dias de verdade
@@ -236,11 +236,15 @@ function usePrevia(eu: Colocado, ativo: boolean): NaPrevia[] | null {
       const comDias = await Promise.all(
         [...autores.values()].slice(0, PESSOAS_CONSULTADAS).map(async (usuario) => {
           const { dias } = await apiGet<{ dias: string[] }>(`/usuarios/${usuario.username}/treinos?dias=7`);
-          return { usuario, dias: semana.filter((d) => dias.includes(d)).length, souEu: false };
+          return { usuario, dias: semana.filter((d) => dias.includes(d)).length, treinados: new Set(dias), souEu: false };
         })
       );
       const melhores = comDias.filter((p) => p.dias > 0).sort((a, b) => b.dias - a.dias || a.usuario.username.localeCompare(b.usuario.username));
-      const comigo = [...melhores.slice(0, PESSOAS_NA_PREVIA), { usuario: eu.usuario, dias: eu.dias_treinados, souEu: true }];
+      const meus = await apiGet<{ dias: string[] }>(`/usuarios/${eu.usuario.username}/treinos?dias=7`);
+      const comigo = [
+        ...melhores.slice(0, PESSOAS_NA_PREVIA),
+        { usuario: eu.usuario, dias: eu.dias_treinados, treinados: new Set(meus.dias), souEu: true },
+      ];
       comigo.sort((a, b) => b.dias - a.dias || a.usuario.username.localeCompare(b.usuario.username));
       if (vivo) setPrevia(melhores.length ? comigo : []);
     })().catch(() => vivo && setPrevia([]));
@@ -251,46 +255,59 @@ function usePrevia(eu: Colocado, ativo: boolean): NaPrevia[] | null {
   return previa;
 }
 
-function PreviaDaGranja({ previa, aoSeguir }: { previa: NaPrevia[]; aoSeguir: () => void }) {
+/** Esquerda: o que é a granja, para quem ainda está sozinho nela. */
+function IntroDaPrevia() {
   return (
-    <section aria-label="Prévia da sua granja" className="flex animate-subir flex-col gap-3">
-      <div>
-        <h2 className="text-2xl font-bold leading-tight tracking-[-0.02em]">Sua granja ainda é só você</h2>
-        <p className="mt-2 text-[15px] leading-normal text-pretty text-suave">
-          A granja é você e quem você segue. Ganha a semana quem treinar em mais dias. Se você seguisse essa galera, ela estaria assim:
-        </p>
-      </div>
-      <ol className="rounded-2xl bg-superficie px-4 py-1">
-        {previa.map((p, i) => {
-          const posicao = i + 1;
-          return (
-            <li
-              key={p.usuario.username}
-              aria-current={p.souEu ? "true" : undefined}
-              className={`flex items-center gap-3 py-2.5 ${i < previa.length - 1 ? "border-b border-borda" : ""}`}
-            >
-              <span className="w-6 shrink-0 font-placar text-[22px] leading-none" style={{ color: MEDALHA[posicao]?.cor }}>
-                {posicao}
+    <section aria-label="Sua granja" className="flex animate-subir flex-col gap-2">
+      <h2 className="text-2xl font-bold leading-tight tracking-[-0.02em]">Sua granja ainda é só você</h2>
+      <p className="text-[15px] leading-normal text-pretty text-suave">
+        A granja é você e quem você segue. Ganha a semana quem treinar em mais dias, e toda segunda começa do zero.
+      </p>
+    </section>
+  );
+}
+
+/** Direita: a prévia no mesmo formato da classificação de verdade, com Seguir em cada pessoa. */
+function ListaDaPrevia({ previa, aoSeguir }: { previa: NaPrevia[]; aoSeguir: () => void }) {
+  const semana = semanaAtual();
+  return (
+    <section aria-label="Prévia da classificação" className="flex flex-col gap-1">
+      <h2 className="text-[15px] font-bold">Se você seguisse essa galera, sua granja estaria assim</h2>
+      <ol>
+        {previa.map((p, i) => (
+          <li
+            key={p.usuario.username}
+            aria-current={p.souEu ? "true" : undefined}
+            className={
+              p.souEu
+                ? "-mx-2 my-1.5 flex items-center gap-3 rounded-[10px] bg-superficie px-2 py-2.5 shadow-[inset_0_0_0_1px_var(--color-borda-forte)]"
+                : "flex items-center gap-3 border-b border-borda py-3"
+            }
+          >
+            <span className="w-6 shrink-0 text-[17px] font-bold tabular-nums text-suave">{i + 1}</span>
+            <Avatar name={p.usuario.name} avatarUrl={p.usuario.avatar_url} patente={p.usuario.nivel} />
+            <Link href={p.souEu ? "/perfil" : `/u/${p.usuario.username}`} className="min-w-0 flex-1">
+              <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                <span className={`truncate text-sm ${p.souEu ? "font-bold" : "font-medium"}`}>{p.souEu ? "Você" : p.usuario.name}</span>
+                {p.usuario.nivel && <SeloDaPatente patente={p.usuario.nivel} />}
               </span>
-              <Avatar name={p.usuario.name} avatarUrl={p.usuario.avatar_url} patente={p.usuario.nivel} />
-              <div className="min-w-0 flex-1">
-                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                  <span className={`truncate text-sm ${p.souEu ? "font-bold" : "font-medium"}`}>{p.souEu ? "Você" : p.usuario.name}</span>
-                  {p.usuario.nivel && !p.souEu && <SeloDaPatente patente={p.usuario.nivel} />}
-                </span>
-                <span className="text-xs text-suave">{p.souEu && p.dias === 0 ? "0 dias: treina hoje e já sai do zero" : dias(p.dias)}</span>
-              </div>
-              {!p.souEu && (
-                <BotaoSeguir
-                  username={p.usuario.username}
-                  euSigoInicial={false}
-                  aoMudar={(delta) => delta > 0 && aoSeguir()}
-                  className="w-24 shrink-0 lg:w-28"
-                />
-              )}
-            </li>
-          );
-        })}
+              <span role="img" aria-label={`Treinou ${p.dias} de 7 dias nesta semana`} className="mt-1 flex gap-[3px]">
+                {semana.map((d) => (
+                  <span key={d} className={`h-2.5 w-2.5 rounded-sm ${p.treinados.has(d) ? "bg-tinta" : "bg-elevado"}`} />
+                ))}
+              </span>
+            </Link>
+            {!p.souEu && (
+              <BotaoSeguir
+                username={p.usuario.username}
+                euSigoInicial={false}
+                aoMudar={(delta) => delta > 0 && aoSeguir()}
+                className="w-24 shrink-0"
+              />
+            )}
+            <span className="w-5 shrink-0 text-right text-lg font-bold leading-none tabular-nums">{p.dias}</span>
+          </li>
+        ))}
       </ol>
       <p className="text-[13px] text-pretty text-suave">Seguiu alguém, a granja vira disputa de verdade na hora.</p>
     </section>
@@ -347,7 +364,7 @@ export default function GranjaPage() {
       {soEu && previa === null ? (
         <Carregando />
       ) : soEu && previa && previa.length > 0 ? (
-        <PreviaDaGranja previa={previa} aoSeguir={carregar} />
+        <IntroDaPrevia />
       ) : soEu ? (
         <EstadoVazio
           titulo="Sua granja é só você"
@@ -368,8 +385,11 @@ export default function GranjaPage() {
       )}
 
       <section aria-label="Sua semana" className="flex flex-col gap-3 rounded-2xl bg-superficie p-4">
-        <div className="flex items-baseline justify-between">
-          <span className="text-[17px] font-bold tracking-[-0.02em]">{soEu ? "Você" : `Você · ${granja.eu.posicao}º lugar`}</span>
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2.5 text-[17px] font-bold tracking-[-0.02em]">
+            {soEu && <Avatar name={granja.eu.usuario.name} avatarUrl={granja.eu.usuario.avatar_url} patente={granja.eu.usuario.nivel} />}
+            {soEu ? "Você" : `Você · ${granja.eu.posicao}º lugar`}
+          </span>
           <span className="text-[13px] text-suave">{dias(granja.eu.dias_treinados)}</span>
         </div>
         <SemanaDeTreinos treinados={minhaSemana} />
@@ -401,6 +421,7 @@ export default function GranjaPage() {
       </div>
 
       <div className="flex flex-col gap-4">
+      {soEu && previa && previa.length > 0 && <ListaDaPrevia previa={previa} aoSeguir={carregar} />}
       {!soEu && (resto.length > 0 || !euNoTopo) && (
         <section aria-label="Classificação">
           <ol>
