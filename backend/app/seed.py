@@ -16,6 +16,7 @@ comentários. Os textos são escritos à mão (nada de faker.text()).
 import random
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta, timezone
+from pathlib import Path
 
 import bcrypt
 from sqlalchemy import select
@@ -28,11 +29,13 @@ from app.models.curtida import Curtida
 from app.models.equipamento_usuario import EquipamentoUsuario
 from app.models.exercicio import Exercicio
 from app.models.follow import Follow
+from app.models.foto_de_perfil import FotoDePerfil
 from app.models.mensagem import Mensagem
 from app.models.post import Post
 from app.models.progressao_dominada import ProgressaoDominada
 from app.models.treino import Treino
 from app.models.user import User
+from app.services import fotos_de_perfil
 
 # A mesma senha para todo usuário do seed, para dar para logar na demo.
 SENHA_SEED = "senha-forte-123"
@@ -334,6 +337,7 @@ def seed_fake(db: Session) -> None:
             )
 
     _semear_conversas(db, usuarios)
+    _semear_perfil_fixo(db, usuarios, hoje)
     db.commit()
 
 
@@ -411,9 +415,82 @@ def _semear_conversas(db: Session, usuarios: dict[str, User]) -> None:
             db.add(Participante(conversa_id=conversa.id, user_id=membro.id, lida_ate_id=lida))
 
 
+# Perfil de verdade de quem faz a rede, igual a cada subida (o disco do Render
+# zera e a rede volta com o seed). Fica fora de PESSOAS: tem só o post que a
+# pessoa escreveu, sem treinos sorteados no nome dela, e não mexe no sorteio
+# dos outros. A foto de perfil mora em app/seed_fotos/.
+PERFIL_FIXO = {
+    "username": "edu",
+    "name": "Eduardo",
+    "bio": "",
+    "nivel": 2,
+    "foto_de_perfil": "edu_perfil.jpg",
+    "post": {
+        "texto": "Treinando barra graças a deus!!!",
+        "exercicios": [("barra_fixa", 3, 8)],
+    },
+    "seguidores": [USUARIO_DEMO, "caio_barra", "bia_paralela", "matheus_def", "gabi_muscleup"],
+    "segue": ["caio_barra", "bia_paralela", "matheus_def", "gabi_muscleup", "rafa_lsit"],
+    "tamo_junto": [USUARIO_DEMO, "caio_barra", "bia_paralela", "matheus_def"],
+    "comentarios": [("bia_paralela", "Boa demais, segue firme."), ("caio_barra", "Tamo junto!")],
+}
+FOTOS_DO_SEED = Path(__file__).parent / "seed_fotos"
+
+
+def _semear_perfil_fixo(db: Session, usuarios: dict[str, User], hoje: date) -> None:
+    perfil = PERFIL_FIXO
+    hash_seed = usuarios[USUARIO_DEMO].password_hash
+    eu = User(
+        username=perfil["username"],
+        name=perfil["name"],
+        bio=perfil["bio"],
+        password_hash=hash_seed,
+        created_at=datetime.combine(hoje - timedelta(days=14), time(9), tzinfo=FUSO_RECIFE),
+    )
+    db.add(eu)
+    db.flush()
+    db.add_all(ProgressaoDominada(user_id=eu.id, codigo=c) for c in DOMINADAS[perfil["nivel"]])
+    db.add_all(EquipamentoUsuario(user_id=eu.id, equipamento=e) for e in EQUIPAMENTOS[perfil["nivel"]])
+
+    foto = FotoDePerfil(user_id=eu.id, tipo="image/jpeg", conteudo=(FOTOS_DO_SEED / perfil["foto_de_perfil"]).read_bytes())
+    db.add(foto)
+    db.flush()
+    eu.avatar_url = fotos_de_perfil.url(eu.username, foto.chave)
+
+    # o post de hoje, uns minutos atrás (no máximo a 0h01 de hoje, para contar o dia certo)
+    inicio_de_hoje = datetime.combine(hoje, time(0, 1), tzinfo=FUSO_RECIFE).astimezone(timezone.utc)
+    momento = max(_agora() - timedelta(minutes=20), inicio_de_hoje)
+    dados = perfil["post"]
+    post = Post(
+        autor_id=eu.id,
+        texto=dados["texto"],
+        created_at=momento,
+        treino=Treino(
+            autor_id=eu.id,
+            dia=hoje,
+            exercicios=[Exercicio(progressao=p, series=s, reps=r) for p, s, r in dados["exercicios"]],
+        ),
+    )
+    db.add(post)
+    db.flush()
+
+    db.add_all(Follow(seguidor_id=usuarios[u].id, seguido_id=eu.id) for u in perfil["seguidores"])
+    db.add_all(Follow(seguidor_id=eu.id, seguido_id=usuarios[u].id) for u in perfil["segue"])
+    db.add_all(Curtida(usuario_id=usuarios[u].id, post_id=post.id) for u in perfil["tamo_junto"])
+    for i, (autor, texto) in enumerate(perfil["comentarios"], 1):
+        db.add(
+            Comentario(
+                post_id=post.id,
+                autor_id=usuarios[autor].id,
+                texto=texto,
+                created_at=min(momento + timedelta(minutes=3 * i), _agora()),
+            )
+        )
+
+
 def semear_se_vazio(db: Session) -> int:
     """Roda o seed_fake se o banco não tem nenhum usuário. Devolve quantos criou."""
     if db.scalar(select(User.id).limit(1)) is not None:
         return 0
     seed_fake(db)
-    return len(PESSOAS)
+    return len(PESSOAS) + 1  # + o PERFIL_FIXO
