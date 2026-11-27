@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Archivo, Big_Shoulders_Stencil, Work_Sans } from "next/font/google";
 
 import { GuardaDeRota } from "@/components/GuardaDeRota";
+import { AjusteDoTeclado } from "@/components/AjusteDoTeclado";
 import { Navbar } from "@/components/Navbar";
 import { GLOSSARIO } from "@/lib/glossario";
 import "./globals.css";
@@ -52,6 +53,7 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${archivo.variable} ${stencil.variable} ${workSans.variable}`}>
       <body className="min-h-screen bg-fundo font-corpo text-tinta">
         <Navbar />
+        <AjusteDoTeclado />
         {/* pb-24: espaço para a barra inferior do celular não cobrir o conteúdo */}
         <main className="mx-auto max-w-5xl px-5 pb-28 pt-2 md:pb-10 md:pt-8">
           <GuardaDeRota>{children}</GuardaDeRota>
