@@ -218,5 +218,13 @@ pode custar uma varredura nos posts.
   post) e para revisar a escrita deste arquivo. Eu revisava cada diff, rodava os
   testes e conferia as telas no navegador antes de abrir o PR. Codex para revisar
   PRs antes do merge.
+- **@SofiaLimar:** Claude (canvas de design no claude.ai) para desenhar as telas
+  e testar paleta e tipografia da identidade visual. Claude Code para levar o
+  canvas para o front e para as revisões de design do app no ar: crítica das
+  telas com a skill Impeccable (heurísticas, contraste, celular e computador) e
+  os ajustes que saíram dela, como a tela de treino registrado, as metas de
+  reps, a prévia da Granja e o layout no computador. Eu decidia o que mudar,
+  conferia cada tela no celular e no computador e testava os fluxos com contas
+  minhas antes do merge.
 - **Do time, sem IA:** o nicho e o público, as decisões de produto e o que ficou
   de fora.

@@ -89,8 +89,9 @@ function Exercicio({ p, ordem, feitas, aoMarcar }: { p: Progressao; ordem: numbe
               aria-pressed={feita}
               aria-label={`Série ${k + 1}: ${textoDaSerie(reps, segundos)}`}
               onClick={() => aoMarcar(feita ? k : k + 1)}
-              className={`flex min-h-11 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold ${
-                feita ? "border-destaque-fundo bg-destaque-fundo text-destaque" : "border-borda-forte bg-superficie-2 text-tinta"
+              // não feita: clara e solta (pede o toque); feita: preenchida com ✓ (já foi)
+              className={`flex min-h-12 items-center justify-center gap-2 rounded-xl border text-[14px] font-semibold transition-[background-color,transform] duration-150 active:scale-[0.97] ${
+                feita ? "border-destaque-fundo bg-destaque-fundo text-destaque" : "border-borda-forte bg-elevado text-tinta hover:bg-fundo"
               }`}
             >
               {feita && (
