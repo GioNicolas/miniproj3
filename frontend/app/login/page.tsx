@@ -60,7 +60,7 @@ export default function LoginPage() {
             Entra pra registrar o treino de hoje
           </h1>
           <p className="mt-2 text-[15px] leading-normal text-pretty text-suave">
-            {GLOSSARIO.rede} é a rede de calistenia da UFPB. Cada treino que você registra faz seu frango crescer; se você some, ele definha.
+            {GLOSSARIO.rede} é a rede social de quem pratica calistenia. Aqui você disputa o ranking da semana e conquista novos frangos conforme evolui.
           </p>
         </div>
 

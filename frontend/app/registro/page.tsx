@@ -71,7 +71,7 @@ export default function RegistroPage() {
             Bota seu frango pra treinar
           </h1>
           <p className="mt-2 text-[15px] leading-normal text-pretty text-suave">
-            A rede de calistenia da UFPB. Seu frango começa Pintinho e cresce a cada treino; se você some, ele definha.
+            A rede social de quem pratica calistenia. Você entra no ranking da semana e conquista novos frangos conforme evolui.
           </p>
         </div>
 
