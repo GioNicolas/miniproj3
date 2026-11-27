@@ -37,7 +37,8 @@ function Cabecalho({ conversa, eu }: { conversa: Conversa; eu: string | undefine
     ? `@${demais[0]?.username ?? ""}`
     : `${conversa.participantes.length} pessoas: ${[...demais.map((p) => p.name.split(" ")[0]), "você"].join(", ")}`;
   return (
-    <div className="flex items-center gap-2 border-b border-borda pb-3 pt-2">
+    // fixo no topo ao rolar (no computador, abaixo da barra de navegação de 69px)
+    <div className="sticky top-0 z-10 -mx-5 flex items-center gap-2 border-b border-borda bg-fundo px-5 pb-3 pt-2 md:top-[69px] md:mx-0 md:px-0">
       <Link
         href="/chat"
         aria-label="Voltar para as conversas"
@@ -69,7 +70,6 @@ export default function ConversaPage() {
   const total = useRef(0); // quantas mensagens a conversa tinha na última busca
   const carregou = useRef(false);
   const fila = useRef<Promise<unknown>>(Promise.resolve());
-  const fim = useRef<HTMLDivElement>(null);
   const colarNoFim = useRef(true); // só desce sozinho se a pessoa já estava lá embaixo
 
   // Pede só o que chegou depois do que está na tela. Em fila: o polling e o
@@ -117,7 +117,8 @@ export default function ConversaPage() {
   }, []);
 
   useEffect(() => {
-    if (colarNoFim.current) fim.current?.scrollIntoView({ block: "end" });
+    // rola a página até o fim, e não só até o fim da lista: o campo fixo cobriria a última mensagem
+    if (colarNoFim.current) window.scrollTo({ top: document.documentElement.scrollHeight });
   }, [mensagens]);
 
   async function enviar(e?: React.FormEvent) {
@@ -208,7 +209,6 @@ export default function ConversaPage() {
             })}
           </ol>
         )}
-        <div ref={fim} />
       </div>
 
       {/* Caixa de mensagem presa embaixo, acima da barra de navegação do celular */}

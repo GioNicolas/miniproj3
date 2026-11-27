@@ -12,6 +12,7 @@ import { SemanaDeTreinos } from "@/components/SemanaDeTreinos";
 import { apiGet, type Granja, type Perfil } from "@/lib/api";
 import { useDiasTreinados } from "@/lib/dias";
 import { useEu } from "@/lib/eu";
+import { fraseDaDisputa } from "@/lib/granja";
 import { GLOSSARIO } from "@/lib/glossario";
 
 // A coluna só existe no computador (mouse): o link não precisa da altura de toque de 44px.
@@ -66,7 +67,7 @@ function SuaSemana({ granja, username }: { granja: Granja; username: string }) {
       <SemanaDeTreinos treinados={treinados} />
       <p className="text-[13px] leading-snug">
         {alvo
-          ? `Mais ${alvo.faltam_dias} ${alvo.faltam_dias === 1 ? "dia" : "dias"} e você passa ${alvo.usuario.name.split(" ")[0]}.`
+          ? fraseDaDisputa(granja)
           : "Ninguém na sua frente essa semana."}
       </p>
       {/* o pódio da semana preenche o card até o link */}

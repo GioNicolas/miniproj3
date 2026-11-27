@@ -17,6 +17,7 @@ import { SemanaDeTreinos } from "@/components/SemanaDeTreinos";
 import { apiDelete, apiGet, type Granja, type Perfil } from "@/lib/api";
 import { diasSeguidos, useDiasTreinados } from "@/lib/dias";
 import { useEu } from "@/lib/eu";
+import { fraseDaDisputa } from "@/lib/granja";
 import { GLOSSARIO, PATENTES, type Patente } from "@/lib/glossario";
 
 function patenteDaForca(forca: number): Patente {
@@ -123,7 +124,7 @@ function NaGranja({ granja, treinados }: { granja: Granja; treinados: Set<string
       <p className="text-sm leading-snug">
         Você tá em <strong>{eu.posicao}º</strong>.{" "}
         {alvo
-          ? `Mais ${alvo.faltam_dias} ${alvo.faltam_dias === 1 ? "dia" : "dias"} e você passa ${alvo.usuario.name.split(" ")[0]}.`
+          ? fraseDaDisputa(granja)
           : "Ninguém na sua frente essa semana."}
       </p>
     </Card>
@@ -150,8 +151,13 @@ function Desfazer({ postId }: { postId: number }) {
 
   return (
     <>
-      <button type="button" onClick={() => setConfirmando(true)} className="inline-flex min-h-11 items-center self-center text-[13px] font-semibold text-suave hover:text-tinta">
-        Registrei sem querer · desfazer
+      <button
+        type="button"
+        onClick={() => setConfirmando(true)}
+        aria-label="Registrei sem querer: desfazer o treino"
+        className="inline-flex min-h-11 items-center rounded-full px-3 text-[13px] font-semibold text-suave hover:bg-superficie hover:text-tinta"
+      >
+        Desfazer
       </button>
       <Confirmacao
         aberta={confirmando}
@@ -217,12 +223,14 @@ export default function TreinoRegistradoPage() {
     // No computador (lg), tudo centralizado e sem rolar: frango e título em cima, os cards
     // de força e granja lado a lado, e os botões embaixo. No celular, tudo em coluna, como no canvas.
     <div className="pagina-larga mx-auto flex max-w-xl flex-col gap-4 lg:grid lg:max-w-3xl lg:grid-cols-2 lg:gap-x-4 lg:gap-y-4">
-      <header className="-mb-12 -ml-3 flex pt-2 lg:col-span-2 lg:-mb-14">
+      {/* X à esquerda e "desfazer" à direita: no topo nunca fica atrás da barra fixa */}
+      <header className="-mb-12 -ml-3 flex items-start justify-between pt-2 lg:col-span-2 lg:-mb-14">
         <Link href="/" aria-label="Fechar e voltar pro feed" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-superficie">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
         </Link>
+        {postId !== null && contouHoje && <Desfazer postId={postId} />}
       </header>
 
       <div className="flex flex-col items-center text-center lg:col-span-2 lg:row-start-2">
@@ -261,11 +269,6 @@ export default function TreinoRegistradoPage() {
           </Link>
         )}
       </div>
-      {postId !== null && contouHoje && (
-        <div className="flex flex-col lg:col-span-2 lg:row-start-5 lg:mx-auto lg:w-full lg:max-w-xl">
-          <Desfazer postId={postId} />
-        </div>
-      )}
     </div>
   );
 }

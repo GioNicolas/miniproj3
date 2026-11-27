@@ -51,6 +51,11 @@ function Recado({ granja }: { granja: Granja }) {
   if (alvo.faltam_dias > restam) {
     return <p>Essa semana não dá mais pra passar {quem}. Segunda zera e todo mundo começa do zero.</p>;
   }
+  if (alvo.dias_treinados === eu.dias_treinados) {
+    // empate: a ordem é a do @ (ver "Como funciona"); um dia a mais desempata
+    const quando = restam === diasAteDomingo() ? "hoje" : "amanhã";
+    return <p>Você e {quem} estão empatados com {dias(eu.dias_treinados)}. Treina {quando} e passa na frente.</p>;
+  }
   if (alvo.faltam_dias === 1) {
     // dias_que_ainda_contam não inclui hoje quando você já treinou hoje (o 2º treino do dia não conta)
     return <p>Treina {restam === diasAteDomingo() ? "hoje" : "amanhã"} e você passa {quem}.</p>;

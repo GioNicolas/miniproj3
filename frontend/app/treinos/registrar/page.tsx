@@ -383,7 +383,8 @@ export default function RegistrarTreinoPage() {
 
       {erro && <Erro>{erro}</Erro>}
 
-      <div className="flex flex-col gap-2 border-t border-borda pt-3">
+      {/* rodapé com o botão preso embaixo, como em Treinos: nunca fica abaixo da dobra */}
+      <div className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] z-10 -mx-5 flex flex-col gap-2 border-t border-borda bg-fundo px-5 py-3 md:bottom-0 md:mx-0 md:px-0">
         <p className="text-center text-xs text-balance text-suave">
           {!podeEnviar
             ? "Escreve algo no post pra liberar."
