@@ -35,10 +35,12 @@ type Props = {
   // rota que devolve página de PostOut: "/explorar", "/feed", "/usuarios/ana/posts"
   caminho: string;
   vazio: { titulo: string; texto?: string };
+  // avisa quem está em volta quando um post sai da lista (ex.: o feed refaz a chamada do dia)
+  aoApagar?: (post: Post) => void;
 };
 
 // Lista única de posts com "carregar mais": feed, explorar e perfil usam esta.
-export function ListaDePosts({ caminho, vazio }: Props) {
+export function ListaDePosts({ caminho, vazio, aoApagar }: Props) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [carregando, setCarregando] = useState(false);
@@ -73,6 +75,8 @@ export function ListaDePosts({ caminho, vazio }: Props) {
   }
 
   function remover(id: number) {
+    const apagado = posts.find((p) => p.id === id);
+    if (apagado) aoApagar?.(apagado);
     setPosts((atuais) => atuais.filter((p) => p.id !== id));
     setTotal((t) => (t === null ? t : t - 1));
   }

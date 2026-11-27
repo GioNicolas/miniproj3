@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Card } from "@/components/Card";
 import { Carregando } from "@/components/Carregando";
 import { ListaDePosts } from "@/components/ListaDePosts";
+import type { Post } from "@/lib/api";
 import { diaIso, useDiasTreinados } from "@/lib/dias";
 import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
@@ -74,10 +75,16 @@ export default function Home() {
   // Explorar continua no Explorar para seguir mais gente.
   const [aba, setAba] = useState<Aba | null>(null);
   if (aba === null && sigoAlguem !== null) setAba(sigoAlguem ? "seguindo" : "explorar");
+  // Apagar um post de treino tira o dia da granja e a força no backend; trocar a
+  // key remonta a chamada do dia, que pergunta de novo se hoje já tem treino.
+  const [versaoDaChamada, setVersaoDaChamada] = useState(0);
+  const aoApagar = (post: Post) => {
+    if (post.treino) setVersaoDaChamada((v) => v + 1);
+  };
 
   return (
     <div className="flex flex-col gap-4">
-      <ChamadaDoDia />
+      <ChamadaDoDia key={versaoDaChamada} />
 
       <section className="flex flex-col gap-4">
         {/* Controle segmentado: a aba escolhida fica preenchida (elevado) */}
@@ -111,6 +118,7 @@ export default function Home() {
           <ListaDePosts
             key="seguindo"
             caminho="/feed"
+            aoApagar={aoApagar}
             vazio={
               sigoAlguem
                 ? { titulo: "Nada por aqui ainda", texto: "Quem você segue ainda não contou o treino. Que tal contar o seu?" }
@@ -130,6 +138,7 @@ export default function Home() {
             <ListaDePosts
               key="explorar"
               caminho="/explorar"
+              aoApagar={aoApagar}
               vazio={{ titulo: "Ninguém postou ainda", texto: "Que tal ser o primeiro a contar o treino de hoje?" }}
             />
           </>
