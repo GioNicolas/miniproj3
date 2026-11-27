@@ -233,7 +233,7 @@ export default function RegistrarTreinoPage() {
       .map((item) => item.split(":"))
       .filter(([codigo]) => codigos.has(codigo))
       .slice(0, LIMITE_EXERCICIOS)
-      .map(([codigo, series]) => ({ progressao: codigo, series: series ?? "", reps: "" }));
+      .map(([codigo, series, reps]) => ({ progressao: codigo, series: series ?? "", reps: reps ?? "" }));
     if (vindos.length) setExercicios(vindos);
   }, []);
 
