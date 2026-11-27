@@ -13,7 +13,7 @@ import { EstadoVazio } from "@/components/EstadoVazio";
 import { CartaoDoFrango } from "@/components/Frango";
 import { GradeDePosts } from "@/components/GradeDePosts";
 import { apiGet, type Perfil as PerfilDados, type SkillDominada as Dominada } from "@/lib/api";
-import { diaIso, ultimosDias, useDiasTreinados } from "@/lib/dias";
+import { diaIso, diasSeguidos, ultimosDias, useDiasTreinados } from "@/lib/dias";
 import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
 
@@ -29,16 +29,7 @@ function Calendario({ username, diasSemTreinar }: { username: string; diasSemTre
   const carregou = treinados instanceof Set;
   const total = carregou ? dias.filter((d) => treinados.has(d)).length : 0;
 
-  // Sequência: dias seguidos com treino até hoje (ou até ontem, se hoje ainda não treinou).
-  let seguidos = 0;
-  if (carregou) {
-    let i = dias.length - 1;
-    if (!treinados.has(dias[i])) i -= 1;
-    while (i >= 0 && treinados.has(dias[i])) {
-      seguidos += 1;
-      i -= 1;
-    }
-  }
+  const seguidos = carregou ? diasSeguidos(treinados) : 0;
   const sumiu = diasSemTreinar !== null && diasSemTreinar >= 2;
   const resumo = !carregou
     ? treinados === "erro"

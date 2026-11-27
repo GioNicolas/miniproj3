@@ -6,6 +6,8 @@ import { useState } from "react";
 import { Card } from "@/components/Card";
 import { Carregando } from "@/components/Carregando";
 import { ListaDePosts } from "@/components/ListaDePosts";
+import { diaIso, useDiasTreinados } from "@/lib/dias";
+import { useEu } from "@/lib/eu";
 import { GLOSSARIO } from "@/lib/glossario";
 import { useSeguindo } from "@/lib/seguindo";
 
@@ -15,6 +17,55 @@ const ABAS: { id: Aba; rotulo: string }[] = [
   { id: "seguindo", rotulo: "Seguindo" },
   { id: "explorar", rotulo: "Explorar" },
 ];
+
+/**
+ * Chamada do dia, o único botão principal do feed. Quem já treinou hoje não vê o
+ * botão: o 2º treino do dia não conta na granja nem soma força.
+ */
+function ChamadaDoDia() {
+  const eu = useEu();
+  const treinados = useDiasTreinados(eu?.username, 1);
+  const treinouHoje = treinados instanceof Set && treinados.has(diaIso(new Date()));
+
+  if (treinouHoje) {
+    return (
+      <Card className="flex animate-aparecer items-center gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-folha-fundo text-folha" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12.5l4.5 4.5L19 7.5" />
+          </svg>
+        </span>
+        <div className="flex-1">
+          <h1 className="text-[17px] font-bold leading-tight tracking-[-0.02em]">Treino de hoje contado.</h1>
+          <p className="mt-0.5 text-[13px] text-suave">Amanhã vale de novo.</p>
+        </div>
+        <Link href="/granja" className="inline-flex min-h-11 shrink-0 items-center rounded-[10px] border border-borda-forte px-3 text-sm font-semibold hover:bg-superficie-2">
+          Ver granja
+        </Link>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="flex flex-col gap-4">
+      <div>
+        <h1 className="text-[17px] font-bold leading-tight tracking-[-0.02em]">Treinou hoje? Conta pra granja.</h1>
+        <p className="mt-1 text-[13px] text-suave">Vale 1 dia na granja e +10 de força.</p>
+      </div>
+      {treinados === null ? (
+        // enquanto não sabe se já treinou, guarda o lugar do botão sem mostrá-lo
+        <div className="min-h-[52px] animate-brilho rounded-xl bg-superficie-2" aria-hidden="true" />
+      ) : (
+        <Link
+          href="/treinos/registrar"
+          className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque transition-[transform,filter] duration-150 ease-out hover:brightness-105 active:scale-[0.97] motion-reduce:transition-none"
+        >
+          {GLOSSARIO.registrarTreino}
+        </Link>
+      )}
+    </Card>
+  );
+}
 
 export default function Home() {
   const sigo = useSeguindo();
@@ -26,19 +77,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Chamada do dia: o único botão principal do feed */}
-      <Card className="flex flex-col gap-4">
-        <div>
-          <h1 className="text-[17px] font-bold leading-tight tracking-[-0.02em]">Treinou hoje? Conta pra granja.</h1>
-          <p className="mt-1 text-[13px] text-suave">Vale 1 dia na granja e +10 de força.</p>
-        </div>
-        <Link
-          href="/treinos/registrar"
-          className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque transition-[transform,filter] duration-150 ease-out hover:brightness-105 active:scale-[0.97] motion-reduce:transition-none"
-        >
-          {GLOSSARIO.registrarTreino}
-        </Link>
-      </Card>
+      <ChamadaDoDia />
 
       <section className="flex flex-col gap-4">
         {/* Controle segmentado: a aba escolhida fica preenchida (elevado) */}

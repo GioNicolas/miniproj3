@@ -35,6 +35,21 @@ export function ultimosDias(n: number): string[] {
   });
 }
 
+/**
+ * Dias seguidos com treino até hoje, ou até ontem se hoje ainda não treinou:
+ * a sequência só quebra quando passa um dia inteiro sem treino.
+ */
+export function diasSeguidos(treinados: Set<string>): number {
+  const dia = new Date();
+  if (!treinados.has(diaIso(dia))) dia.setDate(dia.getDate() - 1);
+  let seguidos = 0;
+  while (treinados.has(diaIso(dia))) {
+    seguidos += 1;
+    dia.setDate(dia.getDate() - 1);
+  }
+  return seguidos;
+}
+
 /** Dias com treino nos últimos `dias` dias. null enquanto carrega; "erro" se não veio. */
 export function useDiasTreinados(username: string | undefined, dias: number): Set<string> | "erro" | null {
   const [treinados, setTreinados] = useState<Set<string> | "erro" | null>(null);

@@ -7,7 +7,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
 import { Erro } from "@/components/Erro";
-import { apiGet, apiPost, subirFotoDoPost, type Post } from "@/lib/api";
+import { apiGet, apiPost, subirFotoDoPost, type Perfil, type Post } from "@/lib/api";
+import { semanaAtual } from "@/lib/dias";
 import { useEu } from "@/lib/eu";
 import { reduzirFoto } from "@/lib/foto";
 import { GLOSSARIO } from "@/lib/glossario";
@@ -23,22 +24,6 @@ const LINHA_VAZIA: Linha = { progressao: "", series: "", reps: "" };
 // appearance-none: sem isso o Safari desenha o select e as setinhas do número do jeito dele.
 const ESTILO_CAMPO =
   "min-h-12 w-full appearance-none rounded-[10px] border border-borda-forte bg-fundo px-4 text-base font-normal text-tinta outline-none [&::-webkit-inner-spin-button]:appearance-none focus-visible:ring-2 focus-visible:ring-destaque focus-visible:ring-offset-2 focus-visible:ring-offset-superficie-2";
-
-function diaIso(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-/** Os 7 dias desta semana, de segunda a domingo: a mesma semana da Granja. */
-function semanaAtual(): string[] {
-  const hoje = new Date();
-  const segunda = new Date(hoje);
-  segunda.setDate(hoje.getDate() - ((hoje.getDay() + 6) % 7));
-  return Array.from({ length: 7 }, (_, i) => {
-    const dia = new Date(segunda);
-    dia.setDate(segunda.getDate() + i);
-    return diaIso(dia);
-  });
-}
 
 function numero(valor: string): number | null {
   const n = Number.parseInt(valor, 10);
@@ -63,6 +48,19 @@ function useDiasNaSemana(): number | null {
       .catch(() => setDias(null));
   }, [eu]);
   return dias;
+}
+
+/** Força do frango antes de registrar, para a tela de treino registrado mostrar quanto subiu. */
+function useForcaAntes(): number | null {
+  const eu = useEu();
+  const [forca, setForca] = useState<number | null>(null);
+  useEffect(() => {
+    if (!eu) return;
+    apiGet<Perfil>(`/usuarios/${eu.username}`)
+      .then((p) => setForca(p.frango.forca))
+      .catch(() => setForca(null));
+  }, [eu]);
+  return forca;
 }
 
 type Tipo = "treino" | "post";
@@ -203,6 +201,15 @@ export default function RegistrarTreinoPage() {
   const router = useRouter();
   const eu = useEu();
   const diasNaSemana = useDiasNaSemana();
+  const forcaAntes = useForcaAntes();
+  const [postId, setPostId] = useState<number | null>(null);
+
+  // Treino vai para a tela de treino registrado (força, sequência, granja); post solto, para o feed.
+  function irDepoisDePublicar(id: number) {
+    if (tipo !== "treino") return router.push("/");
+    const antes = forcaAntes === null ? "" : `&antes=${forcaAntes}`;
+    router.push(`/treinos/registrado?post=${id}${antes}`);
+  }
   const [tipo, setTipo] = useState<Tipo>("treino");
   const [foto, setFoto] = useState<Blob | null>(null);
   const [preparandoFoto, setPreparandoFoto] = useState(false);
@@ -251,6 +258,7 @@ export default function RegistrarTreinoPage() {
       return;
     }
     setPublicado(true);
+    setPostId(post.id);
     if (foto) {
       try {
         await subirFotoDoPost(post.id, foto);
@@ -261,7 +269,7 @@ export default function RegistrarTreinoPage() {
         return;
       }
     }
-    router.push("/");
+    irDepoisDePublicar(post.id);
   }
 
   return (
@@ -395,8 +403,8 @@ export default function RegistrarTreinoPage() {
               : `Vale 1 dia na granja e +10 de força${diasNaSemana !== null ? `. Essa semana você treinou ${diasNaSemana} ${diasNaSemana === 1 ? "dia" : "dias"} até agora.` : "."}`}
         </p>
         {publicado && !enviando ? (
-          <Botao onClick={() => router.push("/")} className="w-full">
-            Ver no feed
+          <Botao onClick={() => (postId === null ? router.push("/") : irDepoisDePublicar(postId))} className="w-full">
+            {tipo === "treino" ? "Continuar" : "Ver no feed"}
           </Botao>
         ) : (
           <Botao type="submit" disabled={enviando || publicado || preparandoFoto || !texto.trim()} className="w-full">
