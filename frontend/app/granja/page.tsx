@@ -225,6 +225,7 @@ export default function GranjaPage() {
   // Quanto falta para a semana zerar não depende de eu já ter treinado hoje
   // (dias_que_ainda_contam desconta hoje de quem treinou: no sábado dava "acaba hoje").
   const restam = diasAteDomingo();
+  const treineiHoje = minhaSemana instanceof Set && minhaSemana.has(diaIso(new Date()));
 
   return (
     <div className="flex flex-col gap-4">
@@ -268,12 +269,27 @@ export default function GranjaPage() {
         <div className="text-[15px] leading-snug">
           <Recado granja={granja} />
         </div>
-        <Link
-          href="/treinos/registrar"
-          className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque hover:brightness-105"
-        >
-          {GLOSSARIO.registrarTreino}
-        </Link>
+        {treineiHoje ? (
+          // o 2º treino do dia não conta: no lugar do botão, a confirmação
+          <p className="flex animate-aparecer items-center gap-2 text-sm font-semibold">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-folha-fundo text-folha" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12.5l4.5 4.5L19 7.5" />
+              </svg>
+            </span>
+            Treino de hoje contado.
+          </p>
+        ) : minhaSemana === null ? (
+          // enquanto não sabe se já treinou, guarda o lugar do botão sem mostrá-lo
+          <div className="min-h-[52px] animate-brilho rounded-xl bg-superficie-2" aria-hidden="true" />
+        ) : (
+          <Link
+            href="/treinos/registrar"
+            className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque hover:brightness-105"
+          >
+            {GLOSSARIO.registrarTreino}
+          </Link>
+        )}
       </section>
 
       {!soEu && (resto.length > 0 || !euNoTopo) && (
