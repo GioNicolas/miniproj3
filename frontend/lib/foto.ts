@@ -4,9 +4,9 @@
 const LADO_MAIOR = 1080;
 const QUALIDADE = 0.82;
 
-export async function reduzirFoto(arquivo: File): Promise<Blob> {
+export async function reduzirFoto(arquivo: File, ladoMaior = LADO_MAIOR): Promise<Blob> {
   const bitmap = await createImageBitmap(arquivo, { imageOrientation: "from-image" });
-  const escala = Math.min(1, LADO_MAIOR / Math.max(bitmap.width, bitmap.height));
+  const escala = Math.min(1, ladoMaior / Math.max(bitmap.width, bitmap.height));
   const largura = Math.round(bitmap.width * escala);
   const altura = Math.round(bitmap.height * escala);
   const canvas = document.createElement("canvas");

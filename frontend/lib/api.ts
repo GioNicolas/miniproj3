@@ -79,6 +79,32 @@ export async function subirFotoDoPost(postId: number, foto: Blob): Promise<{ ima
   return res.json();
 }
 
+async function enviarFoto<T>(method: "POST" | "DELETE", path: string, foto?: Blob): Promise<T> {
+  let corpo: FormData | undefined;
+  if (foto) {
+    corpo = new FormData();
+    corpo.append("arquivo", foto, "foto.jpg");
+  }
+  const token = localStorage.getItem("token");
+  // sem Content-Type: o navegador monta o multipart com o boundary certo
+  const res = await fetch(`${BASE}${path}`, { method, headers: token ? { Authorization: `Bearer ${token}` } : {}, body: corpo });
+  if (!res.ok) {
+    const erro = await res.json().catch(() => null);
+    throw new Error(typeof erro?.detail === "string" ? erro.detail : `a foto não subiu (${res.status})`);
+  }
+  return res.json();
+}
+
+/** Troca a foto de perfil por uma escolhida dos arquivos. Devolve o usuário com o avatar_url novo. */
+export function subirFotoDePerfil(foto: Blob): Promise<User> {
+  return enviarFoto<User>("POST", "/usuarios/eu/foto", foto);
+}
+
+/** Tira a foto de perfil: o avatar volta para as iniciais do nome. */
+export function removerFotoDePerfil(): Promise<User> {
+  return enviarFoto<User>("DELETE", "/usuarios/eu/foto");
+}
+
 // ---- tipos do slice de exemplo (espelham backend/app/schemas/user.py) ----
 
 export type User = {

@@ -1,3 +1,4 @@
+import { urlDaApi } from "@/lib/api";
 import type { Patente } from "@/lib/glossario";
 
 const ANEL: Record<Patente, string> = {
@@ -41,8 +42,9 @@ export function Avatar({
       className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-elevado font-semibold text-tinta ${TAMANHO[t]} ${patente ? ANEL[patente] : "border-transparent"}`}
     >
       {avatarUrl ? (
+        // foto escolhida dos arquivos vem como caminho da API ("/usuarios/ana/foto/..."); link de fora vem completo
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+        <img src={avatarUrl.startsWith("/") ? urlDaApi(avatarUrl) : avatarUrl} alt="" className="h-full w-full object-cover" />
       ) : (
         iniciais(name)
       )}

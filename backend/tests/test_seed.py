@@ -50,7 +50,7 @@ def test_seed_nao_duplica_nem_mexe_em_banco_com_gente(monkeypatch):
     with _subir(monkeypatch):
         pass
     with SessionLocal() as db:
-        assert db.query(User).count() == len(PESSOAS)
+        assert db.query(User).count() == len(PESSOAS) + 1  # + o PERFIL_FIXO
 
     _banco_vazio()
     with SessionLocal() as db:
@@ -132,3 +132,31 @@ def test_demo_abre_o_chat_com_conversas_e_aviso_de_nao_lidas(monkeypatch):
         direta = next(c for c in conversas if c["direta"] and c["nao_lidas"] == 1)
         mensagens = client.get(f"/conversas/{direta['id']}/mensagens", headers=eu).json()["items"]
         assert mensagens[-1]["autor"]["username"] == "caio_barra"
+
+
+def test_perfil_fixo_do_edu_volta_com_foto_de_perfil_e_o_post_da_barra(monkeypatch):
+    """O @edu sobe igual em toda subida: foto de perfil, o post da barra e quem segue."""
+    _banco_vazio()
+    with _subir(monkeypatch) as client:
+        token = client.post("/auth/login", json={"username": "edu", "password": SENHA_SEED}).json()["token"]
+        eu = {"Authorization": f"Bearer {token}"}
+
+        perfil = client.get("/usuarios/edu", headers=eu).json()
+        assert perfil["name"] == "Eduardo"
+        assert perfil["avatar_url"].startswith("/usuarios/edu/foto/")
+        foto = client.get(perfil["avatar_url"])
+        assert foto.status_code == 200 and foto.headers["content-type"] == "image/jpeg"
+        assert perfil["seguidores"] == 5 and perfil["seguindo"] == 5
+
+        posts = client.get("/usuarios/edu/posts", headers=eu).json()
+        assert posts["total"] == 1
+        post = posts["items"][0]
+        assert post["texto"] == "Treinando barra graças a deus!!!"
+        assert [(e["progressao"], e["series"], e["reps"]) for e in post["treino"]["exercicios"]] == [("barra_fixa", 3, 8)]
+        assert post["imagem_url"] is None
+        assert post["curtidas"] == 4 and post["comentarios"] == 2
+
+        # quem segue o edu vê o post dele no feed
+        demo = client.post("/auth/login", json={"username": USUARIO_DEMO, "password": SENHA_SEED}).json()["token"]
+        feed = client.get("/feed", headers={"Authorization": f"Bearer {demo}"}).json()["items"]
+        assert any(p["autor"]["username"] == "edu" for p in feed)
