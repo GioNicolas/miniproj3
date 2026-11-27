@@ -148,7 +148,8 @@ export default function Home() {
         )}
       </section>
     </div>
-      <aside aria-label="Sua semana" className="hidden lg:sticky lg:top-24 lg:flex lg:flex-col lg:gap-4">
+      {/* a coluna ocupa a altura da tela e os cards crescem até embaixo, sem buraco vazio */}
+      <aside aria-label="Sua semana" className="hidden lg:sticky lg:top-[5.5rem] lg:flex lg:h-[calc(100dvh-7.5rem)] lg:flex-col lg:gap-4 lg:overflow-y-auto">
         <ResumoDaSemana />
       </aside>
     </div>

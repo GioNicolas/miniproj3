@@ -148,7 +148,8 @@ export function Perfil({ username }: { username: string }) {
         )}
       </header>
 
-      <div className="flex flex-col gap-4">
+      {/* no computador, quem é e o frango ficam parados enquanto o lado direito rola */}
+      <div className="flex flex-col gap-4 lg:sticky lg:top-[5.5rem]">
       {editando ? (
         <Card>
           <EditarPerfil
