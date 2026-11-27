@@ -42,7 +42,7 @@ export function BotaoSeguir({ username, euSigoInicial, aoMudar, className = "" }
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
-      {/* Seguindo fica preenchido (elevado); Seguir fica só com contorno */}
+      {/* Seguindo: preenchido, com contorno escuro e check (não pode parecer desativado); Seguir: só contorno */}
       <button
         type="button"
         onClick={alternar}
@@ -50,9 +50,14 @@ export function BotaoSeguir({ username, euSigoInicial, aoMudar, className = "" }
         aria-pressed={euSigo}
         aria-label={euSigo ? `Deixar de seguir @${username}` : `Seguir @${username}`}
         className={`min-h-11 min-w-24 w-full shrink-0 rounded-full border px-4 text-sm font-semibold text-tinta transition-colors disabled:opacity-50 ${
-          euSigo ? "border-elevado bg-elevado" : "border-borda-forte bg-transparent hover:bg-superficie-2"
+          euSigo ? "inline-flex items-center justify-center gap-1.5 border-tinta bg-elevado" : "border-borda-forte bg-transparent hover:bg-superficie-2"
         }`}
       >
+        {euSigo && (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12.5l4.5 4.5L19 7.5" />
+          </svg>
+        )}
         {euSigo ? "Seguindo" : "Seguir"}
       </button>
       {erro && <p className="text-xs text-brasa">{erro}</p>}

@@ -111,7 +111,8 @@ export function Comentarios({ postId, onComentou }: Props) {
           />
         </label>
         {erro && <Erro>{erro}</Erro>}
-        <Botao type="submit" disabled={enviando || !texto.trim()} className="w-full">
+        {/* vazio, o botão fica no contorno: o bloco preto só aparece quando há o que mandar */}
+        <Botao type="submit" variante={texto.trim() ? "principal" : "contorno"} disabled={enviando || !texto.trim()} className="w-full">
           {enviando ? "Comentando..." : "Comentar"}
         </Botao>
       </form>

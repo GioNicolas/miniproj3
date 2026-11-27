@@ -188,7 +188,7 @@ export function Perfil({ username }: { username: string }) {
                 euSigoInicial={perfil.eu_sigo}
                 aoMudar={(delta) => setPerfil((p) => (p ? { ...p, seguidores: p.seguidores + delta, eu_sigo: delta > 0 } : p))}
               />
-              <Link href={`/chat?com=${perfil.username}`} className={ESTILO_LINK_BOTAO}>
+              <Link href={`/chat?com=${perfil.username}`} className={ESTILO_LINK_BOTAO.replace("rounded-[10px]", "rounded-full")}>
                 Mensagem
               </Link>
             </div>

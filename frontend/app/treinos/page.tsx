@@ -151,9 +151,10 @@ function TreinoDeHoje({
       <section aria-label="Resumo do treino de hoje" className="rounded-[14px] bg-superficie p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-[17px] font-bold tracking-[-0.02em]">Treino de hoje</h2>
+            {/* a aba já diz "Treino de hoje": o card diz de onde ele vem */}
+            <h2 className="text-[17px] font-bold tracking-[-0.02em]">O próximo passo de cada trilha</h2>
             <p className="mt-0.5 text-[13px] text-suave">
-              {hoje.length} {hoje.length === 1 ? "exercício" : "exercícios"} · o próximo passo de cada trilha
+              {hoje.length} {hoje.length === 1 ? "exercício" : "exercícios"} · marca cada série que fizer
             </p>
           </div>
           <div className="shrink-0 text-right">

@@ -56,8 +56,11 @@ function BlocoDoTreino({ exercicios, comFoto }: { exercicios: Exercicio[]; comFo
   const limite = comFoto ? EXERCICIOS_VISIVEIS_COM_FOTO : EXERCICIOS_VISIVEIS;
   const escondidos = exercicios.length - limite;
   const visiveis = aberto ? exercicios : exercicios.slice(0, limite);
+  // Com um exercício só, o placar repetiria a linha de baixo ("1 exercício, 3 séries, 24 reps").
+  const comPlacar = exercicios.length > 1;
   return (
     <section aria-label="Treino do dia" className="overflow-hidden rounded-xl bg-superficie">
+      {comPlacar && (
       <dl className="grid grid-cols-3 divide-x divide-borda py-3">
         {totais(exercicios).map(({ valor, rotulo }) => (
           <div key={rotulo} className="flex flex-col items-center gap-1">
@@ -66,8 +69,9 @@ function BlocoDoTreino({ exercicios, comFoto }: { exercicios: Exercicio[]; comFo
           </div>
         ))}
       </dl>
+      )}
       {visiveis.length > 0 && (
-      <ul className="border-t border-borda px-3.5">
+      <ul className={`px-3.5 ${comPlacar ? "border-t border-borda" : ""}`}>
         {visiveis.map((exercicio, i) => (
           <li key={i} className="flex items-center justify-between gap-3 border-b border-borda py-2.5 text-[14px] last:border-b-0">
             <span className="min-w-0 truncate font-semibold">{nomeDaProgressao(exercicio.progressao)}</span>

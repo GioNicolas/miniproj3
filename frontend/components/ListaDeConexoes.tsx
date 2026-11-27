@@ -8,8 +8,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import { Botao } from "@/components/Botao";
 import { Erro } from "@/components/Erro";
+import { EstadoVazio } from "@/components/EstadoVazio";
 import { UserCard } from "@/components/UserCard";
 import { apiGet, type Page, type User } from "@/lib/api";
+import { useEu } from "@/lib/eu";
 
 const POR_PAGINA = 20;
 
@@ -28,7 +30,20 @@ const VAZIO = {
   seguindo: "Ainda não segue ninguém.",
 };
 
+// Na sua própria lista vazia, o estado vazio diz o próximo passo.
+const VAZIO_MEU = {
+  seguidores: {
+    titulo: "Ninguém te segue ainda",
+    texto: "Segue quem treina perto e conta seus treinos: é assim que a galera te acha e você entra na granja dela.",
+  },
+  seguindo: {
+    titulo: "Você ainda não segue ninguém",
+    texto: "Quem você segue entra no seu feed e disputa a granja da semana com você.",
+  },
+};
+
 export function ListaDeConexoes({ username, tipo }: Props) {
+  const souEu = useEu()?.username === username;
   const [usuarios, setUsuarios] = useState<User[]>([]);
   const [total, setTotal] = useState<number | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -75,7 +90,20 @@ export function ListaDeConexoes({ username, tipo }: Props) {
 
       {erro && <Erro>{erro}</Erro>}
 
-      {total === 0 && <p className="py-6 text-[15px] text-suave">{VAZIO[tipo]}</p>}
+      {total === 0 &&
+        (souEu ? (
+          <EstadoVazio
+            titulo={VAZIO_MEU[tipo].titulo}
+            texto={VAZIO_MEU[tipo].texto}
+            acao={
+              <Link href="/" className="flex min-h-12 items-center justify-center rounded-xl border border-borda-forte text-[15px] font-semibold hover:bg-superficie-2">
+                Achar gente no Explorar
+              </Link>
+            }
+          />
+        ) : (
+          <p className="py-6 text-[15px] text-suave">{VAZIO[tipo]}</p>
+        ))}
 
       <ul className="border-t border-borda">
         {usuarios.map((u) => (
