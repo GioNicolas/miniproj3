@@ -8,7 +8,7 @@ import { Botao } from "@/components/Botao";
 import { Campo } from "@/components/Campo";
 import { BotaoVerSenha } from "@/components/BotaoVerSenha";
 import { Erro } from "@/components/Erro";
-import { FilaDosFrangos, VitrineDosFrangos } from "@/components/FilaDosFrangos";
+import { FilaDosFrangos } from "@/components/FilaDosFrangos";
 import { apiPost } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
 
@@ -48,10 +48,7 @@ export default function RegistroPage() {
   }
 
   return (
-    // No computador (lg), os frangos à esquerda e o formulário à direita; no celular, uma coluna.
-    <div className="pagina-larga mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col md:min-h-[calc(100dvh-4rem)] md:justify-center lg:grid lg:max-w-4xl lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-center lg:gap-16">
-      <VitrineDosFrangos />
-      <div className="flex flex-1 flex-col md:flex-none">
+    <div className="mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col md:min-h-[calc(100dvh-4rem)] md:justify-center">
       <header className="-ml-3 flex min-h-11 items-center gap-1 pb-4 pt-5">
         <Link
           href="/login"
@@ -67,14 +64,14 @@ export default function RegistroPage() {
 
       <form onSubmit={criarConta} className="flex flex-1 flex-col gap-6 md:flex-none pt-4">
         <div>
-          <div className="mb-5 lg:hidden">
+          <div className="mb-5">
             <FilaDosFrangos />
           </div>
           <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">
             Bota seu frango pra treinar
           </h1>
           <p className="mt-2 text-[15px] leading-normal text-pretty text-suave">
-            Você começa como Pintinho. Cada treino dá +10 de força.
+            A rede de calistenia da UFPB. Seu frango começa Pintinho e cresce a cada treino; se você some, ele definha.
           </p>
         </div>
 
@@ -126,7 +123,6 @@ export default function RegistroPage() {
           Entrar
         </Link>
       </p>
-      </div>
     </div>
   );
 }
