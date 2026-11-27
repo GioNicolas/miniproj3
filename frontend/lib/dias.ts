@@ -5,6 +5,7 @@
 import { useEffect, useState } from "react";
 
 import { apiGet } from "@/lib/api";
+import { useEu } from "@/lib/eu";
 
 export const LETRAS_DA_SEMANA = ["S", "T", "Q", "Q", "S", "S", "D"];
 export const NOMES_DOS_DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"];
@@ -64,4 +65,16 @@ export function useDiasTreinados(username: string | undefined, dias: number): Se
     };
   }, [username, dias]);
   return treinados;
+}
+
+/**
+ * Se quem está logado já tem treino hoje: o 2º treino do dia não soma força nem
+ * dia na granja. null enquanto carrega.
+ */
+export function useTreineiHoje(): boolean | null {
+  const eu = useEu();
+  const treinados = useDiasTreinados(eu?.username, 1);
+  if (treinados === null) return null;
+  // se a consulta falhar, segue como se não tivesse treinado: o botão de registrar continua lá
+  return treinados instanceof Set && treinados.has(diaIso(new Date()));
 }

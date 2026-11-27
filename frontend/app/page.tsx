@@ -8,8 +8,7 @@ import { Carregando } from "@/components/Carregando";
 import { ListaDePosts } from "@/components/ListaDePosts";
 import { ResumoDaSemana } from "@/components/ResumoDaSemana";
 import type { Post } from "@/lib/api";
-import { diaIso, useDiasTreinados } from "@/lib/dias";
-import { useEu } from "@/lib/eu";
+import { useTreineiHoje } from "@/lib/dias";
 import { GLOSSARIO } from "@/lib/glossario";
 import { useSeguindo } from "@/lib/seguindo";
 
@@ -25,11 +24,9 @@ const ABAS: { id: Aba; rotulo: string }[] = [
  * botão: o 2º treino do dia não conta na granja nem soma força.
  */
 function ChamadaDoDia() {
-  const eu = useEu();
-  const treinados = useDiasTreinados(eu?.username, 1);
-  const treinouHoje = treinados instanceof Set && treinados.has(diaIso(new Date()));
+  const treineiHoje = useTreineiHoje();
 
-  if (treinouHoje) {
+  if (treineiHoje) {
     return (
       <Card className="flex animate-aparecer items-center gap-3">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-folha-fundo text-folha" aria-hidden="true">
@@ -54,7 +51,7 @@ function ChamadaDoDia() {
         <h1 className="text-[17px] font-bold leading-tight tracking-[-0.02em]">Treinou hoje? Conta pra granja.</h1>
         <p className="mt-1 text-[13px] text-suave">Vale 1 dia na granja e +10 de força.</p>
       </div>
-      {treinados === null ? (
+      {treineiHoje === null ? (
         // enquanto não sabe se já treinou, guarda o lugar do botão sem mostrá-lo
         <div className="min-h-[52px] animate-brilho rounded-xl bg-superficie-2" aria-hidden="true" />
       ) : (
