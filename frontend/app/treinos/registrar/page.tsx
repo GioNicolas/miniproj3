@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
 import { Erro } from "@/components/Erro";
+import { emSegundos, EscolherExercicio, trilhaDe } from "@/components/EscolherExercicio";
 import { apiGet, apiPost, subirFotoDoPost, type Post } from "@/lib/api";
 import { useEu } from "@/lib/eu";
 import { reduzirFoto } from "@/lib/foto";
@@ -16,13 +17,8 @@ import { nomeDaProgressao, TRILHAS } from "@/lib/progressoes";
 const LIMITE_TEXTO = 500;
 const LIMITE_EXERCICIOS = 20; // o mesmo do backend
 
-// Os números ficam como texto enquanto a pessoa digita; viram int só no envio.
+// Séries e reps ficam como texto (o Treino de hoje manda só as séries); viram int no envio.
 type Linha = { progressao: string; series: string; reps: string };
-const LINHA_VAZIA: Linha = { progressao: "", series: "", reps: "" };
-
-// appearance-none: sem isso o Safari desenha o select e as setinhas do número do jeito dele.
-const ESTILO_CAMPO =
-  "min-h-12 w-full appearance-none rounded-[10px] border border-borda-forte bg-fundo px-4 text-base font-normal text-tinta outline-none [&::-webkit-inner-spin-button]:appearance-none focus-visible:ring-2 focus-visible:ring-destaque focus-visible:ring-offset-2 focus-visible:ring-offset-superficie-2";
 
 function diaIso(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -45,10 +41,11 @@ function numero(valor: string): number | null {
   return Number.isNaN(n) ? null : n;
 }
 
-function dose({ series, reps }: Linha): string {
+function dose({ progressao, series, reps }: Linha): string {
   const s = numero(series);
   const r = numero(reps);
-  return s && r ? `${s}×${r}` : s ? `${s} séries` : r ? `${r} reps` : "";
+  const unidade = emSegundos(progressao) ? " s" : "";
+  return s && r ? `${s}×${r}${unidade}` : s ? `${s} séries` : r ? `${r}${unidade || " reps"}` : "";
 }
 
 /** Quantos dias a pessoa já treinou nesta semana; null enquanto carrega ou se falhar. */
@@ -148,57 +145,6 @@ function EscolherFoto({ foto, aoEscolher, preparando, aoPreparar, desativado }: 
   );
 }
 
-/** Linha de inclusão de um exercício: progressão, séries e reps. */
-function NovoExercicio({ aoIncluir, aoCancelar }: { aoIncluir: (l: Linha) => void; aoCancelar: () => void }) {
-  const [linha, setLinha] = useState<Linha>({ ...LINHA_VAZIA });
-  const mudar = (campo: keyof Linha, valor: string) => setLinha((l) => ({ ...l, [campo]: valor }));
-
-  return (
-    <div className="flex flex-col gap-3 border-t border-borda pt-3">
-      <span className="relative flex">
-        <select
-          aria-label="Progressão"
-          value={linha.progressao}
-          onChange={(e) => mudar("progressao", e.target.value)}
-          className={`${ESTILO_CAMPO} pr-10`}
-        >
-          <option value="">Escolhe a progressão</option>
-          {TRILHAS.map((trilha) => (
-            <optgroup key={trilha.nome} label={trilha.nome}>
-              {trilha.progressoes.map((p) => (
-                <option key={p.codigo} value={p.codigo}>
-                  {p.nome}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-suave">
-          <path d="M6 9l6 6 6-6" />
-        </svg>
-      </span>
-      <div className="flex gap-2">
-        <label className="flex flex-1 flex-col gap-1 text-xs font-medium text-suave">
-          Séries
-          <input type="number" inputMode="numeric" min={1} max={100} value={linha.series} onChange={(e) => mudar("series", e.target.value)} className={ESTILO_CAMPO} />
-        </label>
-        <label className="flex flex-1 flex-col gap-1 text-xs font-medium text-suave">
-          Reps (ou segundos)
-          <input type="number" inputMode="numeric" min={1} max={1000} value={linha.reps} onChange={(e) => mudar("reps", e.target.value)} className={ESTILO_CAMPO} />
-        </label>
-      </div>
-      <div className="flex justify-end gap-2">
-        <Botao variante="contorno" onClick={aoCancelar}>
-          Cancelar
-        </Botao>
-        <Botao variante="escuro" disabled={!linha.progressao} onClick={() => aoIncluir(linha)}>
-          Incluir
-        </Botao>
-      </div>
-    </div>
-  );
-}
-
 export default function RegistrarTreinoPage() {
   const router = useRouter();
   const eu = useEu();
@@ -209,7 +155,8 @@ export default function RegistrarTreinoPage() {
   const [publicado, setPublicado] = useState(false);
   const [texto, setTexto] = useState("");
   const [exercicios, setExercicios] = useState<Linha[]>([]);
-  const [incluindo, setIncluindo] = useState(false);
+  // null: gaveta fechada; indice null: exercício novo; número: editando aquele exercício
+  const [gaveta, setGaveta] = useState<{ indice: number | null } | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -322,43 +269,42 @@ export default function RegistrarTreinoPage() {
           </div>
 
           {exercicios.length > 0 ? (
-            <ul aria-label="Exercícios do treino" className="flex flex-col">
+            <ul aria-label="Exercícios do treino" className="flex flex-col gap-1.5">
               {exercicios.map((l, i) => (
-                <li key={i} className="flex min-h-11 items-center justify-between gap-2 text-sm">
-                  <span className="min-w-0 truncate font-semibold">
-                    {nomeDaProgressao(l.progressao)} <span className="font-normal text-suave">{dose(l)}</span>
-                  </span>
+                <li key={i} className="animate-entrar">
                   <button
                     type="button"
-                    onClick={() => setExercicios((atuais) => atuais.filter((_, j) => j !== i))}
-                    aria-label={`Tirar ${nomeDaProgressao(l.progressao)}`}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-suave hover:text-brasa"
+                    onClick={() => setGaveta({ indice: i })}
+                    aria-label={`${nomeDaProgressao(l.progressao)}, ${dose(l) || "sem dose"}. Toque para editar`}
+                    className="flex min-h-14 w-full items-center gap-3 rounded-xl bg-elevado px-3.5 py-2 text-left transition-transform duration-150 active:scale-[0.98]"
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-                      <path d="M6 6l12 12M18 6L6 18" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[11px] font-semibold uppercase tracking-wider text-suave">{trilhaDe(l.progressao)}</span>
+                      <span className="block truncate text-[15px] font-semibold text-tinta">{nomeDaProgressao(l.progressao)}</span>
+                    </span>
+                    {dose(l) && <span className="shrink-0 rounded-lg bg-superficie-2 px-2.5 py-1 text-sm font-bold tabular-nums">{dose(l)}</span>}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0 text-suave">
+                      <path d="M9 6l6 6-6 6" />
                     </svg>
                   </button>
                 </li>
               ))}
             </ul>
           ) : (
-            !incluindo && <p className="text-[13px] text-pretty text-suave">Nenhum exercício ainda. Treino sem exercício também conta o dia.</p>
+            <p className="text-[13px] text-pretty text-suave">Nenhum exercício ainda. Treino sem exercício também conta o dia.</p>
           )}
 
-          {incluindo ? (
-            <NovoExercicio
-              aoCancelar={() => setIncluindo(false)}
-              aoIncluir={(l) => {
-                setExercicios((atuais) => [...atuais, l]);
-                setIncluindo(false);
-              }}
-            />
-          ) : (
-            exercicios.length < LIMITE_EXERCICIOS && (
-              <button type="button" onClick={() => setIncluindo(true)} className="flex min-h-11 items-center self-start text-[13px] font-semibold text-ceu hover:underline">
-                + Incluir exercício
-              </button>
-            )
+          {exercicios.length < LIMITE_EXERCICIOS && (
+            <button
+              type="button"
+              onClick={() => setGaveta({ indice: null })}
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-borda-forte text-sm font-semibold text-tinta transition-[background-color,transform] duration-150 hover:bg-superficie active:scale-[0.98]"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Adicionar exercício
+            </button>
           )}
         </div>
         )}
@@ -383,6 +329,34 @@ export default function RegistrarTreinoPage() {
           desativado={enviando || publicado}
         />
       </article>
+
+      {gaveta && (
+        <EscolherExercicio
+          inicial={
+            gaveta.indice === null
+              ? null
+              : (() => {
+                  const l = exercicios[gaveta.indice];
+                  return { progressao: l.progressao, series: numero(l.series) ?? 3, reps: numero(l.reps) ?? (emSegundos(l.progressao) ? 20 : 8) };
+                })()
+          }
+          noTreino={exercicios.map((l) => l.progressao)}
+          aoFechar={() => setGaveta(null)}
+          aoSalvar={({ progressao, series, reps }) => {
+            const linha = { progressao, series: String(series), reps: String(reps) };
+            setExercicios((atuais) => (gaveta.indice === null ? [...atuais, linha] : atuais.map((l, j) => (j === gaveta.indice ? linha : l))));
+            setGaveta(null);
+          }}
+          aoTirar={
+            gaveta.indice === null
+              ? undefined
+              : () => {
+                  setExercicios((atuais) => atuais.filter((_, j) => j !== gaveta.indice));
+                  setGaveta(null);
+                }
+          }
+        />
+      )}
 
       {erro && <Erro>{erro}</Erro>}
 
