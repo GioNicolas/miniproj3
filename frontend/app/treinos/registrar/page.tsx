@@ -239,8 +239,11 @@ export default function RegistrarTreinoPage() {
           </svg>
         </Link>
         <div>
-          <h1 className="flex min-h-11 items-center font-titulo text-[22px]">Seu post no feed</h1>
-          <p className="mt-1 text-[13px] text-suave">Ajusta o que quiser antes de registrar</p>
+          {/* o título diz a ação da tela: registrar o treino; o post no feed é consequência */}
+          <h1 className="flex min-h-11 items-center font-titulo text-[22px]">{tipo === "treino" ? "Registrar treino" : "Novo post"}</h1>
+          <p className="mt-1 text-[13px] text-suave">
+            {tipo === "treino" ? "Vai pro feed como post. Texto e foto são opcionais." : "Aparece no feed, sem contar dia na granja."}
+          </p>
         </div>
       </header>
 
