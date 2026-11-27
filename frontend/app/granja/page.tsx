@@ -221,10 +221,10 @@ type NaPrevia = { usuario: Autor; dias: number; treinados: Set<string>; souEu: b
  * Quem mais treinou nesta semana entre quem posta no Explorar, com dias de verdade
  * (a mesma semana e o mesmo desempate da Granja). null enquanto carrega; [] se não deu.
  */
-function usePrevia(eu: Colocado, ativo: boolean): NaPrevia[] | null {
+function usePrevia(eu: Colocado | undefined, ativo: boolean): NaPrevia[] | null {
   const [previa, setPrevia] = useState<NaPrevia[] | null>(null);
   useEffect(() => {
-    if (!ativo) return;
+    if (!ativo || !eu) return;
     let vivo = true;
     const semana = semanaAtual();
     (async () => {
@@ -251,8 +251,24 @@ function usePrevia(eu: Colocado, ativo: boolean): NaPrevia[] | null {
     return () => {
       vivo = false;
     };
-  }, [eu, ativo]);
+    // só o username: seguir alguém recarrega a granja (e o objeto eu), mas a prévia já buscada continua valendo
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eu?.usuario.username, ativo]);
   return previa;
+}
+
+/** Leva ao Explorar para seguir mais gente. `aoClicar` serve para dispensar as sugestões. */
+function ChamarMaisGente({ aoClicar }: { aoClicar?: () => void }) {
+  return (
+    <Link href="/" onClick={aoClicar} className="flex min-h-[52px] items-center gap-3 py-1 text-[15px] font-semibold text-ceu">
+      <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dashed border-borda-forte">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+      </span>
+      Chamar mais gente pra granja
+    </Link>
+  );
 }
 
 /** Esquerda: o que é a granja, para quem ainda está sozinho nela. */
@@ -267,14 +283,32 @@ function IntroDaPrevia() {
   );
 }
 
-/** Direita: a prévia no mesmo formato da classificação de verdade, com Seguir em cada pessoa. */
-function ListaDaPrevia({ previa, aoSeguir }: { previa: NaPrevia[]; aoSeguir: () => void }) {
+/**
+ * Direita: a prévia no mesmo formato da classificação de verdade, com Seguir em cada pessoa.
+ * Sozinho na granja, você aparece na lista. Depois de seguir alguém, quem já está na granja
+ * sai daqui (foi para o pódio) e o resto continua como sugestão até "Chamar mais gente".
+ */
+function ListaDaPrevia({
+  previa,
+  naGranja,
+  soEu,
+  aoSeguir,
+  aoDispensar,
+}: {
+  previa: NaPrevia[];
+  naGranja: Set<string>;
+  soEu: boolean;
+  aoSeguir: () => void;
+  aoDispensar: () => void;
+}) {
   const semana = semanaAtual();
+  const linhas = soEu ? previa : previa.filter((p) => !p.souEu && !naGranja.has(p.usuario.username));
   return (
-    <section aria-label="Prévia da classificação" className="flex flex-col gap-1">
-      <h2 className="text-[15px] font-bold">Se você seguisse essa galera, sua granja estaria assim</h2>
+    <section aria-label={soEu ? "Prévia da classificação" : "Mais gente pra seguir"} className="flex flex-col gap-1">
+      <h2 className="text-[15px] font-bold">{soEu ? "Se você seguisse essa galera, sua granja estaria assim" : "Mais gente pra seguir"}</h2>
+      {!soEu && <p className="text-[13px] text-suave">Quem mais treinou na rede essa semana. Cada um que você segue entra na disputa.</p>}
       <ol>
-        {previa.map((p, i) => (
+        {linhas.map((p, i) => (
           <li
             key={p.usuario.username}
             aria-current={p.souEu ? "true" : undefined}
@@ -284,7 +318,7 @@ function ListaDaPrevia({ previa, aoSeguir }: { previa: NaPrevia[]; aoSeguir: () 
                 : "flex items-center gap-3 border-b border-borda py-3"
             }
           >
-            <span className="w-6 shrink-0 text-[17px] font-bold tabular-nums text-suave">{i + 1}</span>
+            {soEu && <span className="w-6 shrink-0 text-[17px] font-bold tabular-nums text-suave">{i + 1}</span>}
             <Avatar name={p.usuario.name} avatarUrl={p.usuario.avatar_url} patente={p.usuario.nivel} />
             <Link href={p.souEu ? "/perfil" : `/u/${p.usuario.username}`} className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
@@ -298,21 +332,20 @@ function ListaDaPrevia({ previa, aoSeguir }: { previa: NaPrevia[]; aoSeguir: () 
               </span>
             </Link>
             {!p.souEu && (
-              <BotaoSeguir
-                username={p.usuario.username}
-                euSigoInicial={false}
-                aoMudar={(delta) => delta > 0 && aoSeguir()}
-                className="w-24 shrink-0"
-              />
+              <BotaoSeguir key={`${p.usuario.username}-${naGranja.has(p.usuario.username)}`} username={p.usuario.username} euSigoInicial={false} aoMudar={aoSeguir} className="w-24 shrink-0" />
             )}
             <span className="w-5 shrink-0 text-right text-lg font-bold leading-none tabular-nums">{p.dias}</span>
           </li>
         ))}
       </ol>
-      <p className="text-[13px] text-pretty text-suave">Seguiu alguém, a granja vira disputa de verdade na hora.</p>
+      {soEu && <p className="text-[13px] text-pretty text-suave">Seguiu alguém, a granja vira disputa de verdade na hora.</p>}
+      <ChamarMaisGente aoClicar={aoDispensar} />
     </section>
   );
 }
+
+// Sugestões da prévia: ligadas quando a granja começa só com você, desligadas em "Chamar mais gente".
+const CHAVE_SUGESTOES = "granja-sugestoes";
 
 export default function GranjaPage() {
   const [granja, setGranja] = useState<Granja | null>(null);
@@ -329,7 +362,17 @@ export default function GranjaPage() {
   }, [carregar]);
 
   const minhaSemana = useDiasTreinados(granja?.eu.usuario.username, 7);
-  const previa = usePrevia(granja?.eu as Colocado, granja?.items.length === 1);
+  const [sugestoes, setSugestoes] = useState(false);
+  useEffect(() => {
+    if (!granja) return;
+    if (granja.items.length === 1) localStorage.setItem(CHAVE_SUGESTOES, "ativas");
+    setSugestoes(localStorage.getItem(CHAVE_SUGESTOES) === "ativas");
+  }, [granja]);
+  const dispensarSugestoes = () => {
+    localStorage.setItem(CHAVE_SUGESTOES, "dispensadas");
+    setSugestoes(false);
+  };
+  const previa = usePrevia(granja?.eu, sugestoes || granja?.items.length === 1);
 
   if (erro) return <Erro>{erro}</Erro>;
   if (!granja) return <Carregando />;
@@ -343,6 +386,10 @@ export default function GranjaPage() {
   // (dias_que_ainda_contam desconta hoje de quem treinou: no sábado dava "acaba hoje").
   const restam = diasAteDomingo();
   const treineiHoje = minhaSemana instanceof Set && minhaSemana.has(diaIso(new Date()));
+  const naGranja = new Set(granja.items.map((c) => c.usuario.username));
+  // a lista de sugestões aparece enquanto houver alguém da prévia fora da granja
+  const mostrarSugestoes =
+    (soEu || sugestoes) && previa !== null && previa.some((p) => soEu || (!p.souEu && !naGranja.has(p.usuario.username)));
 
   return (
     // No computador (lg): pódio e "Você" de um lado; classificação e regras do outro.
@@ -421,7 +468,6 @@ export default function GranjaPage() {
       </div>
 
       <div className="flex flex-col gap-4">
-      {soEu && previa && previa.length > 0 && <ListaDaPrevia previa={previa} aoSeguir={carregar} />}
       {!soEu && (resto.length > 0 || !euNoTopo) && (
         <section aria-label="Classificação">
           <ol>
@@ -430,15 +476,13 @@ export default function GranjaPage() {
             ))}
             {!euNoTopo && <Linha c={granja.eu} souEu />}
           </ol>
-          <Link href="/" className="flex min-h-[52px] items-center gap-3 py-1 text-[15px] font-semibold text-ceu">
-            <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dashed border-borda-forte">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-            </span>
-            Chamar mais gente pra granja
-          </Link>
+          {!mostrarSugestoes && <ChamarMaisGente />}
         </section>
+      )}
+
+      {/* sugestões depois da classificação real: quem ainda dá pra trazer pra disputa */}
+      {mostrarSugestoes && previa && (
+        <ListaDaPrevia previa={previa} naGranja={naGranja} soEu={soEu} aoSeguir={carregar} aoDispensar={dispensarSugestoes} />
       )}
 
       <Regras abertoInicial={soEu} />
