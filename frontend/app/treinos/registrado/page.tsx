@@ -222,7 +222,7 @@ export default function TreinoRegistradoPage() {
     // No computador (lg), tudo centralizado e sem rolar: frango e título em cima, os cards
     // de força e granja lado a lado, e os botões embaixo. No celular, tudo em coluna, como no canvas.
     <div className="pagina-larga mx-auto flex max-w-xl flex-col gap-4 lg:grid lg:max-w-3xl lg:grid-cols-2 lg:gap-x-4 lg:gap-y-4">
-      <header className="-ml-3 flex pt-2 lg:col-span-2 lg:-mb-14">
+      <header className="-mb-12 -ml-3 flex pt-2 lg:col-span-2 lg:-mb-14">
         <Link href="/" aria-label="Fechar e voltar pro feed" className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-superficie">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18" />
@@ -231,10 +231,10 @@ export default function TreinoRegistradoPage() {
       </header>
 
       <div className="flex flex-col items-center text-center lg:col-span-2 lg:row-start-2">
-        <div className="animate-surgir lg:[&>img]:!h-[104px]">
+        <div className="animate-surgir [&>img]:!h-24 lg:[&>img]:!h-[104px]">
           <ArteDoFrango patente={frango.nivel} altura={168} alt={`Seu frango, patente ${frango.nivel}`} />
         </div>
-        <h1 className="mt-2 font-titulo text-[30px] leading-[0.95]">{contouHoje ? "Treino registrado" : "Hoje já tava contado"}</h1>
+        <h1 className="mt-2 font-titulo text-[24px] leading-[0.95] lg:text-[30px]">{contouHoje ? "Treino registrado" : "Hoje já tava contado"}</h1>
         <p className="mt-2 text-[13px] text-balance text-suave">
           {dataDeHoje()}
           {seguidos !== null && seguidos > 0 && (
@@ -250,23 +250,27 @@ export default function TreinoRegistradoPage() {
       <Forca antes={antes} depois={frango.forca} frango={frango} />
       <NaGranja granja={granja} treinados={treinados} />
 
-      <div className="flex flex-col gap-2 pt-1 lg:col-span-2 lg:row-start-4 lg:mx-auto lg:w-full lg:max-w-xl">
-        {/* no computador, os dois botões lado a lado para caber sem rolar */}
-        <div className="flex flex-col gap-2 lg:flex-row">
+      {/* No celular, os botões ficam presos acima da barra de baixo, ao alcance do polegar (como o
+          "Registrar treino" de Treinos). Precisam ser filhos diretos da tela para o sticky funcionar.
+          No computador, lado a lado, centralizados. */}
+      <div className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] z-10 -mx-5 flex gap-2 border-t border-borda bg-fundo px-5 py-3 md:bottom-0 md:mx-0 md:px-0 lg:static lg:col-span-2 lg:row-start-4 lg:mx-auto lg:w-full lg:max-w-xl lg:border-0 lg:bg-transparent lg:py-0">
         <Link
           href="/granja"
-          className="flex min-h-[52px] items-center lg:flex-1 justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque transition-[transform,filter] duration-150 ease-out hover:brightness-105 active:scale-[0.97]"
+          className="flex min-h-[52px] flex-1 items-center justify-center whitespace-nowrap rounded-xl bg-destaque px-4 font-titulo text-[15px] text-sobre-destaque transition-[transform,filter] duration-150 ease-out hover:brightness-105 active:scale-[0.97] lg:text-[17px]"
         >
           Ver a granja
         </Link>
         {postId !== null && (
-          <Link href={`/posts/${postId}`} className="flex min-h-12 items-center justify-center rounded-[10px] border border-borda-forte text-sm font-semibold hover:bg-superficie-2 lg:min-h-[52px] lg:flex-1 lg:rounded-xl">
+          <Link href={`/posts/${postId}`} className="flex min-h-[52px] flex-1 items-center justify-center rounded-xl border border-borda-forte bg-fundo text-sm font-semibold hover:bg-superficie-2">
             Ver meu post
           </Link>
         )}
-        </div>
-        {postId !== null && contouHoje && <Desfazer postId={postId} />}
       </div>
+      {postId !== null && contouHoje && (
+        <div className="flex flex-col lg:col-span-2 lg:row-start-5 lg:mx-auto lg:w-full lg:max-w-xl">
+          <Desfazer postId={postId} />
+        </div>
+      )}
     </div>
   );
 }
