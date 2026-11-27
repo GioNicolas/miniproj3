@@ -9,7 +9,7 @@ import { Botao } from "@/components/Botao";
 import { Erro } from "@/components/Erro";
 import { emSegundos, EscolherExercicio, trilhaDe } from "@/components/EscolherExercicio";
 import { apiGet, apiPost, subirFotoDoPost, type Perfil, type Post } from "@/lib/api";
-import { semanaAtual } from "@/lib/dias";
+import { semanaAtual, useTreineiHoje } from "@/lib/dias";
 import { useEu } from "@/lib/eu";
 import { reduzirFoto } from "@/lib/foto";
 import { GLOSSARIO } from "@/lib/glossario";
@@ -155,6 +155,7 @@ export default function RegistrarTreinoPage() {
   const router = useRouter();
   const eu = useEu();
   const diasNaSemana = useDiasNaSemana();
+  const treineiHoje = useTreineiHoje();
   const forcaAntes = useForcaAntes();
   const [postId, setPostId] = useState<number | null>(null);
 
@@ -388,7 +389,9 @@ export default function RegistrarTreinoPage() {
             ? "Escreve algo no post pra liberar."
             : tipo === "post"
               ? "Post sem treino: aparece no feed, mas não conta dia na granja."
-              : `Vale 1 dia na granja e +10 de força${diasNaSemana !== null ? `. Essa semana você treinou ${diasNaSemana} ${diasNaSemana === 1 ? "dia" : "dias"} até agora.` : "."}`}
+              : treineiHoje
+                ? "Hoje já contou: esse treino vai pro feed, mas não soma força nem dia na granja."
+                : `Vale 1 dia na granja e +10 de força${diasNaSemana !== null ? `. Essa semana você treinou ${diasNaSemana} ${diasNaSemana === 1 ? "dia" : "dias"} até agora.` : "."}`}
         </p>
         {publicado && !enviando ? (
           <Botao onClick={() => (postId === null ? router.push("/") : irDepoisDePublicar(postId))} className="w-full">

@@ -11,6 +11,7 @@ import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
 import { apiDelete, apiGet, apiPatch, apiPost, type Arvore, type Equipamento, type SkillNaArvore as Progressao } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
+import { useTreineiHoje } from "@/lib/dias";
 import { EQUIPAMENTOS, metaDa, textoDaDose, textoDaSerie } from "@/lib/progressoes";
 
 const TRILHAS = ["Puxar", "Empurrar", "Pernas", "Core"];
@@ -121,6 +122,7 @@ function TreinoDeHoje({
   setSeries: React.Dispatch<React.SetStateAction<Series>>;
   aoVerArvore: () => void;
 }) {
+  const treineiHoje = useTreineiHoje();
   // O próximo passo liberado de cada trilha entra no treino.
   const hoje = TRILHAS.map((t) => arvore.progressoes.find((p) => p.trilha === t && p.estado === "disponivel")).filter(
     (p): p is Progressao => Boolean(p)
@@ -188,13 +190,30 @@ function TreinoDeHoje({
         />
       ))}
 
-      <div className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] -mx-5 border-t border-borda bg-fundo px-5 py-3 md:bottom-0 md:mx-0 md:px-0">
-        <Link
-          href={registrar}
-          className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque hover:brightness-105"
-        >
-          {GLOSSARIO.registrarTreino}
-        </Link>
+      <div className="sticky bottom-[calc(4.25rem+max(1rem,env(safe-area-inset-bottom)))] -mx-5 flex flex-col gap-2 border-t border-borda bg-fundo px-5 py-3 md:bottom-0 md:mx-0 md:px-0">
+        {treineiHoje ? (
+          // o 2º treino do dia não soma: avisa e tira o peso do botão
+          <>
+            <p className="flex items-center gap-2 text-sm font-semibold">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-folha-fundo text-folha" aria-hidden="true">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" />
+                </svg>
+              </span>
+              Treino de hoje contado. Amanhã vale de novo.
+            </p>
+            <Link href={registrar} className="flex min-h-12 items-center justify-center rounded-xl border border-borda-forte text-sm font-semibold hover:bg-superficie-2">
+              Postar mais um treino
+            </Link>
+          </>
+        ) : (
+          <Link
+            href={registrar}
+            className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque hover:brightness-105"
+          >
+            {GLOSSARIO.registrarTreino}
+          </Link>
+        )}
       </div>
     </>
   );
