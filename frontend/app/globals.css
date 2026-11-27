@@ -105,6 +105,7 @@ body {
   --animate-pulo: pulo 380ms var(--ease-saida);
   --animate-encher: encher 900ms var(--ease-saida) both;
   --animate-brilho: brilho 1.4s ease-in-out infinite;
+  --animate-gaveta: gaveta 320ms var(--ease-saida) both;
 
   @keyframes aparecer {
     from { opacity: 0; }
@@ -127,6 +128,9 @@ body {
   }
   @keyframes brilho {
     50% { opacity: 0.55; }
+  }
+  @keyframes gaveta {
+    from { transform: translateY(100%); }
   }
 }
 
