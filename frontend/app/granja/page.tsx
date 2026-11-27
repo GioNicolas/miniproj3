@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { Avatar } from "@/components/Avatar";
 import { BotaoSeguir } from "@/components/BotaoSeguir";
+import { BuscarGente } from "@/components/BuscarGente";
 import { Carregando } from "@/components/Carregando";
 import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
@@ -257,17 +258,17 @@ function usePrevia(eu: Colocado | undefined, ativo: boolean): NaPrevia[] | null 
   return previa;
 }
 
-/** Leva ao Explorar para seguir mais gente. `aoClicar` serve para dispensar as sugestões. */
-function ChamarMaisGente({ aoClicar }: { aoClicar?: () => void }) {
+/** Abre a busca de gente pra seguir (BuscarGente) no lugar do botão. */
+function ChamarMaisGente({ aoClicar }: { aoClicar: () => void }) {
   return (
-    <Link href="/" onClick={aoClicar} className="flex min-h-[52px] items-center gap-3 py-1 text-[15px] font-semibold text-ceu">
+    <button type="button" onClick={aoClicar} className="flex min-h-[52px] w-full items-center gap-3 py-1 text-left text-[15px] font-semibold text-ceu">
       <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dashed border-borda-forte">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <path d="M12 5v14M5 12h14" />
         </svg>
       </span>
       Chamar mais gente pra granja
-    </Link>
+    </button>
   );
 }
 
@@ -293,13 +294,13 @@ function ListaDaPrevia({
   naGranja,
   soEu,
   aoSeguir,
-  aoDispensar,
+  chamar,
 }: {
   previa: NaPrevia[];
   naGranja: Set<string>;
   soEu: boolean;
   aoSeguir: () => void;
-  aoDispensar: () => void;
+  chamar: React.ReactNode; // o "Chamar mais gente" (ou a busca já aberta), no fim da lista
 }) {
   const semana = semanaAtual();
   const linhas = soEu ? previa : previa.filter((p) => !p.souEu && !naGranja.has(p.usuario.username));
@@ -339,7 +340,7 @@ function ListaDaPrevia({
         ))}
       </ol>
       {soEu && <p className="text-[13px] text-pretty text-suave">Seguiu alguém, a granja vira disputa de verdade na hora.</p>}
-      <ChamarMaisGente aoClicar={aoDispensar} />
+      {chamar}
     </section>
   );
 }
@@ -368,9 +369,12 @@ export default function GranjaPage() {
     if (granja.items.length === 1) localStorage.setItem(CHAVE_SUGESTOES, "ativas");
     setSugestoes(localStorage.getItem(CHAVE_SUGESTOES) === "ativas");
   }, [granja]);
-  const dispensarSugestoes = () => {
+  // "Chamar mais gente" abre a busca; a partir daí as sugestões da prévia saem
+  const [buscando, setBuscando] = useState(false);
+  const chamarMaisGente = () => {
     localStorage.setItem(CHAVE_SUGESTOES, "dispensadas");
     setSugestoes(false);
+    setBuscando(true);
   };
   const previa = usePrevia(granja?.eu, sugestoes || granja?.items.length === 1);
 
@@ -476,14 +480,15 @@ export default function GranjaPage() {
             ))}
             {!euNoTopo && <Linha c={granja.eu} souEu />}
           </ol>
-          {!mostrarSugestoes && <ChamarMaisGente />}
+          {!mostrarSugestoes && !buscando && <ChamarMaisGente aoClicar={chamarMaisGente} />}
         </section>
       )}
 
       {/* sugestões depois da classificação real: quem ainda dá pra trazer pra disputa */}
       {mostrarSugestoes && previa && (
-        <ListaDaPrevia previa={previa} naGranja={naGranja} soEu={soEu} aoSeguir={carregar} aoDispensar={dispensarSugestoes} />
+        <ListaDaPrevia previa={previa} naGranja={naGranja} soEu={soEu} aoSeguir={carregar} chamar={<ChamarMaisGente aoClicar={chamarMaisGente} />} />
       )}
+      {buscando && <BuscarGente aoSeguir={carregar} />}
 
       <Regras abertoInicial={soEu} />
       </div>
