@@ -157,7 +157,10 @@ function Desfazer({ postId }: { postId: number }) {
   }
   return (
     <div className="flex animate-surgir flex-col gap-2 rounded-xl bg-superficie p-3">
-      <p className="text-sm">Apagar o post e tirar o dia de hoje da granja?</p>
+      <div>
+        <p className="text-[15px] font-bold">Apagar esse treino?</p>
+        <p className="mt-1 text-[13px] leading-snug">Seu progresso de hoje vai junto: o dia sai da granja e o frango perde a força que ganhou.</p>
+      </div>
       {erro && <Erro>{erro}</Erro>}
       <div className="grid grid-cols-2 gap-2">
         <Botao variante="contorno" onClick={() => setConfirmando(false)} disabled={apagando}>
