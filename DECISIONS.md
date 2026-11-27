@@ -227,5 +227,12 @@ pode custar uma varredura nos posts.
   registrado, as metas de reps, a prévia da Granja e o layout no computador. Eu
   decidia o que mudar, conferia cada tela no celular e no computador e testava
   os fluxos com contas minhas antes do merge.
+- **@EduardoSanturbano:** Claude Code para implementar comigo as features de
+  que eu era dono (follow, curtidas, Granja da Semana e seed fake) e a foto de
+  perfil escolhida dos arquivos: o grafo de follow e o top-K por heap em
+  `core/`, o benchmark da Granja, os textos do seed com cara de calistenia e os
+  merges da main nas minhas branches. Também para escrever comigo a decisão 4.
+  Eu revisava cada diff, rodava os testes e o `make bench` e conferia as telas
+  no navegador antes de abrir o PR.
 - **Do time, sem IA:** o nicho e o público, as decisões de produto e o que ficou
   de fora.
