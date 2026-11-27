@@ -36,6 +36,14 @@ function dose({ series, reps }: Linha): string {
   return s && r ? `${s}×${r}` : s ? `${s} séries` : r ? `${r} reps` : "";
 }
 
+/** Texto do post quando a pessoa não escreve nada: "treino feito · barra australiana 3×8". */
+function textoPadrao(exercicios: Linha[]): string {
+  const feitos = exercicios
+    .filter((l) => l.progressao)
+    .map((l) => [nomeDaProgressao(l.progressao).toLowerCase(), dose(l)].filter(Boolean).join(" "));
+  return feitos.length ? `treino feito · ${feitos.join(", ")}` : "treino feito";
+}
+
 /** Quantos dias a pessoa já treinou nesta semana; null enquanto carrega ou se falhar. */
 function useDiasNaSemana(): number | null {
   const eu = useEu();
@@ -215,6 +223,9 @@ export default function RegistrarTreinoPage() {
   const [preparandoFoto, setPreparandoFoto] = useState(false);
   const [publicado, setPublicado] = useState(false);
   const [texto, setTexto] = useState("");
+  // No treino o texto é opcional: com uma mão e suado, registrar o dia basta.
+  // O backend exige texto, então vai um resumo do treino no lugar.
+  const podeEnviar = tipo === "treino" || texto.trim().length > 0;
   const [exercicios, setExercicios] = useState<Linha[]>([]);
   const [incluindo, setIncluindo] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -239,7 +250,7 @@ export default function RegistrarTreinoPage() {
 
   async function registrar(e: React.FormEvent) {
     e.preventDefault();
-    if (enviando || publicado || preparandoFoto || !texto.trim()) return;
+    if (enviando || publicado || preparandoFoto || !podeEnviar) return;
     setErro(null);
     setEnviando(true);
     let post: Post;
@@ -248,7 +259,7 @@ export default function RegistrarTreinoPage() {
       post =
         tipo === "treino"
           ? await apiPost<Post>("/treinos", {
-              texto,
+              texto: texto.trim() || textoPadrao(exercicios),
               exercicios: exercicios.map((l) => ({ progressao: l.progressao, series: numero(l.series), reps: numero(l.reps) })),
             })
           : await apiPost<Post>("/posts", { texto });
@@ -378,7 +389,7 @@ export default function RegistrarTreinoPage() {
             onChange={(e) => setTexto(e.target.value)}
             maxLength={LIMITE_TEXTO}
             rows={3}
-            placeholder={tipo === "treino" ? "Como foi o treino?" : "O que você quer contar?"}
+            placeholder={tipo === "treino" ? "Como foi o treino? (opcional)" : "O que você quer contar?"}
             className="w-full resize-none border-0 border-b border-borda-forte bg-transparent px-0 pb-2 pt-1 text-sm leading-[1.55] text-tinta outline-none placeholder:text-suave focus:border-tinta"
           />
         </label>
@@ -396,7 +407,7 @@ export default function RegistrarTreinoPage() {
 
       <div className="flex flex-col gap-2 border-t border-borda pt-3">
         <p className="text-center text-xs text-balance text-suave">
-          {!texto.trim()
+          {!podeEnviar
             ? "Escreve algo no post pra liberar."
             : tipo === "post"
               ? "Post sem treino: aparece no feed, mas não conta dia na granja."
@@ -407,7 +418,7 @@ export default function RegistrarTreinoPage() {
             {tipo === "treino" ? "Continuar" : "Ver no feed"}
           </Botao>
         ) : (
-          <Botao type="submit" disabled={enviando || publicado || preparandoFoto || !texto.trim()} className="w-full">
+          <Botao type="submit" disabled={enviando || publicado || preparandoFoto || !podeEnviar} className="w-full">
             {enviando ? "Publicando..." : tipo === "treino" ? GLOSSARIO.registrarTreino : "Postar"}
           </Botao>
         )}

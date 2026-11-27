@@ -13,12 +13,13 @@ export const COR_DA_PATENTE: Record<Patente, string> = {
   Monstro: "#e0704a",
 };
 
-// A mesma cor, escurecida para virar texto legível no fundo claro.
+// A mesma cor, escurecida para virar texto legível no fundo claro: 4,5:1 até na
+// superfície mais escura (#e2ddd2), porque o nome da patente é texto pequeno.
 export const TEXTO_DA_PATENTE: Record<Patente, string> = {
-  Pintinho: "#9a7300",
-  Frango: "#8f6532",
-  Galo: "#b0561a",
-  Monstro: "#b2401d",
+  Pintinho: "#7b5b00",
+  Frango: "#7d582b",
+  Galo: "#974916",
+  Monstro: "#a73c1b",
 };
 
 // Faixas de força de cada patente (backend/app/core/frango.py).

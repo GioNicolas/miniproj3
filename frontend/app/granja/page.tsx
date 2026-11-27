@@ -59,10 +59,11 @@ function Recado({ granja }: { granja: Granja }) {
   );
 }
 
-// Pódio: cor da medalha no número e altura do degrau.
+// Pódio: cor da medalha no número e altura do degrau. O número é grande (3:1 basta),
+// e cada cor passa no fundo do próprio degrau.
 const MEDALHA: Record<number, { cor: string; degrau: string; arte: number }> = {
-  1: { cor: "#c8951f", degrau: "min-h-[160px] bg-superficie-2", arte: 118 },
-  2: { cor: "#8a9099", degrau: "min-h-[136px] bg-superficie", arte: 92 },
+  1: { cor: "#977117", degrau: "min-h-[160px] bg-superficie-2", arte: 118 },
+  2: { cor: "#797e86", degrau: "min-h-[136px] bg-superficie", arte: 92 },
   3: { cor: "#b06a38", degrau: "min-h-[122px] bg-superficie", arte: 84 },
 };
 
