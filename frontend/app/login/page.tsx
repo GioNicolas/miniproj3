@@ -47,23 +47,20 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-sm flex-col md:min-h-[calc(100dvh-4rem)] md:justify-center">
-      <header className="flex min-h-11 items-center justify-center pb-2 pt-5 md:pt-0">
+      <header className="flex min-h-11 items-center pt-5 md:pt-0">
         <span className="font-titulo text-[22px]">{GLOSSARIO.rede}</span>
       </header>
 
-      <form onSubmit={entrar} className="flex flex-1 flex-col gap-6 md:flex-none pt-2">
-        {/* topo centralizado: frango, título e a frase sobre a rede */}
-        <div className="text-center">
-          {/* o frango no topo da patente: o que a pessoa pode virar treinando */}
-          <div className="mb-4 flex animate-subir justify-center md:[&>img]:!h-[128px]">
-            <ArteDoFrango patente="Monstro" altura={150} alt="Frango Monstro, a patente mais alta" />
+      <form onSubmit={entrar} className="flex flex-1 flex-col gap-8 pt-6 md:flex-none">
+        {/* título à esquerda e o Monstro ao lado: o frango aparece sem empilhar mais uma camada */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-end justify-between gap-4">
+            <h1 className="pb-1 text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">Entra pra registrar o treino de hoje</h1>
+            <div className="shrink-0 animate-subir">
+              <ArteDoFrango patente="Monstro" altura={112} alt="Frango Monstro, a patente mais alta" />
+            </div>
           </div>
-          <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-balance">
-            Entra pra registrar o treino de hoje
-          </h1>
-          <p className="mt-2 text-[15px] leading-normal text-pretty text-suave">
-            {GLOSSARIO.rede} é a rede social de quem pratica calistenia. Aqui você disputa o ranking da semana e conquista novos frangos conforme evolui.
-          </p>
+          <p className="text-[15px] leading-normal text-pretty text-suave">{GLOSSARIO.rede} é a rede social de quem pratica calistenia: dispute o ranking da semana e conquiste novos frangos.</p>
         </div>
 
         <div className="flex flex-col gap-4">
