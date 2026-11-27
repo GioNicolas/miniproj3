@@ -56,8 +56,11 @@ function BlocoDoTreino({ exercicios, comFoto }: { exercicios: Exercicio[]; comFo
   const limite = comFoto ? EXERCICIOS_VISIVEIS_COM_FOTO : EXERCICIOS_VISIVEIS;
   const escondidos = exercicios.length - limite;
   const visiveis = aberto ? exercicios : exercicios.slice(0, limite);
+  // Com um exercício só, o placar repetiria a linha de baixo ("1 exercício, 3 séries, 24 reps").
+  const comPlacar = exercicios.length > 1;
   return (
     <section aria-label="Treino do dia" className="overflow-hidden rounded-xl bg-superficie">
+      {comPlacar && (
       <dl className="grid grid-cols-3 divide-x divide-borda py-3">
         {totais(exercicios).map(({ valor, rotulo }) => (
           <div key={rotulo} className="flex flex-col items-center gap-1">
@@ -66,8 +69,9 @@ function BlocoDoTreino({ exercicios, comFoto }: { exercicios: Exercicio[]; comFo
           </div>
         ))}
       </dl>
+      )}
       {visiveis.length > 0 && (
-      <ul className="border-t border-borda px-3.5">
+      <ul className={`px-3.5 ${comPlacar ? "border-t border-borda" : ""}`}>
         {visiveis.map((exercicio, i) => (
           <li key={i} className="flex items-center justify-between gap-3 border-b border-borda py-2.5 text-[14px] last:border-b-0">
             <span className="min-w-0 truncate font-semibold">{nomeDaProgressao(exercicio.progressao)}</span>
@@ -187,6 +191,7 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [fotoCarregou, setFotoCarregou] = useState(false);
+  const [confirmandoApagar, setConfirmandoApagar] = useState(false);
 
   async function salvar() {
     setSalvando(true);
@@ -203,7 +208,6 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
   }
 
   async function apagar() {
-    if (!confirm("Apagar este post?")) return;
     setSalvando(true);
     try {
       await apiDelete(`/posts/${post.id}`);
@@ -269,7 +273,7 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
             Seguir
           </button>
         )}
-        {souAutor && !editando && <MenuDoAutor onEditar={() => setEditando(true)} onApagar={apagar} desativado={salvando} />}
+        {souAutor && !editando && <MenuDoAutor onEditar={() => setEditando(true)} onApagar={() => setConfirmandoApagar(true)} desativado={salvando} />}
       </header>
 
       {post.imagem_url && (
@@ -309,6 +313,30 @@ export function PostCard({ post, onAtualizado, onApagado }: Props) {
         )}
 
         {post.treino && <BlocoDoTreino exercicios={post.treino.exercicios} comFoto={Boolean(post.imagem_url)} />}
+
+        {confirmandoApagar && (
+          // Post de treino carrega progresso: avisa antes do que sai junto com ele.
+          <div role="alertdialog" aria-labelledby={`apagar-${post.id}`} className="flex animate-surgir flex-col gap-3 rounded-xl border border-brasa/30 bg-brasa-fundo p-3">
+            <div>
+              <p id={`apagar-${post.id}`} className="text-[15px] font-bold">
+                {post.treino ? "Apagar esse treino?" : "Apagar esse post?"}
+              </p>
+              <p className="mt-1 text-[13px] leading-snug">
+                {post.treino
+                  ? "Seu progresso vai junto: se for o único treino desse dia, o dia sai da granja e o frango perde a força que ganhou com ele."
+                  : "Ele some do feed e não dá pra desfazer."}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Botao variante="contorno" onClick={() => setConfirmandoApagar(false)} disabled={salvando}>
+                Manter
+              </Botao>
+              <Botao variante="contorno" onClick={apagar} disabled={salvando} className="border-brasa text-brasa hover:bg-elevado">
+                {salvando ? "Apagando..." : "Apagar"}
+              </Botao>
+            </div>
+          </div>
+        )}
 
         {erro && <Erro>{erro}</Erro>}
       </div>

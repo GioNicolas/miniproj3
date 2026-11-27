@@ -8,7 +8,8 @@ import { Avatar } from "@/components/Avatar";
 import { Botao } from "@/components/Botao";
 import { Erro } from "@/components/Erro";
 import { emSegundos, EscolherExercicio, trilhaDe } from "@/components/EscolherExercicio";
-import { apiGet, apiPost, subirFotoDoPost, type Post } from "@/lib/api";
+import { apiGet, apiPost, subirFotoDoPost, type Perfil, type Post } from "@/lib/api";
+import { semanaAtual } from "@/lib/dias";
 import { useEu } from "@/lib/eu";
 import { reduzirFoto } from "@/lib/foto";
 import { GLOSSARIO } from "@/lib/glossario";
@@ -20,22 +21,6 @@ const LIMITE_EXERCICIOS = 20; // o mesmo do backend
 // Séries e reps ficam como texto (o Treino de hoje manda só as séries); viram int no envio.
 type Linha = { progressao: string; series: string; reps: string };
 
-function diaIso(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-/** Os 7 dias desta semana, de segunda a domingo: a mesma semana da Granja. */
-function semanaAtual(): string[] {
-  const hoje = new Date();
-  const segunda = new Date(hoje);
-  segunda.setDate(hoje.getDate() - ((hoje.getDay() + 6) % 7));
-  return Array.from({ length: 7 }, (_, i) => {
-    const dia = new Date(segunda);
-    dia.setDate(segunda.getDate() + i);
-    return diaIso(dia);
-  });
-}
-
 function numero(valor: string): number | null {
   const n = Number.parseInt(valor, 10);
   return Number.isNaN(n) ? null : n;
@@ -46,6 +31,14 @@ function dose({ progressao, series, reps }: Linha): string {
   const r = numero(reps);
   const unidade = emSegundos(progressao) ? " s" : "";
   return s && r ? `${s}×${r}${unidade}` : s ? `${s} séries` : r ? `${r}${unidade || " reps"}` : "";
+}
+
+/** Texto do post quando a pessoa não escreve nada: "treino feito · barra australiana 3×8". */
+function textoPadrao(exercicios: Linha[]): string {
+  const feitos = exercicios
+    .filter((l) => l.progressao)
+    .map((l) => [nomeDaProgressao(l.progressao).toLowerCase(), dose(l)].filter(Boolean).join(" "));
+  return feitos.length ? `treino feito · ${feitos.join(", ")}` : "treino feito";
 }
 
 /** Quantos dias a pessoa já treinou nesta semana; null enquanto carrega ou se falhar. */
@@ -60,6 +53,19 @@ function useDiasNaSemana(): number | null {
       .catch(() => setDias(null));
   }, [eu]);
   return dias;
+}
+
+/** Força do frango antes de registrar, para a tela de treino registrado mostrar quanto subiu. */
+function useForcaAntes(): number | null {
+  const eu = useEu();
+  const [forca, setForca] = useState<number | null>(null);
+  useEffect(() => {
+    if (!eu) return;
+    apiGet<Perfil>(`/usuarios/${eu.username}`)
+      .then((p) => setForca(p.frango.forca))
+      .catch(() => setForca(null));
+  }, [eu]);
+  return forca;
 }
 
 type Tipo = "treino" | "post";
@@ -149,11 +155,23 @@ export default function RegistrarTreinoPage() {
   const router = useRouter();
   const eu = useEu();
   const diasNaSemana = useDiasNaSemana();
+  const forcaAntes = useForcaAntes();
+  const [postId, setPostId] = useState<number | null>(null);
+
+  // Treino vai para a tela de treino registrado (força, sequência, granja); post solto, para o feed.
+  function irDepoisDePublicar(id: number) {
+    if (tipo !== "treino") return router.push("/");
+    const antes = forcaAntes === null ? "" : `&antes=${forcaAntes}`;
+    router.push(`/treinos/registrado?post=${id}${antes}`);
+  }
   const [tipo, setTipo] = useState<Tipo>("treino");
   const [foto, setFoto] = useState<Blob | null>(null);
   const [preparandoFoto, setPreparandoFoto] = useState(false);
   const [publicado, setPublicado] = useState(false);
   const [texto, setTexto] = useState("");
+  // No treino o texto é opcional: com uma mão e suado, registrar o dia basta.
+  // O backend exige texto, então vai um resumo do treino no lugar.
+  const podeEnviar = tipo === "treino" || texto.trim().length > 0;
   const [exercicios, setExercicios] = useState<Linha[]>([]);
   // null: gaveta fechada; indice null: exercício novo; número: editando aquele exercício
   const [gaveta, setGaveta] = useState<{ indice: number | null } | null>(null);
@@ -173,13 +191,13 @@ export default function RegistrarTreinoPage() {
       .map((item) => item.split(":"))
       .filter(([codigo]) => codigos.has(codigo))
       .slice(0, LIMITE_EXERCICIOS)
-      .map(([codigo, series]) => ({ progressao: codigo, series: series ?? "", reps: "" }));
+      .map(([codigo, series, reps]) => ({ progressao: codigo, series: series ?? "", reps: reps ?? "" }));
     if (vindos.length) setExercicios(vindos);
   }, []);
 
   async function registrar(e: React.FormEvent) {
     e.preventDefault();
-    if (enviando || publicado || preparandoFoto || !texto.trim()) return;
+    if (enviando || publicado || preparandoFoto || !podeEnviar) return;
     setErro(null);
     setEnviando(true);
     let post: Post;
@@ -188,7 +206,7 @@ export default function RegistrarTreinoPage() {
       post =
         tipo === "treino"
           ? await apiPost<Post>("/treinos", {
-              texto,
+              texto: texto.trim() || textoPadrao(exercicios),
               exercicios: exercicios.map((l) => ({ progressao: l.progressao, series: numero(l.series), reps: numero(l.reps) })),
             })
           : await apiPost<Post>("/posts", { texto });
@@ -198,6 +216,7 @@ export default function RegistrarTreinoPage() {
       return;
     }
     setPublicado(true);
+    setPostId(post.id);
     if (foto) {
       try {
         await subirFotoDoPost(post.id, foto);
@@ -208,7 +227,7 @@ export default function RegistrarTreinoPage() {
         return;
       }
     }
-    router.push("/");
+    irDepoisDePublicar(post.id);
   }
 
   return (
@@ -316,7 +335,7 @@ export default function RegistrarTreinoPage() {
             onChange={(e) => setTexto(e.target.value)}
             maxLength={LIMITE_TEXTO}
             rows={3}
-            placeholder={tipo === "treino" ? "Como foi o treino?" : "O que você quer contar?"}
+            placeholder={tipo === "treino" ? "Como foi o treino? (opcional)" : "O que você quer contar?"}
             className="w-full resize-none border-0 border-b border-borda-forte bg-transparent px-0 pb-2 pt-1 text-sm leading-[1.55] text-tinta outline-none placeholder:text-suave focus:border-tinta"
           />
         </label>
@@ -362,18 +381,18 @@ export default function RegistrarTreinoPage() {
 
       <div className="flex flex-col gap-2 border-t border-borda pt-3">
         <p className="text-center text-xs text-balance text-suave">
-          {!texto.trim()
+          {!podeEnviar
             ? "Escreve algo no post pra liberar."
             : tipo === "post"
               ? "Post sem treino: aparece no feed, mas não conta dia na granja."
               : `Vale 1 dia na granja e +10 de força${diasNaSemana !== null ? `. Essa semana você treinou ${diasNaSemana} ${diasNaSemana === 1 ? "dia" : "dias"} até agora.` : "."}`}
         </p>
         {publicado && !enviando ? (
-          <Botao onClick={() => router.push("/")} className="w-full">
-            Ver no feed
+          <Botao onClick={() => (postId === null ? router.push("/") : irDepoisDePublicar(postId))} className="w-full">
+            {tipo === "treino" ? "Continuar" : "Ver no feed"}
           </Botao>
         ) : (
-          <Botao type="submit" disabled={enviando || publicado || preparandoFoto || !texto.trim()} className="w-full">
+          <Botao type="submit" disabled={enviando || publicado || preparandoFoto || !podeEnviar} className="w-full">
             {enviando ? "Publicando..." : tipo === "treino" ? GLOSSARIO.registrarTreino : "Postar"}
           </Botao>
         )}

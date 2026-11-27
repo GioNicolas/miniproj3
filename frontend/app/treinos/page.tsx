@@ -11,11 +11,10 @@ import { Erro } from "@/components/Erro";
 import { EstadoVazio } from "@/components/EstadoVazio";
 import { apiDelete, apiGet, apiPatch, apiPost, type Arvore, type Equipamento, type SkillNaArvore as Progressao } from "@/lib/api";
 import { GLOSSARIO } from "@/lib/glossario";
-import { EQUIPAMENTOS } from "@/lib/progressoes";
+import { EQUIPAMENTOS, metaDa, textoDaDose, textoDaSerie } from "@/lib/progressoes";
 
 const TRILHAS = ["Puxar", "Empurrar", "Pernas", "Core"];
 const NOME_DO_EQUIPAMENTO = Object.fromEntries(EQUIPAMENTOS.map((e) => [e.codigo, e.nome.toLowerCase()]));
-const SERIES = 3;
 
 function Segmentado<T extends string>({
   opcoes,
@@ -53,9 +52,11 @@ function Segmentado<T extends string>({
   );
 }
 
-/** Um exercício do treino de hoje: número, nome, trilha e as séries para marcar. */
+/** Um exercício do treino de hoje: número, nome, a dose (3×8) e as séries para marcar. */
 function Exercicio({ p, ordem, feitas, aoMarcar }: { p: Progressao; ordem: number; feitas: number; aoMarcar: (n: number) => void }) {
-  const completo = feitas >= SERIES;
+  const { treino, segundos } = metaDa(p.codigo);
+  const [series, reps] = treino;
+  const completo = feitas >= series;
   return (
     <article aria-label={p.nome} className="flex flex-col gap-3 rounded-[14px] bg-superficie p-4">
       <div className="flex items-center gap-3">
@@ -76,15 +77,17 @@ function Exercicio({ p, ordem, feitas, aoMarcar }: { p: Progressao; ordem: numbe
           <h3 className="truncate text-[15px] font-semibold">{p.nome}</h3>
           <p className="text-xs text-suave">{p.trilha}</p>
         </div>
+        <span className="shrink-0 text-[17px] font-bold tabular-nums">{textoDaDose(treino, segundos)}</span>
       </div>
       <div role="group" aria-label={`Séries de ${p.nome}`} className="grid grid-cols-3 gap-2">
-        {Array.from({ length: SERIES }, (_, k) => {
+        {Array.from({ length: series }, (_, k) => {
           const feita = k < feitas;
           return (
             <button
               key={k}
               type="button"
               aria-pressed={feita}
+              aria-label={`Série ${k + 1}: ${textoDaSerie(reps, segundos)}`}
               onClick={() => aoMarcar(feita ? k : k + 1)}
               className={`flex min-h-11 items-center justify-center gap-2 rounded-lg border text-[13px] font-semibold ${
                 feita ? "border-destaque-fundo bg-destaque-fundo text-destaque" : "border-borda-forte bg-superficie-2 text-tinta"
@@ -95,7 +98,7 @@ function Exercicio({ p, ordem, feitas, aoMarcar }: { p: Progressao; ordem: numbe
                   <path d="M5 12.5l4.5 4.5L19 7.5" />
                 </svg>
               )}
-              Série {k + 1}
+              {textoDaSerie(reps, segundos)}
             </button>
           );
         })}
@@ -122,10 +125,11 @@ function TreinoDeHoje({
     (p): p is Progressao => Boolean(p)
   );
   const feitas = hoje.reduce((soma, p) => soma + (series[p.codigo] ?? 0), 0);
-  const total = hoje.length * SERIES;
+  const total = hoje.reduce((soma, p) => soma + metaDa(p.codigo).treino[0], 0);
   const marcadas = hoje.filter((p) => (series[p.codigo] ?? 0) > 0);
+  // Leva as séries marcadas e as reps da meta, para o registrar já vir preenchido.
   const registrar = marcadas.length
-    ? `/treinos/registrar?ex=${marcadas.map((p) => `${p.codigo}:${series[p.codigo]}`).join(",")}`
+    ? `/treinos/registrar?ex=${marcadas.map((p) => `${p.codigo}:${series[p.codigo]}:${metaDa(p.codigo).treino[1]}`).join(",")}`
     : "/treinos/registrar";
 
   if (hoje.length === 0) {
@@ -147,9 +151,10 @@ function TreinoDeHoje({
       <section aria-label="Resumo do treino de hoje" className="rounded-[14px] bg-superficie p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-[17px] font-bold tracking-[-0.02em]">Treino de hoje</h2>
+            {/* a aba já diz "Treino de hoje": o card diz de onde ele vem */}
+            <h2 className="text-[17px] font-bold tracking-[-0.02em]">O próximo passo de cada trilha</h2>
             <p className="mt-0.5 text-[13px] text-suave">
-              {hoje.length} {hoje.length === 1 ? "exercício" : "exercícios"} · o próximo passo de cada trilha
+              {hoje.length} {hoje.length === 1 ? "exercício" : "exercícios"} · marca cada série que fizer
             </p>
           </div>
           <div className="shrink-0 text-right">
@@ -201,7 +206,9 @@ function detalhe(p: Progressao, porCodigo: Map<string, Progressao>, tenho: strin
   const partes: string[] = [];
   if (faltam.length) partes.push(`Libera depois de ${faltam.join(" e ")}`);
   if (semEquip.length) partes.push(`${faltam.length ? "p" : "P"}recisa de ${semEquip.join(" e ")}`);
-  return partes.length ? partes.join(" · ") : "Entra no treino de hoje. Marca quando dominar.";
+  if (partes.length) return partes.join(" · ");
+  const { treino, domina, segundos } = metaDa(p.codigo);
+  return `Hoje: ${textoDaDose(treino, segundos)}. Domina quando fizer ${textoDaDose(domina, segundos)} sem roubar.`;
 }
 
 function Passo({

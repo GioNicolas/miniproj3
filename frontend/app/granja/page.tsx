@@ -59,10 +59,11 @@ function Recado({ granja }: { granja: Granja }) {
   );
 }
 
-// Pódio: cor da medalha no número e altura do degrau.
+// Pódio: cor da medalha no número e altura do degrau. O número é grande (3:1 basta),
+// e cada cor passa no fundo do próprio degrau.
 const MEDALHA: Record<number, { cor: string; degrau: string; arte: number }> = {
-  1: { cor: "#c8951f", degrau: "min-h-[160px] bg-superficie-2", arte: 118 },
-  2: { cor: "#8a9099", degrau: "min-h-[136px] bg-superficie", arte: 92 },
+  1: { cor: "#977117", degrau: "min-h-[160px] bg-superficie-2", arte: 118 },
+  2: { cor: "#797e86", degrau: "min-h-[136px] bg-superficie", arte: 92 },
   3: { cor: "#b06a38", degrau: "min-h-[122px] bg-superficie", arte: 84 },
 };
 
@@ -225,6 +226,7 @@ export default function GranjaPage() {
   // Quanto falta para a semana zerar não depende de eu já ter treinado hoje
   // (dias_que_ainda_contam desconta hoje de quem treinou: no sábado dava "acaba hoje").
   const restam = diasAteDomingo();
+  const treineiHoje = minhaSemana instanceof Set && minhaSemana.has(diaIso(new Date()));
 
   return (
     <div className="flex flex-col gap-4">
@@ -268,12 +270,27 @@ export default function GranjaPage() {
         <div className="text-[15px] leading-snug">
           <Recado granja={granja} />
         </div>
-        <Link
-          href="/treinos/registrar"
-          className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque hover:brightness-105"
-        >
-          {GLOSSARIO.registrarTreino}
-        </Link>
+        {treineiHoje ? (
+          // o 2º treino do dia não conta: no lugar do botão, a confirmação
+          <p className="flex animate-aparecer items-center gap-2 text-sm font-semibold">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-folha-fundo text-folha" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12.5l4.5 4.5L19 7.5" />
+              </svg>
+            </span>
+            Treino de hoje contado.
+          </p>
+        ) : minhaSemana === null ? (
+          // enquanto não sabe se já treinou, guarda o lugar do botão sem mostrá-lo
+          <div className="min-h-[52px] animate-brilho rounded-xl bg-superficie-2" aria-hidden="true" />
+        ) : (
+          <Link
+            href="/treinos/registrar"
+            className="flex min-h-[52px] items-center justify-center rounded-xl bg-destaque px-4 font-titulo text-[17px] text-sobre-destaque hover:brightness-105"
+          >
+            {GLOSSARIO.registrarTreino}
+          </Link>
+        )}
       </section>
 
       {!soEu && (resto.length > 0 || !euNoTopo) && (
