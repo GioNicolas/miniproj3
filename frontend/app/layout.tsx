@@ -53,7 +53,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-fundo font-corpo text-tinta">
         <Navbar />
         {/* pb-24: espaço para a barra inferior do celular não cobrir o conteúdo */}
-        <main className="mx-auto max-w-xl px-5 pb-28 pt-2 md:pb-10 md:pt-8">
+        <main className="mx-auto max-w-5xl px-5 pb-28 pt-2 md:pb-10 md:pt-8">
           <GuardaDeRota>{children}</GuardaDeRota>
         </main>
       </body>

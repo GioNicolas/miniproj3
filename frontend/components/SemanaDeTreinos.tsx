@@ -23,7 +23,7 @@ export function SemanaDeTreinos({ treinados }: { treinados: Set<string> | "erro"
             </span>
             <span
               aria-label={`${NOMES_DOS_DIAS[i]}, ${Number(dia.slice(8))}: ${treinou ? "treinou" : "sem treino"}${ehHoje ? " (hoje)" : ""}`}
-              className={`flex aspect-square w-full items-center justify-center rounded-lg ${treinou ? "bg-destaque-fundo" : "bg-superficie-2"} ${
+              className={`flex aspect-square w-full max-w-14 items-center justify-center rounded-lg ${treinou ? "bg-destaque-fundo" : "bg-superficie-2"} ${
                 ehHoje ? "border-2 border-dashed border-destaque" : ""
               }`}
             >
